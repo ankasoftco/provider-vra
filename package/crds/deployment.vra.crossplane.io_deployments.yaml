@@ -5,9 +5,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
   creationTimestamp: null
-  name: deployments.deployment.vra.crossplane.io
+  name: deployments.vra.vra.crossplane.io
 spec:
-  group: deployment.vra.crossplane.io
+  group: vra.vra.crossplane.io
   names:
     categories:
     - crossplane
@@ -16,7 +16,7 @@ spec:
     kind: Deployment
     listKind: DeploymentList
     plural: deployments
-    singular: deployment
+    singular: vra
   scope: Cluster
   versions:
   - additionalPrinterColumns:

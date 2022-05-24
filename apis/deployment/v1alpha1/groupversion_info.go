@@ -16,7 +16,7 @@ limitations under the License.
 
 // Package v1alpha1 contains the v1alpha1 group Deployment resources of the vRA provider.
 // +kubebuilder:object:generate=true
-// +groupName=deployment.vra.crossplane.io
+// +groupName=vra.vra.crossplane.io
 // +versionName=v1alpha1
 package v1alpha1
 
@@ -27,7 +27,7 @@ import (
 
 // Package type metadata.
 const (
-	Group   = "deployment.vra.crossplane.io"
+	Group   = "vra.vra.crossplane.io"
 	Version = "v1alpha1"
 )
 

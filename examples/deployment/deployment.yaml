@@ -1,4 +1,4 @@
-apiVersion: deployment.vra.crossplane.io/v1alpha1
+apiVersion: vra.vra.crossplane.io/v1alpha1
 kind: Deployment
 metadata:
   name: example

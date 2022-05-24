@@ -19,6 +19,8 @@ package deployment
 import (
 	"context"
 	"fmt"
+	"github.com/crossplane/provider-vra/internal/clients"
+	"github.com/crossplane/provider-vra/internal/clients/vra"
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -46,15 +48,8 @@ const (
 	errNewClient = "cannot create new Service"
 )
 
-// A NoOpService does nothing.
-type NoOpService struct{}
-
-var (
-	newNoOpService = func(_ []byte) (interface{}, error) { return &NoOpService{}, nil }
-)
-
-// Setup adds a controller that reconciles Deployment managed resources.
-func Setup(mgr ctrl.Manager, o controller.Options) error {
+// SetupDeployment adds a controller that reconciles Deployment managed resources.
+func SetupDeployment(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.DeploymentGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
@@ -67,7 +62,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: newNoOpService}),
+			newServiceFn: clients.NewDeploymentClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
 		managed.WithConnectionPublishers(cps...))
@@ -84,7 +79,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(creds []byte) (interface{}, error)
+	newServiceFn func(config clients.Config) vra.DeploymentClient
 }
 
 // Connect typically produces an ExternalClient by:
@@ -113,7 +108,10 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 		return nil, errors.Wrap(err, errGetCreds)
 	}
 
-	svc, err := c.newServiceFn(data)
+	svc := c.newServiceFn(clients.Config{
+		BaseUrl:      pc.Spec.BaseUrl,
+		RefreshToken: string(data),
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, errNewClient)
 	}
