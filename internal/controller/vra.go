@@ -14,5 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package sample contains group Sample API versions
-package sample
+package controller
+
+import (
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	ctrl "sigs.k8s.io/controller-runtime"
+
+	"github.com/crossplane/provider-vra/internal/controller/config"
+)
+
+// Setup creates all vRA controllers with the supplied logger and adds them to
+// the supplied manager.
+func Setup(mgr ctrl.Manager, o controller.Options) error {
+	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		config.Setup,
+		// deployment.Setup,
+	} {
+		if err := setup(mgr, o); err != nil {
+			return err
+		}
+	}
+	return nil
+}
