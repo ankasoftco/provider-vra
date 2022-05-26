@@ -3,7 +3,7 @@ kind: ProviderConfig
 metadata:
   name: default
 spec:
-  baseUrl: "https://api.mgmt.cloud.vmware.com"
+  baseUrl: "https://api.mgmt.cloud.vmware.com" #"https://api.next.symphony-dev.com"
   credentials:
     source: Secret
     secretRef:

@@ -17,6 +17,6 @@ limitations under the License.
 // Package v1alpha1 contains managed resources, such as
 // Deployment.
 // +kubebuilder:object:generate=true
-// +groupName=vra.vra.crossplane.io
+// +groupName=deployment.vra.crossplane.io
 // +versionName=v1alpha1
 package v1alpha1

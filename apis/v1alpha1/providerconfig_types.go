@@ -28,7 +28,7 @@ import (
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
 type ProviderConfigSpec struct {
 	// Base URL of the vRA Endpoint
-	BaseUrl string `json:"baseUrl,omitempty"`
+	BaseURL string `json:"baseUrl,omitempty"`
 
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`

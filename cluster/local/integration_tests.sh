@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+w3w4w#!/usr/bin/env bash
 set -e
 
 # setting up colors

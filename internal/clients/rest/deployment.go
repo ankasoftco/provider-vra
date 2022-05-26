@@ -21,44 +21,47 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/crossplane/provider-vra/internal/clients/vra"
 	"net/http"
+	url2 "net/url"
+
+	"github.com/crossplane/provider-vra/internal/clients/vra"
 )
 
-// Get gets the vra
-func (c *Client) Get(ctx context.Context, id int) (vra.Deployment, error) {
-	url := c.BaseUrl + fmt.Sprintf("/rest/api/1.0/projects/%d", id)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return vra.Deployment{}, err
-	}
-
-	// The documentation says this is a paged API but it is not
-	var payload vra.Deployment
-	if err := c.sendRequest(req, &payload); err != nil {
-		return vra.Deployment{}, fmt.Errorf("GetWebhook(%d): %w", id, err)
-	}
-
-	return payload, nil
-}
-
 // Create creates the web hook
-func (c *Client) Create(ctx context.Context, hook vra.Deployment) (vra.Deployment, error) {
-	marshalledPayload, err := json.Marshal(hook)
+func (c *Client) Create(ctx context.Context, deployment vra.CreateDeploymentMemberOptions) (vra.CreateDeploymentMemberOptions, error) {
+	marshalledPayload, err := json.Marshal(deployment)
 	if err != nil {
-		return vra.Deployment{}, err
+		return vra.CreateDeploymentMemberOptions{}, err
 	}
 
-	url := c.BaseUrl + fmt.Sprintf("/rest/api/1.0/projects/")
+	url := c.BaseURL + fmt.Sprintf("/catalog/api/items/%s/request",
+		url2.PathEscape(deployment.CatalogItemID))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(marshalledPayload))
 	if err != nil {
-		return vra.Deployment{}, err
+		return vra.CreateDeploymentMemberOptions{}, err
 	}
 
-	var response vra.Deployment
+	var response vra.CreateDeploymentMemberOptions
 	if err := c.sendRequest(req, &response); err != nil {
-		return vra.Deployment{}, err
+		return vra.CreateDeploymentMemberOptions{}, err
 	}
 	return response, nil
+}
+
+// Get gets the vra
+func (c *Client) Get(ctx context.Context, id int) (vra.CreateDeploymentMemberOptions, error) {
+	url := c.BaseURL + fmt.Sprintf("/rest/api/1.0/projects/%d", id)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return vra.CreateDeploymentMemberOptions{}, err
+	}
+
+	// The documentation says this is a paged API but it is not
+	var payload vra.CreateDeploymentMemberOptions
+	if err := c.sendRequest(req, &payload); err != nil {
+		return vra.CreateDeploymentMemberOptions{}, fmt.Errorf("GetDeployment(%d): %w", id, err)
+	}
+
+	return payload, nil
 }

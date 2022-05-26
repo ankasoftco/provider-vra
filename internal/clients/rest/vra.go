@@ -20,16 +20,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"log"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 // Client defines the API client
 type Client struct {
-	BaseUrl      string
-	HTTPClient   *http.Client
-	RefreshToken string
+	BaseURL     string
+	HTTPClient  *http.Client
+	BearerToken string
 }
 
 type errorResponse struct {
@@ -75,7 +76,7 @@ var ErrNotFound = errors.New("not found")
 func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.RefreshToken))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.BearerToken))
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -83,7 +84,7 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	}
 	defer res.Body.Close() // nolint
 
-	// fmt.Printf("%v %v -> %v\n", req.Method, req.URL.String(), res.StatusCode)
+	fmt.Printf("%v %v -> %v\n", req.Method, req.URL.String(), res.StatusCode)
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		var errRes errorResponse
 		errRes.code = res.StatusCode
@@ -97,16 +98,16 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 
 		return errRes
 	}
-
+	fmt.Printf("testtt")
 	if v != nil {
-		if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
+		/* if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
 			return err
-		}
-	} /* else {
+		} */
+	} else {
 		fmt.Printf("Body not decoded: %v\n", req.URL)
-		io.Copy(os.Stdout, res.Body)
+		// io.Copy(os.Stdout, res.Body)
 		fmt.Println()
-	}*/
-
+	}
+	fmt.Printf("testtt22")
 	return nil
 }

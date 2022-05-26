@@ -18,24 +18,24 @@ package clients
 
 import (
 	"context"
-	"github.com/crossplane/provider-vra/apis/v1alpha1"
-	"github.com/crossplane/provider-vra/internal/clients/rest"
-	"github.com/crossplane/provider-vra/internal/clients/vra"
-
 	"net/http"
 
 	"github.com/pkg/errors"
-
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/crossplane/provider-vra/apis/v1alpha1"
+	"github.com/crossplane/provider-vra/internal/clients/rest"
+	"github.com/crossplane/provider-vra/internal/clients/vra"
 )
 
+// Config for vRA Client authentication struct
 type Config struct {
-	BaseUrl      string
+	BaseURL      string
 	RefreshToken string
 }
 
@@ -44,14 +44,18 @@ func NewClient(c Config) *rest.Client {
 	httpClient := http.Client{
 		Transport: &http.Transport{},
 	}
+
+	// Get a bearer token
+
+	token := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNpZ25pbmdfMiJ9.eyJzdWIiOiJ2bXdhcmUuY29tOjRiYzYwODliLWZlYWEtNGMyMS05MjMyLTZjY2YzMTczYTAzYyIsImlzcyI6Imh0dHBzOi8vZ2F6LmNzcC12aWRtLXByb2QuY29tIiwiY29udGV4dF9uYW1lIjoiYTE0OGNkNDMtYmE0OC00YTdlLWJjMTUtMzQzNDI5NGQxNmY0IiwiX25vbmNlIjoiNmMzNDJiNjAtMDMyZS0xMWVjLTk5MTUtMTVlMzJjOGU5ZGRmIiwiYXpwIjoicHJvdmlzaW9uaW5nIiwiYXV0aG9yaXphdGlvbl9kZXRhaWxzIjpbXSwiZG9tYWluIjoidm13YXJlLmNvbSIsImNvbnRleHQiOiI3NGRmYmU0Ni0xZTAzLTRjYmYtYmVmZi00NmNlYTc5ZWQ0MjgiLCJwZXJtcyI6WyJleHRlcm5hbC9Zdy1IeUJlUXpqQ1hrTDJ3UVNlR3dhdUotbUFfL2NhdGFsb2c6dXNlciIsImNzcDpvcmdfbWVtYmVyIiwiZXh0ZXJuYWwvWnk5MjRtRTNkd24yQVN5VlpSME5uN2x1cGVBXy9hdXRvbWF0aW9uc2VydmljZTp1c2VyIiwiZXh0ZXJuYWwvWnk5MjRtRTNkd24yQVN5VlpSME5uN2x1cGVBXy9hdXRvbWF0aW9uc2VydmljZTpjbG91ZF9hZG1pbiIsImV4dGVybmFsL1l3LUh5QmVRempDWGtMMndRU2VHd2F1Si1tQV8vY2F0YWxvZzphZG1pbiJdLCJleHAiOjE2NTM1NTI3NzIsImlhdCI6MTY1MzUyMzk3MiwianRpIjoiYzhhMTFmMzYtNDA4MC00ZGZlLTlmODItYmIxMzA4NWM4M2RkIiwiYWNjdCI6InVkZW1pcnRhc0B2bXdhcmUuY29tIiwidXNlcm5hbWUiOiJ1ZGVtaXJ0YXMifQ.QX8Hi467aRe9NrxB14M3dR-SYy9wBtm28AX-R9hhs3WJXC_W1D_4efpZZ9y07dvM5nvWhRotrARhh6cd7myyuXLSBI-HOJZnze2fohBvFvSBDEGKagOsDuo6EW7EYgSCvXciV12FJ21OhKVQyr9YnUDUXhwqgyBkjP8TRglaqrWiSuvD_8E9jWQuONKH-ST5sLQca_9SmN2qjwLe2O84yCuR8sHZwV4VnOBjij9Tm8MTBaaaIe6L2sQFHR7nLykgiQT3apu3X38L35VPlFsdlPjyLt1PXOOM-bP_MUjqqNtWS_nZGHbeG5EAjAKvXu0xQ1edHB-kHTDeYFmA-0yFqw"
 	return &rest.Client{
-		RefreshToken: c.RefreshToken,
-		BaseUrl:      c.BaseUrl,
-		HTTPClient:   &httpClient,
+		BearerToken: token,
+		BaseURL:     c.BaseURL,
+		HTTPClient:  &httpClient,
 	}
 }
 
-// NewDeploymentClient creates a new client for the webhook api
+// NewDeploymentClient creates a new client for the deployment api
 func NewDeploymentClient(c Config) vra.DeploymentClient {
 	return NewClient(c)
 }
@@ -88,7 +92,7 @@ func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed
 		if err := c.Get(ctx, types.NamespacedName{Namespace: csr.Namespace, Name: csr.Name}, s); err != nil {
 			return nil, errors.Wrap(err, "cannot get credentials secret")
 		}
-		return &Config{BaseUrl: pc.Spec.BaseUrl, RefreshToken: string(s.Data[csr.Key])}, nil
+		return &Config{BaseURL: pc.Spec.BaseURL, RefreshToken: string(s.Data[csr.Key])}, nil
 	default:
 		return nil, errors.Errorf("credentials source %s is not currently supported", s)
 	}

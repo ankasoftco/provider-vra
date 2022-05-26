@@ -5,9 +5,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
   creationTimestamp: null
-  name: deployments.vra.vra.crossplane.io
+  name: deployments.deployment.vra.crossplane.io
 spec:
-  group: vra.vra.crossplane.io
+  group: deployment.vra.crossplane.io
   names:
     categories:
     - crossplane
@@ -16,7 +16,7 @@ spec:
     kind: Deployment
     listKind: DeploymentList
     plural: deployments
-    singular: vra
+    singular: deployment
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -64,6 +64,22 @@ spec:
               forProvider:
                 description: DeploymentParameters are the configurable fields of a
                   Deployment.
+                properties:
+                  catalogItemId:
+                    description: Deployment catalog item id
+                    type: string
+                  deploymentName:
+                    description: Name of the requested deployment
+                    type: string
+                  inputs:
+                    additionalProperties:
+                      type: string
+                    description: Input parameters for the request. These must be compliant
+                      with the schema of the corresponding catalog item
+                    type: object
+                  projectId:
+                    description: Project to be used for the request
+                    type: string
                 type: object
               providerConfigRef:
                 default:
@@ -167,6 +183,11 @@ spec:
               atProvider:
                 description: DeploymentObservation are the observable fields of a
                   Deployment.
+                properties:
+                  id:
+                    description: "UUID represents a uuid string format \n swagger:strfmt
+                      uuid"
+                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.

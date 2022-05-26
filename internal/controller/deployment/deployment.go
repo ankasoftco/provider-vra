@@ -19,23 +19,26 @@ package deployment
 import (
 	"context"
 	"fmt"
-	"github.com/crossplane/provider-vra/internal/clients"
-	"github.com/crossplane/provider-vra/internal/clients/vra"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 	apisv1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
+	"github.com/crossplane/provider-vra/internal/clients"
+	"github.com/crossplane/provider-vra/internal/clients/vra"
 	"github.com/crossplane/provider-vra/internal/controller/features"
 )
 
@@ -46,10 +49,12 @@ const (
 	errGetCreds      = "cannot get credentials"
 
 	errNewClient = "cannot create new Service"
+
+	errCreateFailed = "cannot create deployment with vRA API"
 )
 
-// SetupDeployment adds a controller that reconciles Deployment managed resources.
-func SetupDeployment(mgr ctrl.Manager, o controller.Options) error {
+// Setup adds a controller that reconciles Deployment managed resources.
+func Setup(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.DeploymentGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
@@ -109,22 +114,23 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 	}
 
 	svc := c.newServiceFn(clients.Config{
-		BaseUrl:      pc.Spec.BaseUrl,
+		BaseURL:      pc.Spec.BaseURL,
 		RefreshToken: string(data),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, errNewClient)
 	}
 
-	return &external{service: svc}, nil
+	return &external{kube: c.kube, service: svc}, nil
 }
 
 // An ExternalClient observes, then either creates, updates, or deletes an
 // external resource to ensure it reflects the managed resource's desired state.
 type external struct {
+	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service interface{}
+	service vra.DeploymentClient
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
@@ -136,6 +142,22 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
 
+	if meta.GetExternalName(cr) == "" {
+		return managed.ExternalObservation{
+			ResourceExists: false,
+		}, nil
+	}
+
+	externalName := meta.GetExternalName(cr)
+	_, err := strconv.Atoi(externalName)
+	if err != nil {
+		return managed.ExternalObservation{}, nil // nolint // This is ok as it does not exists
+	}
+
+	cr.Status.SetConditions(xpv1.Available())
+
+	// cr.Status.AtProvider.ID = id
+
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
 		// the managed resource reconciler know that it needs to call Create to
@@ -146,10 +168,6 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		// with the desired managed resource state. This lets the managed
 		// resource reconciler know that it needs to call Update.
 		ResourceUpToDate: true,
-
-		// Return any details that may be required to connect to the external
-		// resource. These will be stored as the connection secret.
-		ConnectionDetails: managed.ConnectionDetails{},
 	}, nil
 }
 
@@ -160,6 +178,19 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 	}
 
 	fmt.Printf("Creating: %+v", cr)
+
+	cr.Status.SetConditions(xpv1.Creating())
+
+	deploymentOptions :=
+
+	key, err := c.service.Create(ctx, dep)
+	if err != nil {
+		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
+	}
+
+	meta.SetExternalName(cr, fmt.Sprint(key.DeploymentName))
+
+	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalCreation{
 		// Optionally return any details that may be required to connect to the
@@ -176,6 +207,8 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	fmt.Printf("Updating: %+v", cr)
 
+	cr.Status.SetConditions(xpv1.Available())
+
 	return managed.ExternalUpdate{
 		// Optionally return any details that may be required to connect to the
 		// external resource. These will be stored as the connection secret.
@@ -190,6 +223,8 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
+
+	cr.Status.SetConditions(xpv1.Deleting())
 
 	return nil
 }

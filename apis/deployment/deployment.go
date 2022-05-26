@@ -14,5 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package vra contains group Deployment API versions
+// Package deployment contains group Deployment API versions
 package deployment

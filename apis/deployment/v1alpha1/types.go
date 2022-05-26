@@ -23,13 +23,43 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/go-openapi/strfmt"
 )
 
+/*
+vRealize Automation Deployment API: https://developer.vmware.com/apis/979
+*/
+
 // DeploymentParameters are the configurable fields of a Deployment.
-type DeploymentParameters struct{}
+type DeploymentParameters struct {
+	// Name of the requested deployment
+	// +immutable
+	DeploymentName string `json:"deploymentName,omitempty"`
+
+	// Deployment catalog item id
+	// +immutable
+	CatalogItemID string `json:"catalogItemId,omitempty"`
+
+	// Catalog Item version
+	// +optional
+	CatalogItemVersion string `json:"catalogItemVersion,omitempty"`
+
+	// Project to be used for the request
+	// +immutable
+	ProjectID string `json:"projectId,omitempty"`
+
+	// Reason of the deployment
+	// +optional
+	Reason string `json:"reason,omitempty"`
+
+	// Input parameters for the request. These must be compliant with the schema of the corresponding catalog item
+	Inputs map[string]string `json:"inputs,omitempty"`
+}
 
 // DeploymentObservation are the observable fields of a Deployment.
-type DeploymentObservation struct{}
+type DeploymentObservation struct {
+	DeploymentID strfmt.UUID `json:"id,omitempty"`
+}
 
 // A DeploymentSpec defines the desired state of a Deployment.
 type DeploymentSpec struct {
