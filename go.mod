@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/crossplane/crossplane-runtime v0.16.0
 	github.com/crossplane/crossplane-tools v0.0.0-20220310165030-1f43fc12793e
-	github.com/go-openapi/strfmt v0.21.2
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 	k8s.io/apimachinery v0.23.0
 	k8s.io/client-go v0.23.0
@@ -14,13 +13,8 @@ require (
 )
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
-	github.com/go-openapi/errors v0.20.1 // indirect
-	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/hashicorp/vault/sdk v0.3.0 // indirect
-	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	go.mongodb.org/mongo-driver v1.8.2 // indirect
 )
 
 require (

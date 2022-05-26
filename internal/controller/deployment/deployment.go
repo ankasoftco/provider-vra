@@ -19,7 +19,6 @@ package deployment
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -38,7 +37,7 @@ import (
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 	apisv1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
 	"github.com/crossplane/provider-vra/internal/clients"
-	"github.com/crossplane/provider-vra/internal/clients/vra"
+	"github.com/crossplane/provider-vra/internal/clients/deployment"
 	"github.com/crossplane/provider-vra/internal/controller/features"
 )
 
@@ -51,6 +50,7 @@ const (
 	errNewClient = "cannot create new Service"
 
 	errCreateFailed = "cannot create deployment with vRA API"
+	errGetFailed    = "cannot get deployment from vRA API"
 )
 
 // Setup adds a controller that reconciles Deployment managed resources.
@@ -84,7 +84,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(config clients.Config) vra.DeploymentClient
+	newServiceFn func(config clients.Config) deployment.Client
 }
 
 // Connect typically produces an ExternalClient by:
@@ -130,7 +130,7 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service vra.DeploymentClient
+	service deployment.Client
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
@@ -142,18 +142,19 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
 
-	if meta.GetExternalName(cr) == "" {
-		return managed.ExternalObservation{
-			ResourceExists: false,
-		}, nil
-	}
-
 	externalName := meta.GetExternalName(cr)
-	_, err := strconv.Atoi(externalName)
-	if err != nil {
-		return managed.ExternalObservation{}, nil // nolint // This is ok as it does not exists
+	if externalName == "" {
+		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
+	deploymentID := externalName
+
+	dep, err := c.service.Get(ctx, deploymentID)
+	if err != nil {
+		return managed.ExternalObservation{}, errors.New(errGetFailed)
+	}
+
+	cr.Status.AtProvider = deployment.GenerateDeploymentObservation(&dep)
 	cr.Status.SetConditions(xpv1.Available())
 
 	// cr.Status.AtProvider.ID = id
@@ -181,14 +182,14 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	cr.Status.SetConditions(xpv1.Creating())
 
-	deploymentOptions :=
+	depOptions := deployment.GenerateCreateDeploymentOptions(&cr.Spec.ForProvider)
 
-	key, err := c.service.Create(ctx, dep)
+	dep, err := c.service.Create(ctx, depOptions)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
 
-	meta.SetExternalName(cr, fmt.Sprint(key.DeploymentName))
+	meta.SetExternalName(cr, fmt.Sprint(dep.DeploymentID))
 
 	cr.Status.SetConditions(xpv1.Available())
 

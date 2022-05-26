@@ -23,7 +23,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/go-openapi/strfmt"
 )
 
 /*
@@ -58,7 +57,8 @@ type DeploymentParameters struct {
 
 // DeploymentObservation are the observable fields of a Deployment.
 type DeploymentObservation struct {
-	DeploymentID strfmt.UUID `json:"id,omitempty"`
+	CreatedAt string  `json:"createdAt,omitempty"`
+	ID        *string `json:"id"`
 }
 
 // A DeploymentSpec defines the desired state of a Deployment.

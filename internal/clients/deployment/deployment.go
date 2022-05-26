@@ -22,13 +22,14 @@ import (
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 )
 
-// DeploymentClient is the API for creating/listing/deleting/getting deployments
-type DeploymentClient interface {
-	Create(ctx context.Context, deployment CreateDeploymentMemberOptions) (result CreateDeploymentMemberOptions, err error)
-	Get(ctx context.Context, id int) (result CreateDeploymentMemberOptions, err error)
+// Client is the API for creating/listing/deleting/getting deployments
+type Client interface {
+	Create(ctx context.Context, deployment CreateDeploymentOptions) (result ResponseCreateDeploymentOptions, err error)
+	Get(ctx context.Context, id string) (result GetDeploymentOptions, err error)
 }
 
-type CreateDeploymentMemberOptions struct {
+// CreateDeploymentOptions request payload
+type CreateDeploymentOptions struct {
 	DeploymentName     string            `json:"deploymentName,omitempty"`
 	CatalogItemID      string            `json:"catalogItemId,omitempty"`
 	CatalogItemVersion string            `json:"catalogItemVersion,omitempty"`
@@ -37,9 +38,27 @@ type CreateDeploymentMemberOptions struct {
 	Inputs             map[string]string `json:"inputs,omitempty"`
 }
 
+// GetDeploymentOptions request payload
+type GetDeploymentOptions struct {
+	CreatedAt   string  `json:"createdAt,omitempty"`
+	Description string  `json:"description,omitempty"`
+	ID          *string `json:"id"`
+	Name        string  `json:"name,omitempty"`
+	OrgID       string  `json:"orgId,omitempty"`
+	Owner       string  `json:"owner,omitempty"`
+	ProjectID   string  `json:"projectId,omitempty"`
+	UpdatedAt   string  `json:"updatedAt,omitempty"`
+}
+
+// ResponseCreateDeploymentOptions response of the create a deployment with catalog item
+type ResponseCreateDeploymentOptions struct {
+	DeploymentID   string `json:"deploymentId,omitempty"`
+	DeploymentName string `json:"deploymentName,omitempty"`
+}
+
 // GenerateCreateDeploymentOptions returns the payload for REST API Client
-func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) CreateDeploymentMemberOptions {
-	deployment := CreateDeploymentMemberOptions{
+func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) CreateDeploymentOptions {
+	deployment := CreateDeploymentOptions{
 		DeploymentName: p.DeploymentName,
 		CatalogItemID:  p.CatalogItemID,
 		ProjectID:      p.ProjectID,
@@ -54,4 +73,18 @@ func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) CreateDep
 	}
 
 	return deployment
+}
+
+// GenerateDeploymentObservation is get api
+func GenerateDeploymentObservation(dep *GetDeploymentOptions) v1alpha1.DeploymentObservation { // nolint:gocyclo
+	if dep == nil {
+		return v1alpha1.DeploymentObservation{}
+	}
+
+	o := v1alpha1.DeploymentObservation{
+		ID:        dep.ID,
+		CreatedAt: dep.CreatedAt,
+	}
+
+	return o
 }

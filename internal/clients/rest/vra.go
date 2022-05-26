@@ -100,9 +100,9 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 	}
 	fmt.Printf("testtt")
 	if v != nil {
-		/* if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
+		if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
 			return err
-		} */
+		}
 	} else {
 		fmt.Printf("Body not decoded: %v\n", req.URL)
 		// io.Copy(os.Stdout, res.Body)

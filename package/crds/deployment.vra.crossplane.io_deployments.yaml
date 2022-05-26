@@ -68,6 +68,9 @@ spec:
                   catalogItemId:
                     description: Deployment catalog item id
                     type: string
+                  catalogItemVersion:
+                    description: Catalog Item version
+                    type: string
                   deploymentName:
                     description: Name of the requested deployment
                     type: string
@@ -79,6 +82,9 @@ spec:
                     type: object
                   projectId:
                     description: Project to be used for the request
+                    type: string
+                  reason:
+                    description: Reason of the deployment
                     type: string
                 type: object
               providerConfigRef:
@@ -184,10 +190,12 @@ spec:
                 description: DeploymentObservation are the observable fields of a
                   Deployment.
                 properties:
-                  id:
-                    description: "UUID represents a uuid string format \n swagger:strfmt
-                      uuid"
+                  createdAt:
                     type: string
+                  id:
+                    type: string
+                required:
+                - id
                 type: object
               conditions:
                 description: Conditions of the resource.

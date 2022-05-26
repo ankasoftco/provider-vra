@@ -24,43 +24,43 @@ import (
 	"net/http"
 	url2 "net/url"
 
-	"github.com/crossplane/provider-vra/internal/clients/vra"
+	"github.com/crossplane/provider-vra/internal/clients/deployment"
 )
 
 // Create creates the web hook
-func (c *Client) Create(ctx context.Context, deployment vra.CreateDeploymentMemberOptions) (vra.CreateDeploymentMemberOptions, error) {
-	marshalledPayload, err := json.Marshal(deployment)
+func (c *Client) Create(ctx context.Context, depOptions deployment.CreateDeploymentOptions) (deployment.ResponseCreateDeploymentOptions, error) {
+	marshalledPayload, err := json.Marshal(depOptions)
 	if err != nil {
-		return vra.CreateDeploymentMemberOptions{}, err
+		return deployment.ResponseCreateDeploymentOptions{}, err
 	}
 
 	url := c.BaseURL + fmt.Sprintf("/catalog/api/items/%s/request",
-		url2.PathEscape(deployment.CatalogItemID))
+		url2.PathEscape(depOptions.CatalogItemID))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(marshalledPayload))
 	if err != nil {
-		return vra.CreateDeploymentMemberOptions{}, err
+		return deployment.ResponseCreateDeploymentOptions{}, err
 	}
 
-	var response vra.CreateDeploymentMemberOptions
+	var response deployment.ResponseCreateDeploymentOptions
 	if err := c.sendRequest(req, &response); err != nil {
-		return vra.CreateDeploymentMemberOptions{}, err
+		return deployment.ResponseCreateDeploymentOptions{}, err
 	}
 	return response, nil
 }
 
 // Get gets the vra
-func (c *Client) Get(ctx context.Context, id int) (vra.CreateDeploymentMemberOptions, error) {
-	url := c.BaseURL + fmt.Sprintf("/rest/api/1.0/projects/%d", id)
+func (c *Client) Get(ctx context.Context, id string) (deployment.GetDeploymentOptions, error) {
+	url := c.BaseURL + fmt.Sprintf("/iaas/api/deployments/%s", id)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return vra.CreateDeploymentMemberOptions{}, err
+		return deployment.GetDeploymentOptions{}, err
 	}
 
 	// The documentation says this is a paged API but it is not
-	var payload vra.CreateDeploymentMemberOptions
+	var payload deployment.GetDeploymentOptions
 	if err := c.sendRequest(req, &payload); err != nil {
-		return vra.CreateDeploymentMemberOptions{}, fmt.Errorf("GetDeployment(%d): %w", id, err)
+		return deployment.GetDeploymentOptions{}, fmt.Errorf("GetDeployment(%s): %w", id, err)
 	}
 
 	return payload, nil
