@@ -57,8 +57,8 @@ type DeploymentParameters struct {
 
 // DeploymentObservation are the observable fields of a Deployment.
 type DeploymentObservation struct {
-	CreatedAt string  `json:"createdAt,omitempty"`
-	ID        *string `json:"id"`
+	CreatedAt    string  `json:"createdAt,omitempty"`
+	DeploymentID *string `json:"deploymentId,omitempty"`
 }
 
 // A DeploymentSpec defines the desired state of a Deployment.

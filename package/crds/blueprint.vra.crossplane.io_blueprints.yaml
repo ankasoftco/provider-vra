@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
   creationTimestamp: null
-  name: deployments.deployment.vra.crossplane.io
+  name: blueprints.blueprint.vra.crossplane.io
 spec:
-  group: deployment.vra.crossplane.io
+  group: blueprint.vra.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Deployment
-    listKind: DeploymentList
-    plural: deployments
-    singular: deployment
+    kind: Blueprint
+    listKind: BlueprintList
+    plural: blueprints
+    singular: blueprint
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A Deployment is an example API type.
+        description: A Blueprint is an example API type.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: A DeploymentSpec defines the desired state of a Deployment.
+            description: A BlueprintSpec defines the desired state of a Blueprint.
             properties:
               deletionPolicy:
                 default: Delete
@@ -62,30 +62,8 @@ spec:
                 - Delete
                 type: string
               forProvider:
-                description: DeploymentParameters are the configurable fields of a
-                  Deployment.
-                properties:
-                  catalogItemId:
-                    description: Deployment catalog item id
-                    type: string
-                  catalogItemVersion:
-                    description: Catalog Item version
-                    type: string
-                  deploymentName:
-                    description: Name of the requested deployment
-                    type: string
-                  inputs:
-                    additionalProperties:
-                      type: string
-                    description: Input parameters for the request. These must be compliant
-                      with the schema of the corresponding catalog item
-                    type: object
-                  projectId:
-                    description: Project to be used for the request
-                    type: string
-                  reason:
-                    description: Reason of the deployment
-                    type: string
+                description: BlueprintParameters are the configurable fields of a
+                  Blueprint.
                 type: object
               providerConfigRef:
                 default:
@@ -184,16 +162,10 @@ spec:
             - forProvider
             type: object
           status:
-            description: A DeploymentStatus represents the observed state of a Deployment.
+            description: A BlueprintStatus represents the observed state of a Blueprint.
             properties:
               atProvider:
-                description: DeploymentObservation are the observable fields of a
-                  Deployment.
-                properties:
-                  createdAt:
-                    type: string
-                  deploymentId:
-                    type: string
+                description: BlueprintObservation are the observable fields of a Blueprint.
                 type: object
               conditions:
                 description: Conditions of the resource.

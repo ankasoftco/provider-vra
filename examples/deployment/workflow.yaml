@@ -1,0 +1,16 @@
+apiVersion: deployment.vra.crossplane.io/v1alpha1
+kind: Deployment
+metadata:
+  name: vra-workflow-crossplane-test-3
+spec:
+  forProvider:
+    catalogItemId: 41913ba8-068f-389c-b179-747a74df560c
+    projectId: 725be285-dcbd-44dc-9416-f5e54aeec294
+    deploymentName: vra-workflow-crossplane-test-3
+    reason: Crossplane Test
+    inputs:
+      input1: test_input_1
+      input2: test_input_2
+
+  providerConfigRef:
+    name: default-allianznext

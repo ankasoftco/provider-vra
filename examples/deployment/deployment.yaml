@@ -1,12 +1,14 @@
 apiVersion: deployment.vra.crossplane.io/v1alpha1
 kind: Deployment
 metadata:
-  name: vra-ankasoft-cp-test-6
+  name: vra-ankasoft-cp-test-8
 spec:
   forProvider:
     catalogItemId: cd5c57f5-1cfd-356e-97f3-6e81b0068ced
     projectId: a24427ee-cae9-41c1-abcf-c88d99779e10
-    deploymentName: vra-ankasoft-cp-test-6
+    deploymentName: vra-ankasoft-cp-test-8
+    reason: test
+    catalogItemVersion: "2"
     inputs:
       input1: test1
       input2: test2

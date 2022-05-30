@@ -20,11 +20,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
@@ -33,6 +28,11 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
+
+	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 	apisv1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
@@ -50,7 +50,8 @@ const (
 	errNewClient = "cannot create new Service"
 
 	errCreateFailed = "cannot create deployment with vRA API"
-	errGetFailed    = "cannot get deployment from vRA API"
+	// errGetFailed    = "cannot get deployment from vRA API"
+	errDeleteFailed = "cannot delete deployment from vRA API"
 )
 
 // Setup adds a controller that reconciles Deployment managed resources.
@@ -151,13 +152,11 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 
 	dep, err := c.service.Get(ctx, deploymentID)
 	if err != nil {
-		return managed.ExternalObservation{}, errors.New(errGetFailed)
+		return managed.ExternalObservation{}, nil
 	}
 
 	cr.Status.AtProvider = deployment.GenerateDeploymentObservation(&dep)
 	cr.Status.SetConditions(xpv1.Available())
-
-	// cr.Status.AtProvider.ID = id
 
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
@@ -189,6 +188,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
 
+	fmt.Println("Dep Id: " + dep.DeploymentID)
 	meta.SetExternalName(cr, fmt.Sprint(dep.DeploymentID))
 
 	cr.Status.SetConditions(xpv1.Available())
@@ -224,6 +224,13 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
+
+	depOptions := deployment.GenerateDeleteDeploymentOptions()
+	externalName := meta.GetExternalName(cr)
+
+	if err := c.service.Delete(ctx, depOptions, externalName); err != nil {
+		return errors.Wrap(err, errDeleteFailed)
+	}
 
 	cr.Status.SetConditions(xpv1.Deleting())
 

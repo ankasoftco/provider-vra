@@ -42,11 +42,11 @@ func (c *Client) Create(ctx context.Context, depOptions deployment.CreateDeploym
 		return deployment.ResponseCreateDeploymentOptions{}, err
 	}
 
-	var response deployment.ResponseCreateDeploymentOptions
+	var response []deployment.ResponseCreateDeploymentOptions
 	if err := c.sendRequest(req, &response); err != nil {
 		return deployment.ResponseCreateDeploymentOptions{}, err
 	}
-	return response, nil
+	return response[0], nil
 }
 
 // Get gets the vra
@@ -60,8 +60,25 @@ func (c *Client) Get(ctx context.Context, id string) (deployment.GetDeploymentOp
 	// The documentation says this is a paged API but it is not
 	var payload deployment.GetDeploymentOptions
 	if err := c.sendRequest(req, &payload); err != nil {
+		fmt.Println("failed get ops umit")
 		return deployment.GetDeploymentOptions{}, fmt.Errorf("GetDeployment(%s): %w", id, err)
 	}
 
 	return payload, nil
+}
+
+// Delete deletes the web hook
+func (c *Client) Delete(ctx context.Context, depOptions deployment.DeleteDeploymentOptions, id string) error {
+	marshalledPayload, err := json.Marshal(depOptions)
+	if err != nil {
+		return err
+	}
+
+	url := c.BaseURL + fmt.Sprintf("/deployment/api/deployments/%s/requests", id)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(marshalledPayload))
+	if err != nil {
+		return err
+	}
+
+	return c.sendRequest(req, nil)
 }

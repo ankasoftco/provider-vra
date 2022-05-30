@@ -1,0 +1,49 @@
+apiVersion: deployment.vra.crossplane.io/v1alpha1
+kind: Deployment
+metadata:
+  name: vra-windowsprivate-crossplane-test-1
+spec:
+  forProvider:
+    catalogItemId: e3bd9e42-b49a-38c3-b40f-ce35ede418b6
+    projectId: 725be285-dcbd-44dc-9416-f5e54aeec294
+    deploymentName: vra-windowsprivate-crossplane-test-1
+    reason: crossplane-test
+    catalogItemVersion: "1"
+    inputs:
+      location: e1
+      debtor: '1200000024'
+      costcenter: '1071068612'
+      cloudtype: private
+      cloudplatform: vsphere
+      lead_time: '00:00:00'
+      az_business_service: HC Windows
+      oecode: eudev
+      ostype: windows
+      fulfillment_time: '02:00:00'
+      clustertype: windows
+      os: windows2019
+      applicationName: "[Deployment-Test]"
+      domainname: wwg00m.rootdom.net
+      environment: Production
+      owner: extern.demirtas_umit@allianz.de
+      assignmentgroup: AZTEC.CMP.INFRA-REQ
+      dataclassification: Internal
+      restricteddata: Unrestricted
+      backuppolicy: '0.5'
+      edrclass: '1'
+      instancequantity: '1'
+      vspheresize: micro
+      cpu: 1
+      memory: 2
+      firecompartment: mirrored
+      tier: '1'
+      payloadnetwork: '1706'
+      ibrnetwork: '1707'
+      customRoles: ''
+      diskSize1: 0
+      diskSize2: 0
+      diskSize3: 0
+      diskSize4: 0
+
+  providerConfigRef:
+    name: default-allianznext

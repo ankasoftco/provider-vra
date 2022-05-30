@@ -20,6 +20,7 @@ package apis
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 
+	blueprintv1alpha1 "github.com/crossplane/provider-vra/apis/blueprint/v1alpha1"
 	deploymentv1alpha1 "github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 	vrav1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
 )
@@ -29,6 +30,7 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		vrav1alpha1.SchemeBuilder.AddToScheme,
 		deploymentv1alpha1.SchemeBuilder.AddToScheme,
+		blueprintv1alpha1.SchemeBuilder.AddToScheme,
 	)
 }
 

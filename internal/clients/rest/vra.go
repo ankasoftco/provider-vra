@@ -98,7 +98,7 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 
 		return errRes
 	}
-	fmt.Printf("testtt")
+
 	if v != nil {
 		if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
 			return err
@@ -108,6 +108,6 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 		// io.Copy(os.Stdout, res.Body)
 		fmt.Println()
 	}
-	fmt.Printf("testtt22")
+
 	return nil
 }

@@ -1,12 +1,12 @@
 apiVersion: vra.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
-  name: default
+  name: default-allianznext
 spec:
-  baseUrl: "https://api.mgmt.cloud.vmware.com"
+  baseUrl: "https://api.next.symphony-dev.com"
   credentials:
     source: Secret
     secretRef:
       namespace: crossplane-system
-      name: provider-vra-secret
+      name: provider-vra-secret-allianznext
       key: credentials

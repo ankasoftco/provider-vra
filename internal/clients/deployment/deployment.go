@@ -26,6 +26,7 @@ import (
 type Client interface {
 	Create(ctx context.Context, deployment CreateDeploymentOptions) (result ResponseCreateDeploymentOptions, err error)
 	Get(ctx context.Context, id string) (result GetDeploymentOptions, err error)
+	Delete(ctx context.Context, deployment DeleteDeploymentOptions, id string) (err error)
 }
 
 // CreateDeploymentOptions request payload
@@ -50,10 +51,15 @@ type GetDeploymentOptions struct {
 	UpdatedAt   string  `json:"updatedAt,omitempty"`
 }
 
+// DeleteDeploymentOptions request payload
+type DeleteDeploymentOptions struct {
+	ActionID string `json:"actionId"`
+}
+
 // ResponseCreateDeploymentOptions response of the create a deployment with catalog item
 type ResponseCreateDeploymentOptions struct {
-	DeploymentID   string `json:"deploymentId,omitempty"`
-	DeploymentName string `json:"deploymentName,omitempty"`
+	DeploymentID   string `json:"deploymentId"`
+	DeploymentName string `json:"deploymentName"`
 }
 
 // GenerateCreateDeploymentOptions returns the payload for REST API Client
@@ -75,6 +81,15 @@ func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) CreateDep
 	return deployment
 }
 
+// GenerateDeleteDeploymentOptions returns the payload for REST API Client
+func GenerateDeleteDeploymentOptions() DeleteDeploymentOptions {
+	deployment := DeleteDeploymentOptions{
+		ActionID: "Deployment.Delete",
+	}
+
+	return deployment
+}
+
 // GenerateDeploymentObservation is get api
 func GenerateDeploymentObservation(dep *GetDeploymentOptions) v1alpha1.DeploymentObservation { // nolint:gocyclo
 	if dep == nil {
@@ -82,8 +97,8 @@ func GenerateDeploymentObservation(dep *GetDeploymentOptions) v1alpha1.Deploymen
 	}
 
 	o := v1alpha1.DeploymentObservation{
-		ID:        dep.ID,
-		CreatedAt: dep.CreatedAt,
+		DeploymentID: dep.ID,
+		CreatedAt:    dep.CreatedAt,
 	}
 
 	return o
