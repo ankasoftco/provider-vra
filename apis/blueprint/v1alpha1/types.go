@@ -31,6 +31,21 @@ vRealize Automation Blueprint API:
 
 // BlueprintParameters are the configurable fields of a Blueprint.
 type BlueprintParameters struct {
+	// Content of the requested deployment
+	// +immutable
+	Content string `json:"content,omitempty"`
+
+	// Description of the requested deployment
+	// +optional
+	Description string `json:"description,omitempty"`
+
+	// Name of the requested deployment
+	// +immutable
+	Name string `json:"name,omitempty"`
+
+	// ProjectID of the requested deployment
+	// +immutable
+	ProjectID string `json:"projectId,omitempty"`
 }
 
 // BlueprintObservation are the observable fields of a Blueprint.

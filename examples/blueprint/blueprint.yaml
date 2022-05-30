@@ -1,0 +1,13 @@
+apiVersion: blueprint.vra.crossplane.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: vra-ankasoft-bp-test-1
+spec:
+  forProvider:
+    content: "test"
+    projectId: a24427ee-cae9-41c1-abcf-c88d99779e10
+    name: vra-ankasoft-bp-test-1
+    description: test
+
+  providerConfigRef:
+    name: default
