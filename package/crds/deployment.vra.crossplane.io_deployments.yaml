@@ -190,9 +190,11 @@ spec:
                 description: DeploymentObservation are the observable fields of a
                   Deployment.
                 properties:
-                  createdAt:
-                    type: string
                   deploymentId:
+                    description: "UUID represents a uuid string format \n swagger:strfmt
+                      uuid"
+                    type: string
+                  deploymentName:
                     type: string
                 type: object
               conditions:

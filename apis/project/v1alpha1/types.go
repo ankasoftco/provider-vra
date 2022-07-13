@@ -25,79 +25,66 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-/*
-vRealize Automation Blueprint API:
-*/
-
-// BlueprintParameters are the configurable fields of a Blueprint.
-type BlueprintParameters struct {
-	// Content of the requested deployment
+// ProjectParameters are the configurable fields of a Project.
+type ProjectParameters struct {
+	// A human-friendly name used as an identifier in APIs that support this option.
+	// Required: true - TODO: check required tag
 	// +immutable
-	Content string `json:"content,omitempty"`
-
-	// Description of the requested deployment
-	// +optional
-	Description string `json:"description,omitempty"`
-
-	// Name of the requested deployment
-	// +immutable
-	Name string `json:"name,omitempty"`
-
-	// ProjectID of the requested deployment
-	// +immutable
-	ProjectID string `json:"projectId,omitempty"`
+	Name *string `json:"name"`
 }
 
-// BlueprintObservation are the observable fields of a Blueprint.
-type BlueprintObservation struct {
+// ProjectObservation are the observable fields of a Project.
+type ProjectObservation struct {
+	Name      string  `json:"name"`
+	ProjectID *string `json:"id"`
 }
 
-// A BlueprintSpec defines the desired state of a Blueprint.
-type BlueprintSpec struct {
+// A ProjectSpec defines the desired state of a Project.
+type ProjectSpec struct {
 	xpv1.ResourceSpec `json:",inline"`
-	ForProvider       BlueprintParameters `json:"forProvider"`
+	ForProvider       ProjectParameters `json:"forProvider"`
 }
 
-// A BlueprintStatus represents the observed state of a Blueprint.
-type BlueprintStatus struct {
+// A ProjectStatus represents the observed state of a Project.
+type ProjectStatus struct {
 	xpv1.ResourceStatus `json:",inline"`
-	AtProvider          BlueprintObservation `json:"atProvider,omitempty"`
+	AtProvider          ProjectObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// A Blueprint is an example API type.
+// A Project is an example API type.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,vra}
-type Blueprint struct {
+type Project struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   BlueprintSpec   `json:"spec"`
-	Status BlueprintStatus `json:"status,omitempty"`
+	Spec   ProjectSpec   `json:"spec"`
+	Status ProjectStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// BlueprintList contains a list of Deployment
-type BlueprintList struct {
+// ProjectList contains a list of Project
+type ProjectList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Blueprint `json:"items"`
+	Items           []Project `json:"items"`
 }
 
-// Blueprint type metadata.
+// Project type metadata.
 var (
-	BlueprintKind             = reflect.TypeOf(Blueprint{}).Name()
-	BlueprintGroupKind        = schema.GroupKind{Group: Group, Kind: BlueprintKind}.String()
-	BlueprintKindAPIVersion   = BlueprintKind + "." + SchemeGroupVersion.String()
-	BlueprintGroupVersionKind = SchemeGroupVersion.WithKind(BlueprintKind)
+	ProjectKind             = reflect.TypeOf(Project{}).Name()
+	ProjectGroupKind        = schema.GroupKind{Group: Group, Kind: ProjectKind}.String()
+	ProjectKindAPIVersion   = ProjectKind + "." + SchemeGroupVersion.String()
+	ProjectGroupVersionKind = SchemeGroupVersion.WithKind(ProjectKind)
 )
 
 func init() {
-	SchemeBuilder.Register(&Blueprint{}, &BlueprintList{})
+	SchemeBuilder.Register(&Project{}, &ProjectList{})
 }

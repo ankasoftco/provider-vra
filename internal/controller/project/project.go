@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package deployment
+package project
 
 import (
 	"context"
 	"fmt"
+	"github.com/vmware/vra-sdk-go/pkg/client/project"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
@@ -33,25 +34,27 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
+	"github.com/crossplane/provider-vra/apis/project/v1alpha1"
+
 	apisv1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
 	"github.com/crossplane/provider-vra/internal/clients"
-	"github.com/crossplane/provider-vra/internal/clients/deployment"
+	p "github.com/crossplane/provider-vra/internal/clients/project"
+
 	"github.com/crossplane/provider-vra/internal/controller/features"
 )
 
 const (
-	errNotDeployment = "managed resource is not a Deployment custom resource"
-	errTrackPCUsage  = "cannot track ProviderConfig usage"
+	errNotProject   = "managed resource is not a Project custom resource"
+	errTrackPCUsage = "cannot track ProviderConfig usage"
 
-	errCreateFailed = "cannot create deployment with vRA API"
-	// errGetFailed    = "cannot get deployment from vRA API"
-	errDeleteFailed = "cannot delete deployment from vRA API"
+	errCreateFailed = "cannot create project with vRA API"
+	// errGetFailed    = "cannot get project from vRA API"
+	errDeleteFailed = "cannot delete project from vRA API"
 )
 
 // Setup adds a controller that reconciles Deployment managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.DeploymentGroupKind)
+	name := managed.ControllerName(v1alpha1.ProjectGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
 	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
@@ -59,11 +62,11 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.DeploymentGroupVersionKind),
+		resource.ManagedKind(v1alpha1.ProjectGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: deployment.NewDeploymentClient}),
+			newServiceFn: p.NewProjectClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
 		managed.WithConnectionPublishers(cps...))
@@ -71,7 +74,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
-		For(&v1alpha1.Deployment{}).
+		For(&v1alpha1.Project{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -80,7 +83,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(config clients.Config) deployment.Client
+	newServiceFn func(cfg clients.Config) project.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -89,9 +92,9 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.Deployment)
+	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
-		return nil, errors.New(errNotDeployment)
+		return nil, errors.New(errNotProject)
 	}
 
 	if err := c.usage.Track(ctx, mg); err != nil {
@@ -111,13 +114,13 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service deployment.Client
+	service project.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.Deployment)
+	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
-		return managed.ExternalObservation{}, errors.New(errNotDeployment)
+		return managed.ExternalObservation{}, errors.New(errNotProject)
 	}
 
 	// These fmt statements should be removed in the real implementation.
@@ -128,15 +131,16 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	deploymentID := externalName
+	projectID := externalName
 
-	dep, _, _ := c.service.GetDeployment(deploymentID, nil)
-	if dep == nil {
+	params := p.GenerateGetProjectOptions(projectID)
+	proj, _ := c.service.GetProject(params)
+
+	if proj == nil {
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	// TODO: Check the deployment process here...
-	cr.Status.AtProvider = deployment.GenerateObservation(dep)
+	cr.Status.AtProvider = p.GenerateObservation(proj)
 	cr.Status.SetConditions(xpv1.Available())
 	//dep.Status
 	//cr.Status.SetConditions(xpv1.Creating())
@@ -155,24 +159,24 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.Deployment)
+	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
-		return managed.ExternalCreation{}, errors.New(errNotDeployment)
+		return managed.ExternalCreation{}, errors.New(errNotProject)
 	}
 
 	fmt.Printf("Creating: %+v", cr)
 
 	cr.Status.SetConditions(xpv1.Creating())
 
-	depOptions := deployment.GenerateCreateDeploymentOptions(&cr.Spec.ForProvider)
+	projectParams := p.GenerateCreateProjectOptions(&cr.Spec.ForProvider)
 
-	dep, _, err := c.service.CreateDeployment(depOptions)
+	response, err := c.service.CreateProject(projectParams)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
 
-	fmt.Println("Dep Id: " + dep.DeploymentID)
-	meta.SetExternalName(cr, fmt.Sprint(dep.DeploymentID))
+	fmt.Println("Project Id: " + *response.Payload.ID)
+	meta.SetExternalName(cr, fmt.Sprint(response.Payload.ID))
 
 	cr.Status.SetConditions(xpv1.Available())
 
@@ -184,9 +188,9 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.Deployment)
+	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
-		return managed.ExternalUpdate{}, errors.New(errNotDeployment)
+		return managed.ExternalUpdate{}, errors.New(errNotProject)
 	}
 
 	fmt.Printf("Updating: %+v", cr)
@@ -201,16 +205,17 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
-	cr, ok := mg.(*v1alpha1.Deployment)
+	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
-		return errors.New(errNotDeployment)
+		return errors.New(errNotProject)
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
 
 	externalName := meta.GetExternalName(cr)
 
-	if _, err := c.service.DeleteDeployment(externalName); err != nil {
+	params := p.GenerateDeleteProjectOptions(externalName)
+	if _, err := c.service.DeleteProject(params); err != nil {
 		return errors.Wrap(err, errDeleteFailed)
 	}
 	// todo: check the decommissioning process here...

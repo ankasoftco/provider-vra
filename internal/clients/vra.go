@@ -18,8 +18,8 @@ package clients
 
 import (
 	"context"
-	"net/http"
 
+	vra "github.com/anka-software/go-vra"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -29,9 +29,11 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane/provider-vra/apis/v1alpha1"
-	"github.com/crossplane/provider-vra/internal/clients/blueprint"
-	"github.com/crossplane/provider-vra/internal/clients/deployment"
-	"github.com/crossplane/provider-vra/internal/clients/rest"
+
+	vra2 "github.com/vmware/vra-sdk-go/pkg/client"
+
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
 )
 
 // Config for vRA Client authentication struct
@@ -40,30 +42,28 @@ type Config struct {
 	RefreshToken string
 }
 
-// NewClient creates new vRA Client with provided base URL and credentials
-func NewClient(c Config) *rest.Client {
-	httpClient := http.Client{
-		Transport: &http.Transport{},
-	}
+// NewClient2 creates new vRA Client with provided vRA Configurations/Credentials.
+func NewClient2(c Config) *vra2.MulticloudIaaS {
+	transport := httptransport.New(c.BaseURL, "", nil)
+	transport.SetDebug(true) // TODO: parametre
 
-	// Get a bearer token
-	token := ""
+	apiClient := vra2.New(transport, strfmt.Default)
 
-	return &rest.Client{
-		BearerToken: token,
-		BaseURL:     c.BaseURL,
-		HTTPClient:  &httpClient,
-	}
+	return apiClient
 }
 
-// NewDeploymentClient creates a new client for the deployment api
-func NewDeploymentClient(c Config) deployment.Client {
-	return NewClient(c)
-}
+// NewClient creates new Gitlab Client with provided Gitlab Configurations/Credentials.
+func NewClient(c Config) *vra.Client {
+	var cl *vra.Client
+	var err error
 
-// NewBlueprintClient creates a new client for the blueprint api
-func NewBlueprintClient(c Config) blueprint.Client {
-	return NewClient(c)
+	cl, err = vra.NewClient(c.RefreshToken,
+		vra.WithBaseURL(c.BaseURL))
+
+	if err != nil {
+		panic(err)
+	}
+	return cl
 }
 
 // GetConfig constructs a Config that can be used to authenticate to vRA

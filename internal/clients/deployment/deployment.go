@@ -17,89 +17,59 @@ limitations under the License.
 package deployment
 
 import (
-	"context"
+	"github.com/anka-software/go-vra"
+	"github.com/anka-software/go-vra/models"
 
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
+	"github.com/crossplane/provider-vra/internal/clients"
 )
 
-// Client is the API for creating/listing/deleting/getting deployments
+// Client defines vRA Deployment service operations
 type Client interface {
-	Create(ctx context.Context, deployment CreateDeploymentOptions) (result ResponseCreateDeploymentOptions, err error)
-	Get(ctx context.Context, id string) (result GetDeploymentOptions, err error)
-	Delete(ctx context.Context, deployment DeleteDeploymentOptions, id string) (err error)
+	GetDeployment(pid interface{}, opt *vra.GetDeploymentsOptions, options ...vra.RequestOptionFunc) (*models.Deployment, *vra.Response, error)
+	CreateDeployment(opt *vra.CreateDeploymentOptions, options ...vra.RequestOptionFunc) (*models.CatalogItemRequestResponse, *vra.Response, error)
+	DeleteDeployment(pid interface{}, options ...vra.RequestOptionFunc) (*vra.Response, error)
 }
 
-// CreateDeploymentOptions request payload
-type CreateDeploymentOptions struct {
-	DeploymentName     string            `json:"deploymentName,omitempty"`
-	CatalogItemID      string            `json:"catalogItemId,omitempty"`
-	CatalogItemVersion string            `json:"catalogItemVersion,omitempty"`
-	ProjectID          string            `json:"projectId,omitempty"`
-	Reason             string            `json:"reason,omitempty"`
-	Inputs             map[string]string `json:"inputs,omitempty"`
+// NewDeploymentClient returns a new vRA Deployment service
+func NewDeploymentClient(cfg clients.Config) Client {
+	vra := clients.NewClient(cfg)
+	return vra.Deployment
 }
 
-// GetDeploymentOptions request payload
-type GetDeploymentOptions struct {
-	CreatedAt   string  `json:"createdAt,omitempty"`
-	Description string  `json:"description,omitempty"`
-	ID          *string `json:"id"`
-	Name        string  `json:"name,omitempty"`
-	OrgID       string  `json:"orgId,omitempty"`
-	Owner       string  `json:"owner,omitempty"`
-	ProjectID   string  `json:"projectId,omitempty"`
-	UpdatedAt   string  `json:"updatedAt,omitempty"`
-}
-
-// DeleteDeploymentOptions request payload
-type DeleteDeploymentOptions struct {
-	ActionID string `json:"actionId"`
-}
-
-// ResponseCreateDeploymentOptions response of the create a deployment with catalog item
-type ResponseCreateDeploymentOptions struct {
-	DeploymentID   string `json:"deploymentId"`
-	DeploymentName string `json:"deploymentName"`
-}
-
-// GenerateCreateDeploymentOptions returns the payload for REST API Client
-func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) CreateDeploymentOptions {
-	deployment := CreateDeploymentOptions{
-		DeploymentName: p.DeploymentName,
-		CatalogItemID:  p.CatalogItemID,
-		ProjectID:      p.ProjectID,
-		Inputs:         p.Inputs,
-	}
-
-	if p.CatalogItemVersion != "" {
-		deployment.CatalogItemVersion = p.CatalogItemVersion
-	}
-	if p.Reason != "" {
-		deployment.Reason = p.Reason
-	}
-
-	return deployment
-}
-
-// GenerateDeleteDeploymentOptions returns the payload for REST API Client
-func GenerateDeleteDeploymentOptions() DeleteDeploymentOptions {
-	deployment := DeleteDeploymentOptions{
-		ActionID: "Deployment.Delete",
-	}
-
-	return deployment
-}
-
-// GenerateDeploymentObservation is get api
-func GenerateDeploymentObservation(dep *GetDeploymentOptions) v1alpha1.DeploymentObservation { // nolint:gocyclo
-	if dep == nil {
+// GenerateObservation is used to produce v1alpha1.ProjectObservation from
+// vra.Deployment.
+func GenerateObservation(deployment *models.Deployment) v1alpha1.DeploymentObservation { // nolint:gocyclo
+	if deployment == nil {
 		return v1alpha1.DeploymentObservation{}
 	}
 
 	o := v1alpha1.DeploymentObservation{
-		DeploymentID: dep.ID,
-		CreatedAt:    dep.CreatedAt,
+		DeploymentID:   deployment.ID,
+		DeploymentName: deployment.Name,
 	}
 
 	return o
+}
+
+// GenerateCreateDeploymentOptions generates deployment creation options
+func GenerateCreateDeploymentOptions(p *v1alpha1.DeploymentParameters) *vra.CreateDeploymentOptions {
+	deployment := &vra.CreateDeploymentOptions{
+		CatalogItemID: p.CatalogItemID,
+		RequestBody: &models.CatalogItemRequest{
+			DeploymentName: p.DeploymentName,
+			ProjectID:      p.ProjectID,
+			Inputs:         p.Inputs,
+		},
+	}
+
+	if p.Reason != "" {
+		deployment.RequestBody.Reason = p.Reason
+	}
+
+	if p.CatalogItemVersion != "" {
+		deployment.RequestBody.Version = p.CatalogItemVersion
+	}
+
+	return deployment
 }
