@@ -21,6 +21,7 @@ import (
 	"github.com/crossplane/provider-vra/internal/controller/project"
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	"github.com/crossplane/provider-vra/internal/controller/blueprint"
 	"github.com/crossplane/provider-vra/internal/controller/config"
 	"github.com/crossplane/provider-vra/internal/controller/deployment"
 )
@@ -32,6 +33,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		config.Setup,
 		deployment.Setup,
 		project.Setup,
+		blueprint.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
