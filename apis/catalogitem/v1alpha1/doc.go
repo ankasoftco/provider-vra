@@ -2,8 +2,8 @@
 Copyright 2022 The ANKA SOFTWARE Authors.
 */
 
-// Package v1alpha1 contains managed resources, such as Deployment.
+// Package v1alpha1 contains managed resources, such as CatalogItem.
 // +kubebuilder:object:generate=true
-// +groupName=deployment.vra.crossplane.io
+// +groupName=catalogitem.vra.crossplane.io
 // +versionName=v1alpha1
 package v1alpha1

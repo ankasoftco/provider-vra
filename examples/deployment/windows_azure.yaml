@@ -1,0 +1,54 @@
+apiVersion: deployment.vra.crossplane.io/v1alpha1
+kind: Deployment
+metadata:
+  name: vra-workflow-crossplane-test-2
+spec:
+  forProvider:
+    catalogItemId: 91fed990-1dd7-30fe-8506-755b7cf2328f
+    projectId: 65fc0be1-3747-4e5d-b4dd-24e1a68ca28e
+    deploymentName: vra-workflow-crossplane-test-2
+    reason: Crossplane Test
+    inputs:
+      debtor_number: '123456789'
+      cost_center: 'XXXDEMOXXX'
+      applicationName: "[Deployment-Test]"
+      environment: 'Test'
+      owner: 'mehul.jain@allianz.com.au'
+      assignmentGroup: 'A.AU.AU.HC.PILOT'
+      dataClassification: 'Public'
+      az_request_restricted_class: 'Restricted'
+      backupPolicy: '14_days'
+      az_request_edr_class: 'EDR1'
+      experimentalDetails: 'No'
+      advancedOptions: 'No'
+      cloudPlatform: 'azure'
+      subscriptionName: 'cdo03ply-dev-francecentral-dev/westeurope'
+      targetSubnetName: '{"subnetName":"sub-d-we1-pubint-44.112.91.128-26","subnetId":"/subscriptions/42d147a6-ca9f-488d-a55f-752342275193/resourceGroups/rgp-d-we1-cdo03ply-networking/providers/Microsoft.Network/virtualNetworks/vnet-d-we1-01/subnets/sub-d-we1-pubint-44.112.91.128-26","virtualNetwork":"vnet-d-we1-01","resourceGroup":"rgp-d-we1-cdo03ply-networking"}'
+      targetVPC: 'vnet-d-we1-01'
+      targetSubnetNameAWS: '{"subnetName":"sub-d-we1-pubint-44.112.91.128-26","subnetId":"/subscriptions/42d147a6-ca9f-488d-a55f-752342275193/resourceGroups/rgp-d-we1-cdo03ply-networking/providers/Microsoft.Network/virtualNetworks/vnet-d-we1-01/subnets/sub-d-we1-pubint-44.112.91.128-26","virtualNetwork":"vnet-d-we1-01","resourceGroup":"rgp-d-we1-cdo03ply-networking"}'
+      targetVnetName: 'vnet-d-we1-01'
+      targetVnetRgName: 'rgp-d-we1-cdo03ply-networking'
+      resourceGroup: ''
+      placementGroupName: ''
+      accelerateNetwork: 'false'
+      os: 'windows2016'
+      instances: '1'
+      machineType: 'Standard_DS1_v2'
+      instanceType: 't3a.medium'
+      templateDetails: 'vCPUs: 1, RAM(GB): 3.5, Max Data Disk Count: 4'
+      instanceTypeDetails: 'vCPUs: 2, RAM(GB): 4, Total Disk Size(GB): 0'
+      disk_provisioning: 'false'
+      disk_count: '1'
+      disk1_size_gb: '4'
+      disk1_lun: '1'
+      disk2_size_gb: '4'
+      disk2_lun: '2'
+      disk3_size_gb: '4'
+      disk3_lun: '3'
+      oecode: 'eudev'
+      oename: 'Allianz Technology OE'
+      cloudtype: 'public'
+      eu_request_custom_roles: ''
+
+  providerConfigRef:
+    name: default

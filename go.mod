@@ -3,7 +3,6 @@ module github.com/crossplane/provider-vra
 go 1.17
 
 require (
-	github.com/anka-software/go-vra v0.1.0
 	github.com/crossplane/crossplane-runtime v0.16.0
 	github.com/crossplane/crossplane-tools v0.0.0-20220310165030-1f43fc12793e
 	github.com/go-openapi/runtime v0.21.0
@@ -29,7 +28,6 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-openapi/validate v0.20.3 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
-	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/vault/sdk v0.3.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

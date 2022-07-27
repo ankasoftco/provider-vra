@@ -1,17 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Copyright 2022 The ANKA SOFTWARE Authors.
 */
 
 package deployment
@@ -29,6 +17,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
+	sdkCatalogItems "github.com/vmware/vra-sdk-go/pkg/client/catalog_items"
+	sdkDeployment "github.com/vmware/vra-sdk-go/pkg/client/deployments"
+
 	"github.com/pkg/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -36,6 +27,7 @@ import (
 	"github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
 	apisv1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
 	"github.com/crossplane/provider-vra/internal/clients"
+	"github.com/crossplane/provider-vra/internal/clients/catalogitem"
 	"github.com/crossplane/provider-vra/internal/clients/deployment"
 	"github.com/crossplane/provider-vra/internal/controller/features"
 )
@@ -61,9 +53,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	r := managed.NewReconciler(mgr,
 		resource.ManagedKind(v1alpha1.DeploymentGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
-			kube:         mgr.GetClient(),
-			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: deployment.NewDeploymentClient}),
+			kube:                    mgr.GetClient(),
+			usage:                   resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
+			newServiceFnDeployment:  deployment.NewDeploymentClient,
+			newServiceFnCatalogItem: catalogitem.NewCatalogItemClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
 		managed.WithConnectionPublishers(cps...))
@@ -78,9 +71,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // A connector is expected to produce an ExternalClient when its Connect method
 // is called.
 type connector struct {
-	kube         client.Client
-	usage        resource.Tracker
-	newServiceFn func(config clients.Config) deployment.Client
+	kube                    client.Client
+	usage                   resource.Tracker
+	newServiceFnDeployment  func(cfg clients.Config) sdkDeployment.ClientService
+	newServiceFnCatalogItem func(cfg clients.Config) sdkCatalogItems.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -102,16 +96,17 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 	if err != nil {
 		return nil, err
 	}
-	return &external{kube: c.kube, service: c.newServiceFn(*cfg)}, nil
+
+	return &external{kube: c.kube, serviceDeployment: c.newServiceFnDeployment(*cfg), serviceCatalogItem: c.newServiceFnCatalogItem(*cfg)}, nil
 }
 
 // An ExternalClient observes, then either creates, updates, or deletes an
 // external resource to ensure it reflects the managed resource's desired state.
 type external struct {
 	kube client.Client
-	// A 'client' used to connect to the external resource API. In practice this
-	// would be something like an AWS SDK client.
-	service deployment.Client
+	// A 'client' used to connect to the external resource API.
+	serviceDeployment  sdkDeployment.ClientService
+	serviceCatalogItem sdkCatalogItems.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
@@ -121,7 +116,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	}
 
 	// These fmt statements should be removed in the real implementation.
-	fmt.Printf("Observing: %+v", cr)
+	fmt.Printf("Observing: \n%+v", cr)
 
 	externalName := meta.GetExternalName(cr)
 	if externalName == "" {
@@ -130,16 +125,29 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 
 	deploymentID := externalName
 
-	dep, _, _ := c.service.GetDeployment(deploymentID, nil)
-	if dep == nil {
+	params := deployment.GenerateGetDeploymentOptions(deploymentID)
+	deploymentObj, _ := c.serviceDeployment.GetDeploymentByIDV3UsingGET(params)
+
+	if deploymentObj == nil {
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
 	// TODO: Check the deployment process here...
-	cr.Status.AtProvider = deployment.GenerateObservation(dep)
-	cr.Status.SetConditions(xpv1.Available())
-	//dep.Status
-	//cr.Status.SetConditions(xpv1.Creating())
+	if deploymentObj.Payload.Status == "CREATE_SUCCESSFUL" {
+		cr.Status.SetConditions(xpv1.Available())
+	} else if deploymentObj.Payload.Status == "CREATE_INPROGRESS" {
+		cr.Status.SetConditions(xpv1.Creating())
+	} else if deploymentObj.Payload.Status == "CREATE_FAILED" {
+		return managed.ExternalObservation{}, nil
+	} else if deploymentObj.Payload.Status == "DELETE_SUCCESSFUL" {
+		return managed.ExternalObservation{}, nil
+	} else if deploymentObj.Payload.Status == "DELETE_INPROGRESS" {
+		cr.Status.SetConditions(xpv1.Deleting())
+	}
+	cr.Status.AtProvider = deployment.GenerateDeploymentObservation(deploymentObj)
+
+	// cr.Status.SetConditions(xpv1.Available())
+	// cr.Status.SetConditions(xpv1.Creating())
 
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
@@ -160,21 +168,22 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.New(errNotDeployment)
 	}
 
-	fmt.Printf("Creating: %+v", cr)
+	fmt.Printf("Creating: \n%+v", cr)
 
-	cr.Status.SetConditions(xpv1.Creating())
+	// cr.Status.SetConditions(xpv1.Creating())
 
-	depOptions := deployment.GenerateCreateDeploymentOptions(&cr.Spec.ForProvider)
+	deploymentParams := catalogitem.GenerateRequestCatalogItemOptions(&cr.Spec.ForProvider)
 
-	dep, _, err := c.service.CreateDeployment(depOptions)
+	response, err := c.serviceCatalogItem.RequestCatalogItemInstancesUsingPOST1(deploymentParams)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
 
-	fmt.Println("Dep Id: " + dep.DeploymentID)
-	meta.SetExternalName(cr, fmt.Sprint(dep.DeploymentID))
+	fmt.Println("Dep Id: " + response.Payload[0].DeploymentID)
+	meta.SetExternalName(cr, response.Payload[0].DeploymentID)
 
-	cr.Status.SetConditions(xpv1.Available())
+	// cr.Status.SetConditions(xpv1.Available())
+	cr.Status.SetConditions(xpv1.Creating())
 
 	return managed.ExternalCreation{
 		// Optionally return any details that may be required to connect to the
@@ -189,7 +198,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalUpdate{}, errors.New(errNotDeployment)
 	}
 
-	fmt.Printf("Updating: %+v", cr)
+	fmt.Printf("Updating: \n%+v", cr)
 
 	cr.Status.SetConditions(xpv1.Available())
 
@@ -206,11 +215,12 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 		return errors.New(errNotDeployment)
 	}
 
-	fmt.Printf("Deleting: %+v", cr)
+	fmt.Printf("Deleting: \n%+v", cr)
 
 	externalName := meta.GetExternalName(cr)
 
-	if _, err := c.service.DeleteDeployment(externalName); err != nil {
+	params := deployment.GenerateDeleteDeploymentOptions(externalName)
+	if _, err := c.serviceDeployment.DeleteDeploymentUsingDELETE2(params); err != nil {
 		return errors.Wrap(err, errDeleteFailed)
 	}
 	// todo: check the decommissioning process here...

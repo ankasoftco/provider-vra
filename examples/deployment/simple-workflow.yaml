@@ -4,13 +4,13 @@ metadata:
   name: vra-workflow-crossplane-test-1
 spec:
   forProvider:
-    catalogItemId: 41913ba8-068f-389c-b179-747a74df560c
-    projectId: 725be285-dcbd-44dc-9416-f5e54aeec294
+    catalogItemId: 5cf6a410-1792-328f-879d-e62183b8614e
+    projectId: 7d4c2c82-583f-4aab-876f-e483e38601a4
     deploymentName: vra-workflow-crossplane-test-1
     reason: Crossplane Test
     inputs:
-      input1: test_input_1
-      input2: test_input_2
+      test1: test_input_1
+      test2: test_input_2
 
   providerConfigRef:
-    name: default-allianznext
+    name: default

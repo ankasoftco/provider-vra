@@ -1,17 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Copyright 2022 The ANKA SOFTWARE Authors.
 */
 
 package v1alpha1
@@ -19,47 +7,52 @@ package v1alpha1
 import (
 	"reflect"
 
+	"github.com/go-openapi/strfmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/go-openapi/strfmt"
 )
-
-/*
-vRealize Automation Deployment API: https://developer.vmware.com/apis/979
-*/
 
 // DeploymentParameters are the configurable fields of a Deployment.
 type DeploymentParameters struct {
+	// Deployment request count; defaults to 1 if not specified.
+	// Maximum: 127
+	// Minimum: -128
+	// +immutable
+	BulkRequestCount *int32 `json:"bulkRequestCount,omitempty"`
+
 	// Name of the requested deployment
 	// +immutable
 	DeploymentName string `json:"deploymentName,omitempty"`
 
-	// Deployment catalog item id
+	// Input parameters for the request. These must be compliant with the schema of the corresponding catalog item
 	// +immutable
-	CatalogItemID string `json:"catalogItemId,omitempty"`
-
-	// Catalog Item version
-	// +optional
-	CatalogItemVersion string `json:"catalogItemVersion,omitempty"`
+	Inputs map[string]string `json:"inputs,omitempty"` // interface{} `json:"inputs,omitempty"`
 
 	// Project to be used for the request
 	// +immutable
 	ProjectID string `json:"projectId,omitempty"`
 
-	// Reason of the deployment
-	// +optional
+	// Reason for request
+	// +immutable
 	Reason string `json:"reason,omitempty"`
 
-	// Input parameters for the request. These must be compliant with the schema of the corresponding catalog item
-	Inputs map[string]string `json:"inputs,omitempty"`
+	// Version of the catalog item. e.g. v2.0
+	// +immutable
+	Version string `json:"version,omitempty"`
+
+	// CatalogItemID Catalog item ID
+	// +immutable
+	CatalogItemID strfmt.UUID `json:"catalogItemId,omitempty"`
 }
 
 // DeploymentObservation are the observable fields of a Deployment.
 type DeploymentObservation struct {
-	DeploymentName *string     `json:"deploymentName,omitempty"`
-	DeploymentID   strfmt.UUID `json:"deploymentId,omitempty"`
+	Name         string      `json:"deploymentName,omitempty"`
+	DeploymentID strfmt.UUID `json:"deploymentId,omitempty"`
+	Status       string      `json:"status,omitempty"`
 }
 
 // A DeploymentSpec defines the desired state of a Deployment.

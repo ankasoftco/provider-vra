@@ -25,66 +25,63 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-// ProjectParameters are the configurable fields of a Project.
-type ProjectParameters struct {
-	// A human-friendly name used as an identifier in APIs that support this option.
-	// Required: true - TODO: check required tag
+// LoginParameters are the configurable fields of a Login.
+type LoginParameters struct {
+	// Refresh token obtained from the UI
 	// +immutable
-	Name *string `json:"name"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
-// ProjectObservation are the observable fields of a Project.
-type ProjectObservation struct {
-	Name      string  `json:"name"`
-	ProjectID *string `json:"id"`
+// LoginObservation are the observable fields of a Login.
+type LoginObservation struct {
 }
 
-// A ProjectSpec defines the desired state of a Project.
-type ProjectSpec struct {
+// A LoginSpec defines the desired state of a Login.
+type LoginSpec struct {
 	xpv1.ResourceSpec `json:",inline"`
-	ForProvider       ProjectParameters `json:"forProvider"`
+	ForProvider       LoginParameters `json:"forProvider"`
 }
 
-// A ProjectStatus represents the observed state of a Project.
-type ProjectStatus struct {
+// A LoginStatus represents the observed state of a Login.
+type LoginStatus struct {
 	xpv1.ResourceStatus `json:",inline"`
-	AtProvider          ProjectObservation `json:"atProvider,omitempty"`
+	AtProvider          LoginObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// A Project is an example API type.
+// A Login is an example API type.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,vra}
-type Project struct {
+type Login struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ProjectSpec   `json:"spec"`
-	Status ProjectStatus `json:"status,omitempty"`
+	Spec   LoginSpec   `json:"spec"`
+	Status LoginStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// ProjectList contains a list of Project
-type ProjectList struct {
+// LoginList contains a list of Login
+type LoginList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Project `json:"items"`
+	Items           []Login `json:"items"`
 }
 
-// Project type metadata.
+// Login type metadata.
 var (
-	ProjectKind             = reflect.TypeOf(Project{}).Name()
-	ProjectGroupKind        = schema.GroupKind{Group: Group, Kind: ProjectKind}.String()
-	ProjectKindAPIVersion   = ProjectKind + "." + SchemeGroupVersion.String()
-	ProjectGroupVersionKind = SchemeGroupVersion.WithKind(ProjectKind)
+	LoginKind             = reflect.TypeOf(Login{}).Name()
+	LoginGroupKind        = schema.GroupKind{Group: Group, Kind: LoginKind}.String()
+	LoginKindAPIVersion   = LoginKind + "." + SchemeGroupVersion.String()
+	LoginGroupVersionKind = SchemeGroupVersion.WithKind(LoginKind)
 )
 
 func init() {
-	SchemeBuilder.Register(&Project{}, &ProjectList{})
+	SchemeBuilder.Register(&Login{}, &LoginList{})
 }

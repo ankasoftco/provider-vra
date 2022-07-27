@@ -18,12 +18,11 @@ package controller
 
 import (
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/provider-vra/internal/controller/project"
-	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/crossplane/provider-vra/internal/controller/blueprint"
 	"github.com/crossplane/provider-vra/internal/controller/config"
 	"github.com/crossplane/provider-vra/internal/controller/deployment"
+
+	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 // Setup creates all vRA controllers with the supplied logger and adds them to
@@ -32,8 +31,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
 		deployment.Setup,
-		project.Setup,
-		blueprint.Setup,
+		// project.Setup,
+		// blueprint.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

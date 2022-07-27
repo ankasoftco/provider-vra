@@ -14,5 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package blueprint contains group Blueprint API versions
-package blueprint
+// Package v1alpha1 contains managed resources, such as
+// Login.
+// +kubebuilder:object:generate=true
+// +groupName=login.vra.crossplane.io
+// +versionName=v1alpha1
+package v1alpha1

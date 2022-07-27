@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.8.0
   creationTimestamp: null
-  name: blueprints.blueprint.vra.crossplane.io
+  name: catalogitems.catalogitem.vra.crossplane.io
 spec:
-  group: blueprint.vra.crossplane.io
+  group: catalogitem.vra.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Blueprint
-    listKind: BlueprintList
-    plural: blueprints
-    singular: blueprint
+    kind: CatalogItem
+    listKind: CatalogItemList
+    plural: catalogitems
+    singular: catalogitem
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A Blueprint is an example API type.
+        description: A CatalogItem is an example API type.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: A BlueprintSpec defines the desired state of a Blueprint.
+            description: A CatalogItemSpec defines the desired state of a CatalogItem.
             properties:
               deletionPolicy:
                 default: Delete
@@ -62,18 +62,8 @@ spec:
                 - Delete
                 type: string
               forProvider:
-                description: BlueprintParameters are the configurable fields of a
-                  Blueprint.
-                properties:
-                  content:
-                    description: Blueprint YAML content
-                    type: string
-                  name:
-                    description: Name of the requested deployment
-                    type: string
-                  projectId:
-                    description: Project to be used for the request
-                    type: string
+                description: CatalogItemParameters are the configurable fields of
+                  a CatalogItem.
                 type: object
               providerConfigRef:
                 default:
@@ -172,17 +162,11 @@ spec:
             - forProvider
             type: object
           status:
-            description: A BlueprintStatus represents the observed state of a Blueprint.
+            description: A CatalogItemStatus represents the observed state of a CatalogItemStatus.
             properties:
               atProvider:
-                description: BlueprintObservation are the observable fields of a Blueprint.
-                properties:
-                  blueprintId:
-                    description: "UUID represents a uuid string format \n swagger:strfmt
-                      uuid"
-                    type: string
-                  name:
-                    type: string
+                description: CatalogItemObservation are the observable fields of a
+                  CatalogItem.
                 type: object
               conditions:
                 description: Conditions of the resource.

@@ -1,17 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Copyright 2022 The ANKA SOFTWARE Authors.
 */
 
 package clients
@@ -19,7 +7,8 @@ package clients
 import (
 	"context"
 
-	vra "github.com/anka-software/go-vra"
+	"github.com/go-openapi/runtime"
+
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -30,7 +19,7 @@ import (
 
 	"github.com/crossplane/provider-vra/apis/v1alpha1"
 
-	vra2 "github.com/vmware/vra-sdk-go/pkg/client"
+	vra "github.com/vmware/vra-sdk-go/pkg/client"
 
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -42,28 +31,41 @@ type Config struct {
 	RefreshToken string
 }
 
-// NewClient2 creates new vRA Client with provided vRA Configurations/Credentials.
-func NewClient2(c Config) *vra2.MulticloudIaaS {
-	transport := httptransport.New(c.BaseURL, "", nil)
-	transport.SetDebug(true) // TODO: parametre
-
-	apiClient := vra2.New(transport, strfmt.Default)
+// NewClient creates new vRA Client with provided vRA Configurations.
+func NewClient(c Config) *vra.MulticloudIaaS {
+	/*
+		transport := httptransport.New(c.BaseURL, "", nil)
+		transport.SetDebug(true) // TODO: get from providerConfig
+	*/
+	transport := GetTransport(c)
+	apiClient := vra.New(transport, strfmt.Default)
 
 	return apiClient
 }
 
-// NewClient creates new Gitlab Client with provided Gitlab Configurations/Credentials.
-func NewClient(c Config) *vra.Client {
-	var cl *vra.Client
-	var err error
+// NewClientWithAuthentication creates new vRA Client with provided vRA Configurations and Credentials.
+func NewClientWithAuthentication(c Config, bearerToken string) *vra.MulticloudIaaS {
+	transport := GetTransportWithAuthentication(c, bearerToken)
+	apiClient := vra.New(transport, strfmt.Default)
 
-	cl, err = vra.NewClient(c.RefreshToken,
-		vra.WithBaseURL(c.BaseURL))
+	return apiClient
+}
 
-	if err != nil {
-		panic(err)
-	}
-	return cl
+// GetTransport returns the REST config
+func GetTransport(c Config) runtime.ClientTransport {
+	transport := httptransport.New(c.BaseURL, "", nil)
+	transport.SetDebug(true)
+
+	return transport
+}
+
+// GetTransportWithAuthentication returns the REST config with authentication header
+func GetTransportWithAuthentication(c Config, bearerToken string) runtime.ClientTransport {
+	transport := httptransport.New(c.BaseURL, "", nil)
+	transport.SetDebug(true)
+	transport.DefaultAuthentication = httptransport.APIKeyAuth("Authorization", "header", "Bearer "+bearerToken)
+
+	return transport
 }
 
 // GetConfig constructs a Config that can be used to authenticate to vRA

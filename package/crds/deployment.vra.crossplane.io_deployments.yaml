@@ -65,11 +65,13 @@ spec:
                 description: DeploymentParameters are the configurable fields of a
                   Deployment.
                 properties:
+                  bulkRequestCount:
+                    description: 'Deployment request count; defaults to 1 if not specified.
+                      Maximum: 127 Minimum: -128'
+                    format: int32
+                    type: integer
                   catalogItemId:
-                    description: Deployment catalog item id
-                    type: string
-                  catalogItemVersion:
-                    description: Catalog Item version
+                    description: CatalogItemID Catalog item ID
                     type: string
                   deploymentName:
                     description: Name of the requested deployment
@@ -84,7 +86,10 @@ spec:
                     description: Project to be used for the request
                     type: string
                   reason:
-                    description: Reason of the deployment
+                    description: Reason for request
+                    type: string
+                  version:
+                    description: Version of the catalog item. e.g. v2.0
                     type: string
                 type: object
               providerConfigRef:
@@ -195,6 +200,8 @@ spec:
                       uuid"
                     type: string
                   deploymentName:
+                    type: string
+                  status:
                     type: string
                 type: object
               conditions:
