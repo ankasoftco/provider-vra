@@ -23,9 +23,6 @@ func NewCatalogItemClient(cfg clients.Config) catalog_items.ClientService {
 	}
 
 	vra := clients.NewClientWithAuthentication(cfg, bearerToken)
-	/* transport := clients.GetTransportWithAuthentication(cfg, bearerToken)
-	vra.SetTransport(transport)
-	*/
 
 	return vra.CatalogItems
 }

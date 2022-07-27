@@ -24,9 +24,7 @@ func NewDeploymentClient(cfg clients.Config) deployments.ClientService {
 	}
 
 	vra := clients.NewClientWithAuthentication(cfg, bearerToken)
-	/* transport := clients.GetTransportWithAuthentication(cfg, bearerToken)
-	vra.SetTransport(transport)
-	*/
+
 	return vra.Deployments
 }
 

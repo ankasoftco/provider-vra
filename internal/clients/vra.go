@@ -33,10 +33,6 @@ type Config struct {
 
 // NewClient creates new vRA Client with provided vRA Configurations.
 func NewClient(c Config) *vra.MulticloudIaaS {
-	/*
-		transport := httptransport.New(c.BaseURL, "", nil)
-		transport.SetDebug(true) // TODO: get from providerConfig
-	*/
 	transport := GetTransport(c)
 	apiClient := vra.New(transport, strfmt.Default)
 

@@ -120,8 +120,9 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 
 	externalName := meta.GetExternalName(cr)
 	if externalName == "" {
-		return managed.ExternalObservation{ResourceExists: false}, nil
+		return managed.ExternalObservation{ResourceExists: false}, nil // trigger Create
 	}
+	// TODO: bug.. deployment id & name
 
 	deploymentID := externalName
 
@@ -129,21 +130,25 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	deploymentObj, _ := c.serviceDeployment.GetDeploymentByIDV3UsingGET(params)
 
 	if deploymentObj == nil {
-		return managed.ExternalObservation{ResourceExists: false}, nil
+		return managed.ExternalObservation{ResourceExists: false}, nil // trigger Create
 	}
 
 	// TODO: Check the deployment process here...
-	if deploymentObj.Payload.Status == "CREATE_SUCCESSFUL" {
+	switch deploymentObj.Payload.Status {
+	case "CREATE_SUCCESSFUL":
 		cr.Status.SetConditions(xpv1.Available())
-	} else if deploymentObj.Payload.Status == "CREATE_INPROGRESS" {
+	case "CREATE_INPROGRESS":
 		cr.Status.SetConditions(xpv1.Creating())
-	} else if deploymentObj.Payload.Status == "CREATE_FAILED" {
+	case "CREATE_FAILED":
 		return managed.ExternalObservation{}, nil
-	} else if deploymentObj.Payload.Status == "DELETE_SUCCESSFUL" {
+	case "DELETE_SUCCESSFUL":
 		return managed.ExternalObservation{}, nil
-	} else if deploymentObj.Payload.Status == "DELETE_INPROGRESS" {
+	case "DELETE_INPROGRESS":
 		cr.Status.SetConditions(xpv1.Deleting())
+	default:
+		return managed.ExternalObservation{}, nil
 	}
+
 	cr.Status.AtProvider = deployment.GenerateDeploymentObservation(deploymentObj)
 
 	// cr.Status.SetConditions(xpv1.Available())
