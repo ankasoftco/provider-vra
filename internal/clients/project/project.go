@@ -6,6 +6,7 @@ package project
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/crossplane/provider-vra/apis/project/v1alpha1"
 	"github.com/crossplane/provider-vra/internal/clients"
@@ -36,34 +37,36 @@ func GenerateGetProjectOptions(projectID string) *project.GetProjectParams {
 	return params
 }
 
-func convertUser(users []*v1alpha1.User) []*models.User {
+/*func convertUser(users []*v1alpha1.User) []*models.User {
 	convertedUsers := []*models.User{}
 	for _, v := range users {
 		convertedUsers = append(convertedUsers, (*models.User)(v))
 	}
 	return convertedUsers
 
-}
+}*/
 
 // GenerateCreateProjectOptions generates project creation options
 func GenerateCreateProjectOptions(p *v1alpha1.ProjectParameters) *project.CreateProjectParams {
 	//viewers:= ([]*models.User) (p.Viewers)
 	//[]*models.User{(*models.User) (p.Administrators)}
 	//fmt.Println(spec)
-
+	converted := *(*[]*models.User)(unsafe.Pointer(&p.Administrators))
+	converted2 := *(*[]*models.User)(unsafe.Pointer(&p.Viewers))
+	converted3 := *(*[]*models.User)(unsafe.Pointer(&p.Members))
 	var params = project.NewCreateProjectParams().WithBody(
 		&models.IaaSProjectSpecification{
-			Administrators:               convertUser(p.Administrators),
+			Administrators:               converted,
 			Constraints:                  map[string][]models.Constraint{},
 			CustomProperties:             map[string]string{},
 			Description:                  p.Description,
 			MachineNamingTemplate:        p.MachineNamingTemplate,
-			Members:                      convertUser(p.Members),
+			Members:                      converted3,
 			Name:                         p.Name,
 			OperationTimeout:             p.OperationTimeout,
 			PlacementPolicy:              p.PlacementPolicy,
 			SharedResources:              p.SharedResources,
-			Viewers:                      convertUser(p.Viewers),
+			Viewers:                      converted2,
 			ZoneAssignmentConfigurations: []*models.ZoneAssignmentSpecification{},
 		},
 	)

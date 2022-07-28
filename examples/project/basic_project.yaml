@@ -1,10 +1,10 @@
 apiVersion: project.vra.crossplane.io/v1alpha1
 kind: Project
 metadata:
-  name: vra-test-project-crossplane-2
+  name: vra-test-project-crossplane-001
 spec:
   forProvider:
-    name: vra-test-project-crossplane-2
+    name: vra-test-project-crossplane-001
     administrators:
       - email: umitdemirtas@vmware.com
         type: user
