@@ -1,0 +1,23 @@
+apiVersion: project.vra.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  name: vra-test-project-crossplane-2
+spec:
+  forProvider:
+    name: vra-test-project-crossplane-2
+    administrators:
+      - email: umitdemirtas@vmware.com
+        type: user
+    members:
+      - email: iyilmaz@vmware.com
+        type: user
+    viewers:
+      - email: test@test.com
+        type: user
+    placementPolicy: placement
+    description: description
+    sharedResources: false
+    operationTimeout: 300
+    machineNamingTemplate: machinenaming
+  providerConfigRef:
+    name: default

@@ -22,6 +22,7 @@ import (
 
 	catalogItemv1alpha1 "github.com/crossplane/provider-vra/apis/catalogitem/v1alpha1"
 	deploymentv1alpha1 "github.com/crossplane/provider-vra/apis/deployment/v1alpha1"
+	projectv1alpha1 "github.com/crossplane/provider-vra/apis/project/v1alpha1"
 
 	vrav1alpha1 "github.com/crossplane/provider-vra/apis/v1alpha1"
 )
@@ -32,6 +33,7 @@ func init() {
 		vrav1alpha1.SchemeBuilder.AddToScheme,
 		deploymentv1alpha1.SchemeBuilder.AddToScheme,
 		catalogItemv1alpha1.SchemeBuilder.AddToScheme,
+		projectv1alpha1.SchemeBuilder.AddToScheme,
 	)
 }
 
