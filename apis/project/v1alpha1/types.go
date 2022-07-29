@@ -25,35 +25,82 @@ type User struct {
 	Type string `json:"type,omitempty"`
 }
 
+type ZoneAssignmentSpecification struct {
+
+	// The maximum amount of cpus that can be used by this cloud zone. Default is 0 (unlimited cpu).
+	// Example: 2048
+	CPULimit int64 `json:"cpuLimit,omitempty"`
+
+	// The maximum number of instances that can be provisioned in this cloud zone. Default is 0 (unlimited instances).
+	// Example: 50
+	MaxNumberInstances int64 `json:"maxNumberInstances,omitempty"`
+
+	// The maximum amount of memory that can be used by this cloud zone. Default is 0 (unlimited memory).
+	// Example: 2048
+	MemoryLimitMB int64 `json:"memoryLimitMB,omitempty"`
+
+	// The priority of this zone in the current project. Lower numbers mean higher priority. Default is 0 (highest)
+	// Example: 1
+	Priority int32 `json:"priority,omitempty"`
+
+	// Defines an upper limit on storage that can be requested from a cloud zone which is part of this project. Default is 0 (unlimited storage). Please note that this feature is supported only for vSphere cloud zones. Not valid for other cloud zone types.
+	// Example: 20
+	StorageLimitGB int64 `json:"storageLimitGB,omitempty"`
+
+	// The Cloud Zone Id
+	// Example: 77ee1
+	ZoneID string `json:"zoneId,omitempty"`
+}
+
+type Constraint struct {
+
+	// An expression of the form "[!]tag-key[:[tag-value]]", used to indicate a constraint match on keys and values of tags.
+	//
+	// Example: ha:strong
+	// Required: true
+	Expression *string `json:"expression"`
+
+	// Indicates whether this constraint should be strictly enforced or not.
+	// Required: true
+	Mandatory *bool `json:"mandatory"`
+}
+
 // ProjectParameters are the configurable fields of a Project.
 type ProjectParameters struct {
 	// A human-friendly name used as an identifier in APIs that support this option.
-	// Required: true - TODO: check required tag
+	// Required: true
 	// +immutable
-	Name                  *string `json:"name"`
-	MachineNamingTemplate string  `json:"machineNamingTemplate,omitempty"`
-	PlacementPolicy       string  `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
-	OperationTimeout      *int64  `json:"operationTimeout,omitempty"`
-	Description           string  `json:"description,omitempty"`
-	Administrators        []*User `json:"administrators"`
-	SharedResources       bool    `json:"sharedResources,omitempty"`
-	Viewers               []*User `json:"viewers"`
-	Members               []*User `json:"members"`
+	Name *string `json:"name"`
+
+	// They are not required. TODO: check required tag
+	Administrators               []*User                        `json:"administrators"`
+	Viewers                      []*User                        `json:"viewers"`
+	Members                      []*User                        `json:"members"`
+	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
+	PlacementPolicy              string                         `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
+	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
+	Description                  string                         `json:"description,omitempty"`
+	SharedResources              bool                           `json:"sharedResources,omitempty"`
+	Constraints                  map[string][]Constraint        `json:"constraints,omitempty"`
+	CustomProperties             map[string]string              `json:"customProperties,omitempty"`
+	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations"`
 }
 
 // ProjectObservation are the observable fields of a Project.
 type ProjectObservation struct {
-	Name            *string `json:"name"`
-	ID              string  `json:"id"`
-	Administrators  []*User `json:"administrators"`
-	Viewers         []*User `json:"viewers"`
-	Members         []*User `json:"members"`
-	PlacementPolicy string  `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
-	//Constraints    map[string][]*struct{} `json:"constraints,omitempty"`
-	SharedResources       bool   `json:"sharedResources,omitempty"`
-	OperationTimeout      *int64 `json:"operationTimeout,omitempty"`
-	MachineNamingTemplate string `json:"machineNamingTemplate,omitempty"`
-	Description           string `json:"description,omitempty"`
+	Name                         *string                        `json:"name"`
+	ID                           string                         `json:"id"`
+	Administrators               []*User                        `json:"administrators"`
+	Viewers                      []*User                        `json:"viewers"`
+	Members                      []*User                        `json:"members"`
+	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
+	PlacementPolicy              string                         `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
+	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
+	Description                  string                         `json:"description,omitempty"`
+	SharedResources              bool                           `json:"sharedResources,omitempty"`
+	Constraints                  map[string][]Constraint        `json:"constraints,omitempty"`
+	CustomProperties             map[string]string              `json:"customProperties,omitempty"`
+	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations"`
 }
 
 // A ProjectSpec defines the desired state of a Project.

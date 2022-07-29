@@ -124,8 +124,12 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	projectID := externalName
 
 	params := p.GenerateGetProjectOptions(projectID)
+
+	// current value of the resource.
 	proj, _ := c.service.GetProject(params)
-	current := cr.Spec.ForProvider.DeepCopy()
+
+	// desired value of the resource. (it reads the current yaml to determine desired state)
+	desired := cr.Spec.ForProvider.DeepCopy()
 
 	/*if  (current.Administrators) == *(*[]*v1alpha1.User)(unsafe.Pointer(&proj.Payload.Administrators)){
 
@@ -139,12 +143,8 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	resourceUpToDate := p.IsResourceUpToDate(current, proj.Payload)
-	fmt.Println(resourceUpToDate)
+	resourceUpToDate := p.IsResourceUpToDate(desired, proj.Payload)
 
-	if *current.Administrators[0].Email != *proj.Payload.Administrators[0].Email {
-		return managed.ExternalObservation{ResourceExists: true, ResourceUpToDate: false}, nil
-	}
 	// TODO: Check the deployment process here...
 	cr.Status.AtProvider = p.GenerateProjectObservation(proj)
 	cr.Status.SetConditions(xpv1.Available())
@@ -160,7 +160,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		// Return false when the external resource exists, but it not up to date
 		// with the desired managed resource state. This lets the managed
 		// resource reconciler know that it needs to call Update.
-		ResourceUpToDate: true,
+		ResourceUpToDate: resourceUpToDate,
 	}, nil
 }
 

@@ -50,7 +50,6 @@ func GenerateGetProjectOptions(projectID string) *project.GetProjectParams {
 func GenerateCreateProjectOptions(p *v1alpha1.ProjectParameters) *project.CreateProjectParams {
 	//viewers:= ([]*models.User) (p.Viewers)
 	//[]*models.User{(*models.User) (p.Administrators)}
-	//fmt.Println(spec)
 
 	var params = project.NewCreateProjectParams().WithBody(
 		&models.IaaSProjectSpecification{
@@ -126,13 +125,23 @@ func GenerateProjectObservation(project *project.GetProjectOK) v1alpha1.ProjectO
 func IsResourceUpToDate(desired *v1alpha1.ProjectParameters, current *models.IaaSProject) bool {
 	// DisableApiTermination
 
+	// check admins, members, viewers
+	if len(current.Administrators) != len(desired.Administrators) || len(current.Members) != len(desired.Members) ||
+		len(current.Viewers) != len(desired.Viewers) || current.Name != *desired.Name || current.Description != desired.Description ||
+		current.PlacementPolicy != desired.PlacementPolicy || current.MachineNamingTemplate != desired.MachineNamingTemplate ||
+		current.SharedResources != desired.SharedResources || current.OperationTimeout != *desired.OperationTimeout {
+		return false
+	}
+
 	for i := 0; i < len(current.Administrators); i++ {
+
 		if *current.Administrators[i].Email != *desired.Administrators[i].Email || current.Administrators[i].Type != desired.Administrators[i].Type {
 			// any admin has changed
 			return false
 		}
 	}
 	for i := 0; i < len(current.Members); i++ {
+
 		if *current.Members[i].Email != *desired.Members[i].Email || current.Members[i].Type != desired.Members[i].Type {
 			// any member has changed
 			return false
@@ -144,5 +153,6 @@ func IsResourceUpToDate(desired *v1alpha1.ProjectParameters, current *models.Iaa
 			return false
 		}
 	}
+
 	return true
 }

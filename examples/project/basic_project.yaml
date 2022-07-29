@@ -9,7 +9,7 @@ spec:
       - email: udemirtas@vmware.com
         type: user
     members:
-      - email: iyilmaz@vmware.com
+      - email: yilmazi@vmware.com
         type: user
     viewers:
       - email: test@test.com
