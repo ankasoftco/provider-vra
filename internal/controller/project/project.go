@@ -37,8 +37,9 @@ const (
 	errTrackPCUsage = "cannot track ProviderConfig usage"
 
 	errCreateFailed = "cannot create project with vRA API"
-	// errGetFailed    = "cannot get project from vRA API"
+	errGetFailed    = "cannot get project from vRA API"
 	errDeleteFailed = "cannot delete project from vRA API"
+	errUpdateFailed = "cannot update project from vRA API"
 )
 
 // Setup adds a controller that reconciles Deployment managed resources.
@@ -124,17 +125,32 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 
 	params := p.GenerateGetProjectOptions(projectID)
 	proj, _ := c.service.GetProject(params)
+	current := cr.Spec.ForProvider.DeepCopy()
+
+	/*if  (current.Administrators) == *(*[]*v1alpha1.User)(unsafe.Pointer(&proj.Payload.Administrators)){
+
+	}*/
+	//fmt.Println("ADMINS:", *current.Administrators[0].Email)
+	//fmt.Printf("ADMINS: %v %v %v\n", *current.Administrators[0], *current.Administrators[0].Email, current.Administrators[0].Type)
+	//fmt.Println("CURRENT:", *current.Administrators[0].Email)
+	//fmt.Println("PAYLOAD:", *proj.Payload.Administrators[0].Email)
 
 	if proj == nil {
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
+	resourceUpToDate := p.IsResourceUpToDate(current, proj.Payload)
+	fmt.Println(resourceUpToDate)
+
+	if *current.Administrators[0].Email != *proj.Payload.Administrators[0].Email {
+		return managed.ExternalObservation{ResourceExists: true, ResourceUpToDate: false}, nil
+	}
 	// TODO: Check the deployment process here...
 	cr.Status.AtProvider = p.GenerateProjectObservation(proj)
 	cr.Status.SetConditions(xpv1.Available())
 	// dep.Status
-	// cr.Status.SetConditions(xpv1.Creating())
 
+	// cr.Status.SetConditions(xpv1.Creating())
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
 		// the managed resource reconciler know that it needs to call Create to
@@ -185,6 +201,14 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	fmt.Printf("Updating: %+v", cr)
 
+	cr.Status.SetConditions(xpv1.Creating())
+
+	externalName := meta.GetExternalName(cr)
+	params := p.GenerateUpdateProjectOptions(externalName, &cr.Spec.ForProvider)
+
+	if _, err := c.service.UpdateProject(params); err != nil {
+		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
+	}
 	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalUpdate{

@@ -51,22 +51,20 @@ func GenerateCreateProjectOptions(p *v1alpha1.ProjectParameters) *project.Create
 	//viewers:= ([]*models.User) (p.Viewers)
 	//[]*models.User{(*models.User) (p.Administrators)}
 	//fmt.Println(spec)
-	converted := *(*[]*models.User)(unsafe.Pointer(&p.Administrators))
-	converted2 := *(*[]*models.User)(unsafe.Pointer(&p.Viewers))
-	converted3 := *(*[]*models.User)(unsafe.Pointer(&p.Members))
+
 	var params = project.NewCreateProjectParams().WithBody(
 		&models.IaaSProjectSpecification{
-			Administrators:               converted,
+			Administrators:               *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
 			Constraints:                  map[string][]models.Constraint{},
 			CustomProperties:             map[string]string{},
 			Description:                  p.Description,
 			MachineNamingTemplate:        p.MachineNamingTemplate,
-			Members:                      converted3,
+			Members:                      *(*[]*models.User)(unsafe.Pointer(&p.Members)),
 			Name:                         p.Name,
 			OperationTimeout:             p.OperationTimeout,
 			PlacementPolicy:              p.PlacementPolicy,
 			SharedResources:              p.SharedResources,
-			Viewers:                      converted2,
+			Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
 			ZoneAssignmentConfigurations: []*models.ZoneAssignmentSpecification{},
 		},
 	)
@@ -82,6 +80,27 @@ func GenerateDeleteProjectOptions(projectID string) *project.DeleteProjectParams
 	return params
 }
 
+// GenerateDeleteProjectOptions test
+func GenerateUpdateProjectOptions(projectID string, p *v1alpha1.ProjectParameters) *project.UpdateProjectParams {
+	var params = project.NewUpdateProjectParams().WithID(
+		projectID,
+	).WithBody(&models.IaaSProjectSpecification{
+		Administrators:               *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
+		Constraints:                  map[string][]models.Constraint{},
+		CustomProperties:             map[string]string{},
+		Description:                  p.Description,
+		MachineNamingTemplate:        p.MachineNamingTemplate,
+		Members:                      *(*[]*models.User)(unsafe.Pointer(&p.Members)),
+		Name:                         p.Name,
+		OperationTimeout:             p.OperationTimeout,
+		PlacementPolicy:              p.PlacementPolicy,
+		SharedResources:              p.SharedResources,
+		Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
+		ZoneAssignmentConfigurations: []*models.ZoneAssignmentSpecification{},
+	})
+	return params
+}
+
 // GenerateProjectObservation is used to produce v1alpha1.ProjectObservation
 func GenerateProjectObservation(project *project.GetProjectOK) v1alpha1.ProjectObservation { // nolint:gocyclo
 	if project.Payload == nil {
@@ -89,9 +108,41 @@ func GenerateProjectObservation(project *project.GetProjectOK) v1alpha1.ProjectO
 	}
 
 	o := v1alpha1.ProjectObservation{
-		Name:      &project.Payload.Name,
-		ProjectID: project.Payload.ID,
+		Name:                  &project.Payload.Name,
+		ID:                    *project.Payload.ID,
+		Administrators:        *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Administrators)),
+		Members:               *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Members)),
+		Viewers:               *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Viewers)),
+		PlacementPolicy:       project.Payload.PlacementPolicy,
+		SharedResources:       project.Payload.SharedResources,
+		OperationTimeout:      &project.Payload.OperationTimeout,
+		MachineNamingTemplate: project.Payload.MachineNamingTemplate,
+		Description:           project.Payload.Description,
 	}
 
 	return o
+}
+
+func IsResourceUpToDate(desired *v1alpha1.ProjectParameters, current *models.IaaSProject) bool {
+	// DisableApiTermination
+
+	for i := 0; i < len(current.Administrators); i++ {
+		if *current.Administrators[i].Email != *desired.Administrators[i].Email || current.Administrators[i].Type != desired.Administrators[i].Type {
+			// any admin has changed
+			return false
+		}
+	}
+	for i := 0; i < len(current.Members); i++ {
+		if *current.Members[i].Email != *desired.Members[i].Email || current.Members[i].Type != desired.Members[i].Type {
+			// any member has changed
+			return false
+		}
+	}
+	for i := 0; i < len(current.Viewers); i++ {
+		if *current.Viewers[i].Email != *desired.Viewers[i].Email || current.Viewers[i].Type != desired.Viewers[i].Type {
+			// any viewer has changed
+			return false
+		}
+	}
+	return true
 }

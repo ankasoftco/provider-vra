@@ -92,9 +92,42 @@ func (in *ProjectObservation) DeepCopyInto(out *ProjectObservation) {
 		*out = new(string)
 		**out = **in
 	}
-	if in.ProjectID != nil {
-		in, out := &in.ProjectID, &out.ProjectID
-		*out = new(string)
+	if in.Administrators != nil {
+		in, out := &in.Administrators, &out.Administrators
+		*out = make([]*User, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(User)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
+	if in.Viewers != nil {
+		in, out := &in.Viewers, &out.Viewers
+		*out = make([]*User, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(User)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
+	if in.Members != nil {
+		in, out := &in.Members, &out.Members
+		*out = make([]*User, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(User)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
+	if in.OperationTimeout != nil {
+		in, out := &in.OperationTimeout, &out.OperationTimeout
+		*out = new(int64)
 		**out = **in
 	}
 }

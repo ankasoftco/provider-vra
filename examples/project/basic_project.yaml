@@ -6,7 +6,7 @@ spec:
   forProvider:
     name: vra-test-project-crossplane-001
     administrators:
-      - email: umitdemirtas@vmware.com
+      - email: udemirtas@vmware.com
         type: user
     members:
       - email: iyilmaz@vmware.com

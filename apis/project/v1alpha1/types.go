@@ -39,21 +39,21 @@ type ProjectParameters struct {
 	SharedResources       bool    `json:"sharedResources,omitempty"`
 	Viewers               []*User `json:"viewers"`
 	Members               []*User `json:"members"`
-	/* Constraints                  []*struct{}          `json:"constraints,omitempty"`
-	CustomProperties             map[string]*struct{} `json:"customProperties,omitempty"`
-	Members                      []*struct{}          `json:"members"`
-	Viewers                      []*struct{}          `json:"viewers"`
-	ZoneAssignmentConfigurations []*struct{}          `json:"zoneAssignmentConfigurations"` */
 }
 
 // ProjectObservation are the observable fields of a Project.
 type ProjectObservation struct {
-	Name      *string `json:"name"`
-	ProjectID *string `json:"id"`
-	/* Administrators []*struct{}            `json:"administrators"`
-	Viewers        []*struct{}            `json:"viewers"`
-	Constraints    map[string][]*struct{} `json:"constraints,omitempty"`
-	Members        []*struct{}            `json:"members"` */
+	Name            *string `json:"name"`
+	ID              string  `json:"id"`
+	Administrators  []*User `json:"administrators"`
+	Viewers         []*User `json:"viewers"`
+	Members         []*User `json:"members"`
+	PlacementPolicy string  `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
+	//Constraints    map[string][]*struct{} `json:"constraints,omitempty"`
+	SharedResources       bool   `json:"sharedResources,omitempty"`
+	OperationTimeout      *int64 `json:"operationTimeout,omitempty"`
+	MachineNamingTemplate string `json:"machineNamingTemplate,omitempty"`
+	Description           string `json:"description,omitempty"`
 }
 
 // A ProjectSpec defines the desired state of a Project.

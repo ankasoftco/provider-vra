@@ -233,13 +233,73 @@ spec:
               atProvider:
                 description: ProjectObservation are the observable fields of a Project.
                 properties:
+                  administrators:
+                    items:
+                      properties:
+                        email:
+                          description: 'The email of the user or name of the group.
+                            Example: administrator@vmware.com Required: true'
+                          type: string
+                        type:
+                          description: 'Type of the principal. Currently supported
+                            ''user'' (default) and ''group''. Example: user'
+                          type: string
+                      required:
+                      - email
+                      type: object
+                    type: array
+                  description:
+                    type: string
                   id:
                     type: string
+                  machineNamingTemplate:
+                    type: string
+                  members:
+                    items:
+                      properties:
+                        email:
+                          description: 'The email of the user or name of the group.
+                            Example: administrator@vmware.com Required: true'
+                          type: string
+                        type:
+                          description: 'Type of the principal. Currently supported
+                            ''user'' (default) and ''group''. Example: user'
+                          type: string
+                      required:
+                      - email
+                      type: object
+                    type: array
                   name:
                     type: string
+                  operationTimeout:
+                    format: int64
+                    type: integer
+                  placementPolicy:
+                    type: string
+                  sharedResources:
+                    description: Constraints    map[string][]*struct{} `json:"constraints,omitempty"`
+                    type: boolean
+                  viewers:
+                    items:
+                      properties:
+                        email:
+                          description: 'The email of the user or name of the group.
+                            Example: administrator@vmware.com Required: true'
+                          type: string
+                        type:
+                          description: 'Type of the principal. Currently supported
+                            ''user'' (default) and ''group''. Example: user'
+                          type: string
+                      required:
+                      - email
+                      type: object
+                    type: array
                 required:
+                - administrators
                 - id
+                - members
                 - name
+                - viewers
                 type: object
               conditions:
                 description: Conditions of the resource.

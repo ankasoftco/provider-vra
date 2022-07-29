@@ -101,3 +101,62 @@ func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed
 		return nil, errors.Errorf("credentials source %s is not currently supported", s)
 	}
 }
+
+type FieldOption int
+
+// Field options.
+const (
+	// FieldRequired causes zero values to be converted to a pointer to the zero
+	// value, rather than a nil pointer. AWS Go SDK types use pointer fields,
+	// with a nil pointer indicating an unset field. Our ToPtr functions return
+	// a nil pointer for a zero values, unless FieldRequired is set.
+	FieldRequired FieldOption = iota
+)
+
+// String converts the supplied string for use with the AWS Go SDK.
+func String(v string, o ...FieldOption) *string {
+	for _, fo := range o {
+		if fo == FieldRequired && v == "" {
+			return &v
+		}
+	}
+
+	if v == "" {
+		return nil
+	}
+
+	return &v
+}
+
+// StringValue converts the supplied string pointer to a string, returning the
+// empty string if the pointer is nil.
+// TODO(muvaf): is this really meaningful? why not implement it?
+func StringValue(v *string) string {
+	return *v
+}
+
+// StringSliceToPtr converts the supplied string array to an array of string pointers.
+func StringSliceToPtr(slice []string) []*string {
+	if slice == nil {
+		return nil
+	}
+
+	res := make([]*string, len(slice))
+	for i, s := range slice {
+		res[i] = String(s)
+	}
+	return res
+}
+
+// StringPtrSliceToValue converts the supplied string pointer array to an array of strings.
+func StringPtrSliceToValue(slice []*string) []string {
+	if slice == nil {
+		return nil
+	}
+
+	res := make([]string, len(slice))
+	for i, s := range slice {
+		res[i] = StringValue(s)
+	}
+	return res
+}
