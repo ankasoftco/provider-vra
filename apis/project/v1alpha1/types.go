@@ -13,6 +13,7 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
+// User struct
 type User struct {
 
 	// The email of the user or name of the group.
@@ -25,6 +26,7 @@ type User struct {
 	Type string `json:"type,omitempty"`
 }
 
+// ZoneAssignmentSpecification struct
 type ZoneAssignmentSpecification struct {
 
 	// The maximum amount of cpus that can be used by this cloud zone. Default is 0 (unlimited cpu).
@@ -52,6 +54,7 @@ type ZoneAssignmentSpecification struct {
 	ZoneID string `json:"zoneId,omitempty"`
 }
 
+// Constraint struct
 type Constraint struct {
 
 	// An expression of the form "[!]tag-key[:[tag-value]]", used to indicate a constraint match on keys and values of tags.
@@ -73,11 +76,13 @@ type ProjectParameters struct {
 	Name *string `json:"name"`
 
 	// They are not required. TODO: check required tag
-	Administrators               []*User                        `json:"administrators"`
-	Viewers                      []*User                        `json:"viewers"`
-	Members                      []*User                        `json:"members"`
-	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
-	PlacementPolicy              string                         `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
+	Administrators        []*User `json:"administrators"`
+	Viewers               []*User `json:"viewers"`
+	Members               []*User `json:"members"`
+	MachineNamingTemplate string  `json:"machineNamingTemplate,omitempty"`
+
+	// Placement Policy, POssible Values: DEFAULT, SPREAD, SPREAD BY MEMORY
+	PlacementPolicy              string                         `json:"placementPolicy,omitempty"`
 	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
 	Description                  string                         `json:"description,omitempty"`
 	SharedResources              bool                           `json:"sharedResources,omitempty"`
@@ -94,7 +99,7 @@ type ProjectObservation struct {
 	Viewers                      []*User                        `json:"viewers"`
 	Members                      []*User                        `json:"members"`
 	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
-	PlacementPolicy              string                         `json:"placementPolicy,omitempty"` //DEFAULT, SPREAD, SPREAD BY MEMORY
+	PlacementPolicy              string                         `json:"placementPolicy,omitempty"`
 	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
 	Description                  string                         `json:"description,omitempty"`
 	SharedResources              bool                           `json:"sharedResources,omitempty"`

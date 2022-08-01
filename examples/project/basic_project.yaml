@@ -9,7 +9,7 @@ spec:
       - email: udemirtas@vmware.com
         type: user
     members:
-      - email: yilmazi@vmware.com
+      - email: iyilmaz@vmware.com
         type: user
     viewers:
       - email: test@test.com
@@ -18,6 +18,13 @@ spec:
     description: description
     sharedResources: false
     operationTimeout: 300
-    machineNamingTemplate: machinenaming
+    machineNamingTemplate: machineNamingTemplate
   providerConfigRef:
     name: default
+
+ #constraints:
+ #     test1: 
+ #       - expression: expression1
+ #         mandatory: false
+ #       - expression: expression2
+ #         mandatory: false    

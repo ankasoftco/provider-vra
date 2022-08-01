@@ -48,14 +48,12 @@ func GenerateGetProjectOptions(projectID string) *project.GetProjectParams {
 
 // GenerateCreateProjectOptions generates project creation options
 func GenerateCreateProjectOptions(p *v1alpha1.ProjectParameters) *project.CreateProjectParams {
-	//viewers:= ([]*models.User) (p.Viewers)
-	//[]*models.User{(*models.User) (p.Administrators)}
 
 	var params = project.NewCreateProjectParams().WithBody(
 		&models.IaaSProjectSpecification{
 			Administrators:               *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
-			Constraints:                  map[string][]models.Constraint{},
-			CustomProperties:             map[string]string{},
+			Constraints:                  *(*map[string][]models.Constraint)(unsafe.Pointer(&p.Constraints)),
+			CustomProperties:             p.CustomProperties,
 			Description:                  p.Description,
 			MachineNamingTemplate:        p.MachineNamingTemplate,
 			Members:                      *(*[]*models.User)(unsafe.Pointer(&p.Members)),
@@ -64,7 +62,7 @@ func GenerateCreateProjectOptions(p *v1alpha1.ProjectParameters) *project.Create
 			PlacementPolicy:              p.PlacementPolicy,
 			SharedResources:              p.SharedResources,
 			Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
-			ZoneAssignmentConfigurations: []*models.ZoneAssignmentSpecification{},
+			ZoneAssignmentConfigurations: *(*[]*models.ZoneAssignmentSpecification)(unsafe.Pointer(&p.ZoneAssignmentConfigurations)),
 		},
 	)
 
@@ -79,14 +77,15 @@ func GenerateDeleteProjectOptions(projectID string) *project.DeleteProjectParams
 	return params
 }
 
-// GenerateDeleteProjectOptions test
+// GenerateUpdateProjectOptions test
 func GenerateUpdateProjectOptions(projectID string, p *v1alpha1.ProjectParameters) *project.UpdateProjectParams {
+	fmt.Println("UPDATE CALISTIIIII....", p.SharedResources)
 	var params = project.NewUpdateProjectParams().WithID(
 		projectID,
 	).WithBody(&models.IaaSProjectSpecification{
 		Administrators:               *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
-		Constraints:                  map[string][]models.Constraint{},
-		CustomProperties:             map[string]string{},
+		Constraints:                  *(*map[string][]models.Constraint)(unsafe.Pointer(&p.Constraints)),
+		CustomProperties:             p.CustomProperties,
 		Description:                  p.Description,
 		MachineNamingTemplate:        p.MachineNamingTemplate,
 		Members:                      *(*[]*models.User)(unsafe.Pointer(&p.Members)),
@@ -95,7 +94,7 @@ func GenerateUpdateProjectOptions(projectID string, p *v1alpha1.ProjectParameter
 		PlacementPolicy:              p.PlacementPolicy,
 		SharedResources:              p.SharedResources,
 		Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
-		ZoneAssignmentConfigurations: []*models.ZoneAssignmentSpecification{},
+		ZoneAssignmentConfigurations: *(*[]*models.ZoneAssignmentSpecification)(unsafe.Pointer(&p.ZoneAssignmentConfigurations)),
 	})
 	return params
 }
@@ -107,52 +106,126 @@ func GenerateProjectObservation(project *project.GetProjectOK) v1alpha1.ProjectO
 	}
 
 	o := v1alpha1.ProjectObservation{
-		Name:                  &project.Payload.Name,
-		ID:                    *project.Payload.ID,
-		Administrators:        *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Administrators)),
-		Members:               *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Members)),
-		Viewers:               *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Viewers)),
-		PlacementPolicy:       project.Payload.PlacementPolicy,
-		SharedResources:       project.Payload.SharedResources,
-		OperationTimeout:      &project.Payload.OperationTimeout,
-		MachineNamingTemplate: project.Payload.MachineNamingTemplate,
-		Description:           project.Payload.Description,
+		Name:                         &project.Payload.Name,
+		ID:                           *project.Payload.ID,
+		Administrators:               *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Administrators)),
+		Members:                      *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Members)),
+		Viewers:                      *(*[]*v1alpha1.User)(unsafe.Pointer(&project.Payload.Viewers)),
+		PlacementPolicy:              project.Payload.PlacementPolicy,
+		SharedResources:              project.Payload.SharedResources,
+		OperationTimeout:             &project.Payload.OperationTimeout,
+		MachineNamingTemplate:        project.Payload.MachineNamingTemplate,
+		Description:                  project.Payload.Description,
+		ZoneAssignmentConfigurations: *(*[]*v1alpha1.ZoneAssignmentSpecification)(unsafe.Pointer(&project.Payload.Zones)),
+		Constraints:                  *(*map[string][]v1alpha1.Constraint)(unsafe.Pointer(&project.Payload.Constraints)),
+		CustomProperties:             project.Payload.CustomProperties,
 	}
 
 	return o
 }
 
 func IsResourceUpToDate(desired *v1alpha1.ProjectParameters, current *models.IaaSProject) bool {
-	// DisableApiTermination
 
-	// check admins, members, viewers
-	if len(current.Administrators) != len(desired.Administrators) || len(current.Members) != len(desired.Members) ||
-		len(current.Viewers) != len(desired.Viewers) || current.Name != *desired.Name || current.Description != desired.Description ||
+	if current.Name != *desired.Name || current.Description != desired.Description ||
 		current.PlacementPolicy != desired.PlacementPolicy || current.MachineNamingTemplate != desired.MachineNamingTemplate ||
-		current.SharedResources != desired.SharedResources || current.OperationTimeout != *desired.OperationTimeout {
+		current.OperationTimeout != *desired.OperationTimeout {
+		/* fmt.Println("OTHERS FARKLI")
+		fmt.Println(current.Name, *desired.Name)
+		fmt.Println(current.Description, desired.Description)
+		fmt.Println(current.PlacementPolicy, desired.PlacementPolicy)
+		fmt.Println(current.MachineNamingTemplate, desired.MachineNamingTemplate)
+		fmt.Println(current.OperationTimeout, *desired.OperationTimeout) */
+		return false
+	}
+	if !CompareUsers(current.Administrators, desired.Administrators) {
+		fmt.Println("Administrators FARKLI")
+		return false
+	}
+	if !CompareUsers(current.Members, desired.Members) {
+		fmt.Println("Members FARKLI")
+		return false
+	}
+	if !CompareUsers(current.Viewers, desired.Viewers) {
+		fmt.Println("Viewers FARKLI")
+		return false
+	}
+	if !CompareZones(current.Zones, desired.ZoneAssignmentConfigurations) {
+		fmt.Println("Zones FARKLI")
+		return false
+	}
+	if !CompareCustomProperties(current.CustomProperties, desired.CustomProperties) {
+		fmt.Println("CUSTOMPROPERTIES FARKLI")
+		fmt.Println("CURRENT:", current.CustomProperties)
+		fmt.Println("DESIRED:", desired.CustomProperties)
+		return false
+	}
+	if !CompareConstraints(current.Constraints, desired.Constraints) {
+		fmt.Println("Constraints FARKLI")
+		fmt.Println("CURRENT:", current.Constraints)
+		fmt.Println("DESIRED:", desired.Constraints)
 		return false
 	}
 
-	for i := 0; i < len(current.Administrators); i++ {
+	return true
+}
 
-		if *current.Administrators[i].Email != *desired.Administrators[i].Email || current.Administrators[i].Type != desired.Administrators[i].Type {
-			// any admin has changed
+func CompareConstraints(c1 map[string][]models.Constraint, c2 map[string][]v1alpha1.Constraint) bool {
+	if len(c1) != len(c2) {
+		return false
+	}
+	for k, v := range c1 {
+		if len(v) != len(c2[k]) {
+			return false
+		}
+		for i := 0; i < len(v); i++ {
+			if v[i].Expression != c2[k][i].Expression || v[i].Mandatory != c2[k][i].Mandatory {
+				return false
+			}
+		}
+	}
+	return true
+
+}
+
+func CompareCustomProperties(c1, c2 map[string]string) bool {
+	if len(c1) != len(c2) {
+		return false
+	}
+	for k, v := range c1 {
+		if v != c2[k] {
 			return false
 		}
 	}
-	for i := 0; i < len(current.Members); i++ {
+	return true
 
-		if *current.Members[i].Email != *desired.Members[i].Email || current.Members[i].Type != desired.Members[i].Type {
-			// any member has changed
+}
+
+// CompareUsers Comparition of the users to catch differences if exist. (current, desired)
+func CompareUsers(users []*models.User, v1alpha1Users []*v1alpha1.User) bool {
+	if len(users) != len(v1alpha1Users) {
+		return false
+	}
+	for i := 0; i < len(users); i++ {
+		if *users[i].Email != *v1alpha1Users[i].Email || users[i].Type != v1alpha1Users[i].Type {
 			return false
 		}
 	}
-	for i := 0; i < len(current.Viewers); i++ {
-		if *current.Viewers[i].Email != *desired.Viewers[i].Email || current.Viewers[i].Type != desired.Viewers[i].Type {
-			// any viewer has changed
+	return true
+}
+
+// CompareZones Comparition of the zones to catch differences if exist. (current, desired)
+func CompareZones(zones []*models.ZoneAssignment, v1aplha1Zones []*v1alpha1.ZoneAssignmentSpecification) bool {
+
+	if len(zones) != len(v1aplha1Zones) {
+		return false
+	}
+
+	for i, v := range zones {
+		if v.CPULimit != v1aplha1Zones[i].CPULimit || v.MaxNumberInstances != v1aplha1Zones[i].MaxNumberInstances ||
+			v.MemoryLimitMB != v1aplha1Zones[i].MemoryLimitMB || v.Priority != v1aplha1Zones[i].Priority ||
+			v.StorageLimitGB != v1aplha1Zones[i].StorageLimitGB || v.ZoneID != v1aplha1Zones[i].ZoneID {
 			return false
 		}
 	}
-
 	return true
 }

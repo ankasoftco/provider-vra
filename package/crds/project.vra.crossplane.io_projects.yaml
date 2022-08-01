@@ -65,7 +65,9 @@ spec:
                 description: ProjectParameters are the configurable fields of a Project.
                 properties:
                   administrators:
+                    description: 'They are not required. TODO: check required tag'
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -79,12 +81,37 @@ spec:
                       - email
                       type: object
                     type: array
+                  constraints:
+                    additionalProperties:
+                      items:
+                        description: Constraint struct
+                        properties:
+                          expression:
+                            description: "An expression of the form \"[!]tag-key[:[tag-value]]\",
+                              used to indicate a constraint match on keys and values
+                              of tags. \n Example: ha:strong Required: true"
+                            type: string
+                          mandatory:
+                            description: 'Indicates whether this constraint should
+                              be strictly enforced or not. Required: true'
+                            type: boolean
+                        required:
+                        - expression
+                        - mandatory
+                        type: object
+                      type: array
+                    type: object
+                  customProperties:
+                    additionalProperties:
+                      type: string
+                    type: object
                   description:
                     type: string
                   machineNamingTemplate:
                     type: string
                   members:
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -100,18 +127,20 @@ spec:
                     type: array
                   name:
                     description: 'A human-friendly name used as an identifier in APIs
-                      that support this option. Required: true - TODO: check required
-                      tag'
+                      that support this option. Required: true'
                     type: string
                   operationTimeout:
                     format: int64
                     type: integer
                   placementPolicy:
+                    description: 'Placement Policy, POssible Values: DEFAULT, SPREAD,
+                      SPREAD BY MEMORY'
                     type: string
                   sharedResources:
                     type: boolean
                   viewers:
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -125,11 +154,53 @@ spec:
                       - email
                       type: object
                     type: array
+                  zoneAssignmentConfigurations:
+                    items:
+                      description: ZoneAssignmentSpecification struct
+                      properties:
+                        cpuLimit:
+                          description: 'The maximum amount of cpus that can be used
+                            by this cloud zone. Default is 0 (unlimited cpu). Example:
+                            2048'
+                          format: int64
+                          type: integer
+                        maxNumberInstances:
+                          description: 'The maximum number of instances that can be
+                            provisioned in this cloud zone. Default is 0 (unlimited
+                            instances). Example: 50'
+                          format: int64
+                          type: integer
+                        memoryLimitMB:
+                          description: 'The maximum amount of memory that can be used
+                            by this cloud zone. Default is 0 (unlimited memory). Example:
+                            2048'
+                          format: int64
+                          type: integer
+                        priority:
+                          description: 'The priority of this zone in the current project.
+                            Lower numbers mean higher priority. Default is 0 (highest)
+                            Example: 1'
+                          format: int32
+                          type: integer
+                        storageLimitGB:
+                          description: 'Defines an upper limit on storage that can
+                            be requested from a cloud zone which is part of this project.
+                            Default is 0 (unlimited storage). Please note that this
+                            feature is supported only for vSphere cloud zones. Not
+                            valid for other cloud zone types. Example: 20'
+                          format: int64
+                          type: integer
+                        zoneId:
+                          description: 'The Cloud Zone Id Example: 77ee1'
+                          type: string
+                      type: object
+                    type: array
                 required:
                 - administrators
                 - members
                 - name
                 - viewers
+                - zoneAssignmentConfigurations
                 type: object
               providerConfigRef:
                 default:
@@ -235,6 +306,7 @@ spec:
                 properties:
                   administrators:
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -248,6 +320,30 @@ spec:
                       - email
                       type: object
                     type: array
+                  constraints:
+                    additionalProperties:
+                      items:
+                        description: Constraint struct
+                        properties:
+                          expression:
+                            description: "An expression of the form \"[!]tag-key[:[tag-value]]\",
+                              used to indicate a constraint match on keys and values
+                              of tags. \n Example: ha:strong Required: true"
+                            type: string
+                          mandatory:
+                            description: 'Indicates whether this constraint should
+                              be strictly enforced or not. Required: true'
+                            type: boolean
+                        required:
+                        - expression
+                        - mandatory
+                        type: object
+                      type: array
+                    type: object
+                  customProperties:
+                    additionalProperties:
+                      type: string
+                    type: object
                   description:
                     type: string
                   id:
@@ -256,6 +352,7 @@ spec:
                     type: string
                   members:
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -277,10 +374,10 @@ spec:
                   placementPolicy:
                     type: string
                   sharedResources:
-                    description: Constraints    map[string][]*struct{} `json:"constraints,omitempty"`
                     type: boolean
                   viewers:
                     items:
+                      description: User struct
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -294,12 +391,54 @@ spec:
                       - email
                       type: object
                     type: array
+                  zoneAssignmentConfigurations:
+                    items:
+                      description: ZoneAssignmentSpecification struct
+                      properties:
+                        cpuLimit:
+                          description: 'The maximum amount of cpus that can be used
+                            by this cloud zone. Default is 0 (unlimited cpu). Example:
+                            2048'
+                          format: int64
+                          type: integer
+                        maxNumberInstances:
+                          description: 'The maximum number of instances that can be
+                            provisioned in this cloud zone. Default is 0 (unlimited
+                            instances). Example: 50'
+                          format: int64
+                          type: integer
+                        memoryLimitMB:
+                          description: 'The maximum amount of memory that can be used
+                            by this cloud zone. Default is 0 (unlimited memory). Example:
+                            2048'
+                          format: int64
+                          type: integer
+                        priority:
+                          description: 'The priority of this zone in the current project.
+                            Lower numbers mean higher priority. Default is 0 (highest)
+                            Example: 1'
+                          format: int32
+                          type: integer
+                        storageLimitGB:
+                          description: 'Defines an upper limit on storage that can
+                            be requested from a cloud zone which is part of this project.
+                            Default is 0 (unlimited storage). Please note that this
+                            feature is supported only for vSphere cloud zones. Not
+                            valid for other cloud zone types. Example: 20'
+                          format: int64
+                          type: integer
+                        zoneId:
+                          description: 'The Cloud Zone Id Example: 77ee1'
+                          type: string
+                      type: object
+                    type: array
                 required:
                 - administrators
                 - id
                 - members
                 - name
                 - viewers
+                - zoneAssignmentConfigurations
                 type: object
               conditions:
                 description: Conditions of the resource.
