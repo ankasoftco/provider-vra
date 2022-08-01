@@ -75,29 +75,10 @@ type ProjectParameters struct {
 	// +immutable
 	Name *string `json:"name"`
 
-	// They are not required. TODO: check required tag
-	Administrators        []*User `json:"administrators"`
-	Viewers               []*User `json:"viewers"`
-	Members               []*User `json:"members"`
-	MachineNamingTemplate string  `json:"machineNamingTemplate,omitempty"`
-
-	// Placement Policy, POssible Values: DEFAULT, SPREAD, SPREAD BY MEMORY
-	PlacementPolicy              string                         `json:"placementPolicy,omitempty"`
-	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
-	Description                  string                         `json:"description,omitempty"`
-	SharedResources              bool                           `json:"sharedResources,omitempty"`
-	Constraints                  map[string][]Constraint        `json:"constraints,omitempty"`
-	CustomProperties             map[string]string              `json:"customProperties,omitempty"`
-	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations"`
-}
-
-// ProjectObservation are the observable fields of a Project.
-type ProjectObservation struct {
-	Name                         *string                        `json:"name"`
-	ID                           string                         `json:"id"`
-	Administrators               []*User                        `json:"administrators"`
-	Viewers                      []*User                        `json:"viewers"`
-	Members                      []*User                        `json:"members"`
+	// They are not required.
+	Administrators               []*User                        `json:"administrators,omitempty"`
+	Viewers                      []*User                        `json:"viewers,omitempty"`
+	Members                      []*User                        `json:"members,omitempty"`
 	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
 	PlacementPolicy              string                         `json:"placementPolicy,omitempty"`
 	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
@@ -105,7 +86,24 @@ type ProjectObservation struct {
 	SharedResources              bool                           `json:"sharedResources,omitempty"`
 	Constraints                  map[string][]Constraint        `json:"constraints,omitempty"`
 	CustomProperties             map[string]string              `json:"customProperties,omitempty"`
-	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations"`
+	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations,omitempty"`
+}
+
+// ProjectObservation are the observable fields of a Project.
+type ProjectObservation struct {
+	Name                         *string                        `json:"name,omitempty"`
+	ID                           string                         `json:"id"`
+	Administrators               []*User                        `json:"administrators,omitempty"`
+	Viewers                      []*User                        `json:"viewers,omitempty"`
+	Members                      []*User                        `json:"members,omitempty"`
+	MachineNamingTemplate        string                         `json:"machineNamingTemplate,omitempty"`
+	PlacementPolicy              string                         `json:"placementPolicy,omitempty"`
+	OperationTimeout             *int64                         `json:"operationTimeout,omitempty"`
+	Description                  string                         `json:"description,omitempty"`
+	SharedResources              bool                           `json:"sharedResources,omitempty"`
+	Constraints                  map[string][]Constraint        `json:"constraints,omitempty"`
+	CustomProperties             map[string]string              `json:"customProperties,omitempty"`
+	ZoneAssignmentConfigurations []*ZoneAssignmentSpecification `json:"zoneAssignmentConfigurations,omitempty"`
 }
 
 // A ProjectSpec defines the desired state of a Project.

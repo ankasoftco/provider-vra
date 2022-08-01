@@ -133,8 +133,6 @@ spec:
                     format: int64
                     type: integer
                   placementPolicy:
-                    description: 'Placement Policy, POssible Values: DEFAULT, SPREAD,
-                      SPREAD BY MEMORY'
                     type: string
                   sharedResources:
                     type: boolean
@@ -196,11 +194,7 @@ spec:
                       type: object
                     type: array
                 required:
-                - administrators
-                - members
                 - name
-                - viewers
-                - zoneAssignmentConfigurations
                 type: object
               providerConfigRef:
                 default:
@@ -433,12 +427,7 @@ spec:
                       type: object
                     type: array
                 required:
-                - administrators
                 - id
-                - members
-                - name
-                - viewers
-                - zoneAssignmentConfigurations
                 type: object
               conditions:
                 description: Conditions of the resource.

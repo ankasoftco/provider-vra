@@ -129,40 +129,24 @@ func IsResourceUpToDate(desired *v1alpha1.ProjectParameters, current *models.Iaa
 	if current.Name != *desired.Name || current.Description != desired.Description ||
 		current.PlacementPolicy != desired.PlacementPolicy || current.MachineNamingTemplate != desired.MachineNamingTemplate ||
 		current.OperationTimeout != *desired.OperationTimeout {
-		/* fmt.Println("OTHERS FARKLI")
-		fmt.Println(current.Name, *desired.Name)
-		fmt.Println(current.Description, desired.Description)
-		fmt.Println(current.PlacementPolicy, desired.PlacementPolicy)
-		fmt.Println(current.MachineNamingTemplate, desired.MachineNamingTemplate)
-		fmt.Println(current.OperationTimeout, *desired.OperationTimeout) */
 		return false
 	}
 	if !CompareUsers(current.Administrators, desired.Administrators) {
-		fmt.Println("Administrators FARKLI")
 		return false
 	}
 	if !CompareUsers(current.Members, desired.Members) {
-		fmt.Println("Members FARKLI")
 		return false
 	}
 	if !CompareUsers(current.Viewers, desired.Viewers) {
-		fmt.Println("Viewers FARKLI")
 		return false
 	}
 	if !CompareZones(current.Zones, desired.ZoneAssignmentConfigurations) {
-		fmt.Println("Zones FARKLI")
 		return false
 	}
 	if !CompareCustomProperties(current.CustomProperties, desired.CustomProperties) {
-		fmt.Println("CUSTOMPROPERTIES FARKLI")
-		fmt.Println("CURRENT:", current.CustomProperties)
-		fmt.Println("DESIRED:", desired.CustomProperties)
 		return false
 	}
 	if !CompareConstraints(current.Constraints, desired.Constraints) {
-		fmt.Println("Constraints FARKLI")
-		fmt.Println("CURRENT:", current.Constraints)
-		fmt.Println("DESIRED:", desired.Constraints)
 		return false
 	}
 
@@ -178,7 +162,8 @@ func CompareConstraints(c1 map[string][]models.Constraint, c2 map[string][]v1alp
 			return false
 		}
 		for i := 0; i < len(v); i++ {
-			if v[i].Expression != c2[k][i].Expression || v[i].Mandatory != c2[k][i].Mandatory {
+			if *v[i].Expression != *c2[k][i].Expression || *v[i].Mandatory != *c2[k][i].Mandatory {
+				fmt.Println("EXPRESSION FARKLIYDI:", *v[i].Expression, *c2[k][i].Expression)
 				return false
 			}
 		}
