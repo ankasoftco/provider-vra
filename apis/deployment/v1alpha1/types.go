@@ -20,32 +20,32 @@ type DeploymentParameters struct {
 	// Deployment request count; defaults to 1 if not specified.
 	// Maximum: 127
 	// Minimum: -128
-	// +immutable
+	// +optional
 	BulkRequestCount *int32 `json:"bulkRequestCount,omitempty"`
 
 	// Name of the requested deployment
-	// +immutable
+	// +optional
 	DeploymentName string `json:"deploymentName,omitempty"`
 
 	// Input parameters for the request. These must be compliant with the schema of the corresponding catalog item
 	// +immutable
-	Inputs map[string]string `json:"inputs,omitempty"` // interface{} `json:"inputs,omitempty"`
+	Inputs map[string]string `json:"inputs"` // interface{} `json:"inputs,omitempty"`
 
 	// Project to be used for the request
 	// +immutable
-	ProjectID string `json:"projectId,omitempty"`
+	ProjectID string `json:"projectId"`
 
 	// Reason for request
-	// +immutable
+	// +optional
 	Reason string `json:"reason,omitempty"`
 
 	// Version of the catalog item. e.g. v2.0
-	// +immutable
+	// +optional
 	Version string `json:"version,omitempty"`
 
 	// CatalogItemID Catalog item ID
 	// +immutable
-	CatalogItemID strfmt.UUID `json:"catalogItemId,omitempty"`
+	CatalogItemID strfmt.UUID `json:"catalogItemId"`
 }
 
 // DeploymentObservation are the observable fields of a Deployment.
@@ -69,7 +69,7 @@ type DeploymentStatus struct {
 
 // +kubebuilder:object:root=true
 
-// A Deployment is an example API type.
+// A Deployment is a vRA Deployment API type.
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"

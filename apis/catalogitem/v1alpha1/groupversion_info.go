@@ -2,7 +2,7 @@
 Copyright 2022 The ANKA SOFTWARE Authors.
 */
 
-// Package v1alpha1 contains the v1alpha1 group a CatalogItem resources of the vRA provider.
+// Package v1alpha1 contains the v1alpha1 group vRA CatalogItem resources of the vRA provider.
 // +kubebuilder:object:generate=true
 // +groupName=catalogitem.vra.crossplane.io
 // +versionName=v1alpha1
