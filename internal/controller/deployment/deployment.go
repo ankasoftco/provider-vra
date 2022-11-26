@@ -140,7 +140,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	case "CREATE_INPROGRESS":
 		cr.Status.SetConditions(xpv1.Creating())
 	case "CREATE_FAILED":
-		return managed.ExternalObservation{}, nil
+		return managed.ExternalObservation{}, nil // TODO: ne yapilmasi lazim?
 	case "DELETE_SUCCESSFUL":
 		return managed.ExternalObservation{}, nil
 	case "DELETE_INPROGRESS":

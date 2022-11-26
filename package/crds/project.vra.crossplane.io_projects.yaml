@@ -65,9 +65,9 @@ spec:
                 description: ProjectParameters are the configurable fields of a Project.
                 properties:
                   administrators:
-                    description: 'They are not required. TODO: check required tag'
+                    description: They are not required.
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -84,7 +84,8 @@ spec:
                   constraints:
                     additionalProperties:
                       items:
-                        description: Constraint struct
+                        description: Constraint A constraint that is conveyed to the
+                          policy engine.
                         properties:
                           expression:
                             description: "An expression of the form \"[!]tag-key[:[tag-value]]\",
@@ -111,7 +112,7 @@ spec:
                     type: string
                   members:
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -138,7 +139,7 @@ spec:
                     type: boolean
                   viewers:
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -154,7 +155,7 @@ spec:
                     type: array
                   zoneAssignmentConfigurations:
                     items:
-                      description: ZoneAssignmentSpecification struct
+                      description: ZoneAssignmentSpecification A zone assignment configuration
                       properties:
                         cpuLimit:
                           description: 'The maximum amount of cpus that can be used
@@ -300,7 +301,7 @@ spec:
                 properties:
                   administrators:
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -317,7 +318,8 @@ spec:
                   constraints:
                     additionalProperties:
                       items:
-                        description: Constraint struct
+                        description: Constraint A constraint that is conveyed to the
+                          policy engine.
                         properties:
                           expression:
                             description: "An expression of the form \"[!]tag-key[:[tag-value]]\",
@@ -346,7 +348,7 @@ spec:
                     type: string
                   members:
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -371,7 +373,7 @@ spec:
                     type: boolean
                   viewers:
                     items:
-                      description: User struct
+                      description: User A representation of a user.
                       properties:
                         email:
                           description: 'The email of the user or name of the group.
@@ -387,7 +389,7 @@ spec:
                     type: array
                   zoneAssignmentConfigurations:
                     items:
-                      description: ZoneAssignmentSpecification struct
+                      description: ZoneAssignmentSpecification A zone assignment configuration
                       properties:
                         cpuLimit:
                           description: 'The maximum amount of cpus that can be used

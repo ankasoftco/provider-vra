@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A Deployment is an example API type.
+        description: A Deployment is a vRA Deployment API type.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -91,6 +91,10 @@ spec:
                   version:
                     description: Version of the catalog item. e.g. v2.0
                     type: string
+                required:
+                - catalogItemId
+                - inputs
+                - projectId
                 type: object
               providerConfigRef:
                 default:

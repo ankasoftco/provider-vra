@@ -13,7 +13,7 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-// User struct
+// User A representation of a user.
 type User struct {
 
 	// The email of the user or name of the group.
@@ -26,7 +26,21 @@ type User struct {
 	Type string `json:"type,omitempty"`
 }
 
-// ZoneAssignmentSpecification struct
+// Constraint A constraint that is conveyed to the policy engine.
+type Constraint struct {
+
+	// An expression of the form "[!]tag-key[:[tag-value]]", used to indicate a constraint match on keys and values of tags.
+	//
+	// Example: ha:strong
+	// Required: true
+	Expression *string `json:"expression"`
+
+	// Indicates whether this constraint should be strictly enforced or not.
+	// Required: true
+	Mandatory *bool `json:"mandatory"`
+}
+
+// ZoneAssignmentSpecification A zone assignment configuration
 type ZoneAssignmentSpecification struct {
 
 	// The maximum amount of cpus that can be used by this cloud zone. Default is 0 (unlimited cpu).
@@ -52,20 +66,6 @@ type ZoneAssignmentSpecification struct {
 	// The Cloud Zone Id
 	// Example: 77ee1
 	ZoneID string `json:"zoneId,omitempty"`
-}
-
-// Constraint struct
-type Constraint struct {
-
-	// An expression of the form "[!]tag-key[:[tag-value]]", used to indicate a constraint match on keys and values of tags.
-	//
-	// Example: ha:strong
-	// Required: true
-	Expression *string `json:"expression"`
-
-	// Indicates whether this constraint should be strictly enforced or not.
-	// Required: true
-	Mandatory *bool `json:"mandatory"`
 }
 
 // ProjectParameters are the configurable fields of a Project.

@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A CatalogItem is an example API type.
+        description: A CatalogItem is a vRA Catalog Item API type.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

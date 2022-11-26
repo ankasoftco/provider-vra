@@ -67,6 +67,8 @@ spec:
                   refreshToken:
                     description: Refresh token obtained from the UI
                     type: string
+                required:
+                - refreshToken
                 type: object
               providerConfigRef:
                 default:
