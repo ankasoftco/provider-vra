@@ -2,7 +2,7 @@
 # Setup Project
 
 PROJECT_NAME ?= upjet-provider-template
-PROJECT_REPO ?= github.com/upbound/$(PROJECT_NAME)
+PROJECT_REPO ?= github.com/ankasoftco/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.2.1
 
