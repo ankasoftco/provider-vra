@@ -4,7 +4,7 @@
 PROJECT_NAME ?= upjet-provider-vra
 PROJECT_REPO ?= github.com/ankasoftco/$(PROJECT_NAME)
 
-export TERRAFORM_VERSION ?= 1.2.1
+export TERRAFORM_VERSION ?= 1.5.5
 
 export TERRAFORM_PROVIDER_SOURCE ?= vmware/vra
 export TERRAFORM_PROVIDER_REPO ?= https://github.com/vmware/terraform-provider-vra
