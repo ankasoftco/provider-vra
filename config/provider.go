@@ -10,7 +10,7 @@ import (
 
 	ujconfig "github.com/upbound/upjet/pkg/config"
 
-	"github.com/ankasoftco/upjet-provider-template/config/project"
+	"github.com/ankasoftco/upjet-provider-vra/config/project"
 )
 
 const (
