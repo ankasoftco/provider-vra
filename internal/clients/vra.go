@@ -27,6 +27,14 @@ const (
 	errUnmarshalCredentials = "cannot unmarshal template credentials as JSON"
 )
 
+const (
+	keyURL          = "url"
+	keyRefreshToken = "refresh_token"
+
+	envURL          = "VRA_URL"
+	envRefreshToken = "VRA_REFRESH_TOKEN"
+)
+
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
 // returns Terraform provider setup configuration
 func TerraformSetupBuilder(version, providerSource, providerVersion string) terraform.SetupFn {
@@ -57,9 +65,25 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		if err != nil {
 			return ps, errors.Wrap(err, errExtractCredentials)
 		}
-		creds := map[string]string{}
-		if err := json.Unmarshal(data, &creds); err != nil {
+
+		// Configuration is a map of provider configuration values.
+		vraCreds := map[string]string{}
+		if err := json.Unmarshal(data, &vraCreds); err != nil {
 			return ps, errors.Wrap(err, errUnmarshalCredentials)
+		}
+
+		ps.Configuration = map[string]interface{}{}
+		if v, ok := vraCreds[keyURL]; ok {
+			ps.Configuration[keyURL] = v
+		}
+		if v, ok := vraCreds[keyRefreshToken]; ok {
+			ps.Configuration[keyRefreshToken] = v
+		}
+		
+		// Set credentials in Terraform provider environment.
+		ps.Env = []string{
+			fmt.Sprintf("%s=%s", envURL, vraCreds[keyURL]),
+			fmt.Sprintf("%s=%s", envRefreshToken, vraCreds[keyRefreshToken]),
 		}
 
 		// Set credentials in Terraform provider configuration.
