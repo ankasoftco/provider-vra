@@ -1,13 +1,13 @@
 apiVersion: blueprint.crossplane.io/v1alpha1
 kind: Version
 metadata:
-  name: test-blueprint-version-1
+  name: test-blueprint-version-3
 spec:
   forProvider:
     version: '1'
 
     blueprintIdRef:
-      name: 'test-blueprint-1'
+      name: 'test-blueprint-3'
 
   providerConfigRef:
     name: vra-test

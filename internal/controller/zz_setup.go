@@ -12,6 +12,7 @@ import (
 	blueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/blueprint"
 	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
+	compute "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/compute"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 )
@@ -23,6 +24,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		blueprint.Setup,
 		version.Setup,
 		deployment.Setup,
+		compute.Setup,
 		project.Setup,
 		providerconfig.Setup,
 	} {

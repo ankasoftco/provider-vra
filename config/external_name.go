@@ -14,6 +14,9 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_blueprint": config.IdentifierFromProvider,
 	"vra_blueprint_version": config.IdentifierFromProvider,
 	"vra_deployment": config.IdentifierFromProvider,
+	"vra_fabric_compute": config.IdentifierFromProvider,
+	"vra_datastore_vsphere": config.IdentifierFromProvider,
+	"vra_network_vsphere": config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

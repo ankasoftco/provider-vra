@@ -1,10 +1,10 @@
 apiVersion: project.crossplane.io/v1alpha1
 kind: Project
 metadata:
-  name: test-project-1
+  name: test-project-24
 spec:
   forProvider:
-    name: 'test-project-1'
+    name: 'test-project-24'
     description: 'test-project-1 - alpcan - caner'
 
   providerConfigRef:

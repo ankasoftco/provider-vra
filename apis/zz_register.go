@@ -12,6 +12,7 @@ import (
 
 	v1alpha1 "github.com/ankasoftco/upjet-provider-vra/apis/blueprint/v1alpha1"
 	v1alpha1deployment "github.com/ankasoftco/upjet-provider-vra/apis/deployment/v1alpha1"
+	v1alpha1fabric "github.com/ankasoftco/upjet-provider-vra/apis/fabric/v1alpha1"
 	v1alpha1project "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1"
 	v1alpha1apis "github.com/ankasoftco/upjet-provider-vra/apis/v1alpha1"
 	v1beta1 "github.com/ankasoftco/upjet-provider-vra/apis/v1beta1"
@@ -23,6 +24,7 @@ func init() {
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1deployment.SchemeBuilder.AddToScheme,
+		v1alpha1fabric.SchemeBuilder.AddToScheme,
 		v1alpha1project.SchemeBuilder.AddToScheme,
 		v1alpha1apis.SchemeBuilder.AddToScheme,
 		v1beta1.SchemeBuilder.AddToScheme,

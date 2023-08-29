@@ -1,0 +1,18 @@
+apiVersion: deployment.vra.jet.crossplane.io/v1alpha1
+kind: Deployment
+metadata:
+  name: test-deployment-24
+spec:
+  forProvider:
+    name: test-deployment-24
+    description: "Managed with Crossplane vRA Provider"
+
+    catalogItemId: 41913ba8-068f-389c-b179-747a74df560c
+    projectId: 35fe73a7-0ba0-457e-830d-68328c0ae5a4
+
+    inputs:
+        input1: test1
+        input2: test2
+
+  providerConfigRef:
+    name: provider-config-vra-jet-allianz-next
