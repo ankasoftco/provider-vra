@@ -18,6 +18,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_fabric_datastore_vsphere":     config.IdentifierFromProvider,
 	"vra_fabric_network_vsphere":       config.IdentifierFromProvider,
 	"vra_flavor_profile":				config.IdentifierFromProvider,
+	"vra_image_profile":				config.IdentifierFromProvider,
 	"vra_block_device":          		config.IdentifierFromProvider,
 	"vra_block_device_snapshot": 		config.IdentifierFromProvider,
 }

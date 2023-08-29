@@ -16,6 +16,7 @@ import (
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
 	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
+	imageProfile "github.com/ankasoftco/upjet-provider-vra/config/image_profile"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 )
 
@@ -48,6 +49,7 @@ func GetProvider() *ujconfig.Provider {
 		fabric.Configure,
 		blockDevice.Configure,
 		flavorProfile.Configure,
+		imageProfile.Configure,
 	} {
 		configure(pc)
 	}

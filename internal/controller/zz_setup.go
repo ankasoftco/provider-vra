@@ -18,6 +18,7 @@ import (
 	datastorevsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/datastorevsphere"
 	networkvsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/networkvsphere"
 	profile "github.com/ankasoftco/upjet-provider-vra/internal/controller/flavorprofile/profile"
+	profileimageprofile "github.com/ankasoftco/upjet-provider-vra/internal/controller/imageprofile/profile"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 )
@@ -35,6 +36,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		datastorevsphere.Setup,
 		networkvsphere.Setup,
 		profile.Setup,
+		profileimageprofile.Setup,
 		project.Setup,
 		providerconfig.Setup,
 	} {
