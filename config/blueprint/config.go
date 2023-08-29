@@ -15,7 +15,7 @@ func Configure(p *config.Provider) {
 
 	p.AddResourceConfigurator("vra_blueprint_version", func(r *config.Resource) {
 
-		r.ShortGroup = "blueprint.version"
+		r.ShortGroup = "blueprint"
 		r.Version = "v1alpha1"
 		r.References["blueprint_id"] = config.Reference{
 			Type: "Blueprint", //github.com/crossplane-contrib/upjet-provider-vra/apis/blueprint/v1alpha1.Blueprint

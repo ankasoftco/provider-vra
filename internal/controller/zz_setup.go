@@ -21,6 +21,10 @@ import (
 	profileimageprofile "github.com/ankasoftco/upjet-provider-vra/internal/controller/imageprofile/profile"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
+	profilestorage "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profile"
+	profileaws "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profileaws"
+	profileazure "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profileazure"
+	profilevsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profilevsphere"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
@@ -39,6 +43,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		profileimageprofile.Setup,
 		project.Setup,
 		providerconfig.Setup,
+		profilestorage.Setup,
+		profileaws.Setup,
+		profileazure.Setup,
+		profilevsphere.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

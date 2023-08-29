@@ -17,6 +17,7 @@ import (
 	v1alpha1flavorprofile "github.com/ankasoftco/upjet-provider-vra/apis/flavorprofile/v1alpha1"
 	v1alpha1imageprofile "github.com/ankasoftco/upjet-provider-vra/apis/imageprofile/v1alpha1"
 	v1alpha1project "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1"
+	v1alpha1storage "github.com/ankasoftco/upjet-provider-vra/apis/storage/v1alpha1"
 	v1alpha1apis "github.com/ankasoftco/upjet-provider-vra/apis/v1alpha1"
 	v1beta1 "github.com/ankasoftco/upjet-provider-vra/apis/v1beta1"
 )
@@ -26,12 +27,12 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1blueprint.SchemeBuilder.AddToScheme,
-		v1alpha1blueprint.SchemeBuilder.AddToScheme,
 		v1alpha1deployment.SchemeBuilder.AddToScheme,
 		v1alpha1fabric.SchemeBuilder.AddToScheme,
 		v1alpha1flavorprofile.SchemeBuilder.AddToScheme,
 		v1alpha1imageprofile.SchemeBuilder.AddToScheme,
 		v1alpha1project.SchemeBuilder.AddToScheme,
+		v1alpha1storage.SchemeBuilder.AddToScheme,
 		v1alpha1apis.SchemeBuilder.AddToScheme,
 		v1beta1.SchemeBuilder.AddToScheme,
 	)
