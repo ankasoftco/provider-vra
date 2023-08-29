@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	resourcePrefix = "template"
+	resourcePrefix = "vra"
 	modulePath     = "github.com/ankasoftco/upjet-provider-vra"
 )
 

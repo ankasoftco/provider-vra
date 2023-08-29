@@ -1,9 +1,9 @@
-# Provider Template
+# Provider vRA
 
-`upjet-provider-template` is a [Crossplane](https://crossplane.io/) provider that
+`upjet-provider-vra` is a [Crossplane](https://crossplane.io/) provider that
 is built using [Upjet](https://github.com/upbound/upjet) code
 generation tools and exposes XRM-conformant managed resources for the
-Template API.
+vRA API.
 
 ## Getting Started
 
@@ -21,7 +21,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: upjet-provider-template
+  name: upjet-provider-vra
 spec:
   package: ankasoftco/upjet-provider-vra:v0.1.0
 EOF
