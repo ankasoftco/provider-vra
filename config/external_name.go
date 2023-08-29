@@ -13,6 +13,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_project": config.IdentifierFromProvider,
 	"vra_blueprint": config.IdentifierFromProvider,
 	"vra_blueprint_version": config.IdentifierFromProvider,
+	"vra_deployment": config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

@@ -12,6 +12,7 @@ import (
 
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
+	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 )
 
 const (
@@ -38,7 +39,8 @@ func GetProvider() *ujconfig.Provider {
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
 		project.Configure,
-		blueprint.Configure,		
+		blueprint.Configure,	
+		deployment.Configure,	
 	} {
 		configure(pc)
 	}
