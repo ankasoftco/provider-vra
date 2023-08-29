@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: blueprints.blueprint.version.crossplane.io
+  name: versions.blueprint.crossplane.io
 spec:
-  group: blueprint.version.crossplane.io
+  group: blueprint.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Blueprint
-    listKind: BlueprintList
-    plural: blueprints
-    singular: blueprint
+    kind: Version
+    listKind: VersionList
+    plural: versions
+    singular: version
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Blueprint is the Schema for the Blueprints API. <no value>
+        description: Version is the Schema for the Versions API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: BlueprintSpec defines the desired state of Blueprint
+            description: VersionSpec defines the desired state of Version
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,18 +67,16 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  content:
+                  blueprintId:
+                    type: string
+                  changeLog:
                     type: string
                   description:
                     type: string
-                  name:
-                    type: string
-                  projectId:
-                    type: string
-                  requestScopeOrg:
-                    description: Flag to indicate blueprint can be requested from
-                      any project in org
+                  release:
                     type: boolean
+                  version:
+                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -267,30 +265,22 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: name is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
-            - message: projectId is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.projectId)
+            - message: blueprintId is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.blueprintId)
+            - message: version is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.version)
           status:
-            description: BlueprintStatus defines the observed state of Blueprint.
+            description: VersionStatus defines the observed state of Version.
             properties:
               atProvider:
                 properties:
+                  blueprintDescription:
+                    type: string
+                  blueprintId:
+                    type: string
+                  changeLog:
+                    type: string
                   content:
-                    type: string
-                  contentSourceId:
-                    type: string
-                  contentSourcePath:
-                    type: string
-                  contentSourceSyncAt:
-                    type: string
-                  contentSourceSyncMessages:
-                    items:
-                      type: string
-                    type: array
-                  contentSourceSyncStatus:
-                    type: string
-                  contentSourceType:
                     type: string
                   createdAt:
                     type: string
@@ -308,41 +298,18 @@ spec:
                     type: string
                   projectName:
                     type: string
-                  requestScopeOrg:
-                    description: Flag to indicate blueprint can be requested from
-                      any project in org
+                  release:
                     type: boolean
-                  selfLink:
-                    type: string
                   status:
                     type: string
-                  totalReleasedVersions:
-                    type: number
-                  totalVersions:
-                    type: number
                   updatedAt:
                     type: string
                   updatedBy:
                     type: string
                   valid:
-                    type: boolean
-                  validationMessages:
-                    items:
-                      properties:
-                        message:
-                          type: string
-                        metadata:
-                          additionalProperties:
-                            type: string
-                          type: object
-                        path:
-                          type: string
-                        resourceName:
-                          type: string
-                        type:
-                          type: string
-                      type: object
-                    type: array
+                    type: string
+                  version:
+                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.
