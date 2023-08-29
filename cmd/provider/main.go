@@ -25,12 +25,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/upbound/upjet-provider-template/apis"
-	"github.com/upbound/upjet-provider-template/apis/v1alpha1"
-	"github.com/upbound/upjet-provider-template/config"
-	"github.com/upbound/upjet-provider-template/internal/clients"
-	"github.com/upbound/upjet-provider-template/internal/controller"
-	"github.com/upbound/upjet-provider-template/internal/features"
+	"github.com/ankasoftco/upjet-provider-vra/apis"
+	"github.com/ankasoftco/upjet-provider-vra/apis/v1alpha1"
+	"github.com/ankasoftco/upjet-provider-vra/config"
+	"github.com/ankasoftco/upjet-provider-vra/internal/clients"
+	"github.com/ankasoftco/upjet-provider-vra/internal/controller"
+	"github.com/ankasoftco/upjet-provider-vra/internal/features"
 )
 
 func main() {

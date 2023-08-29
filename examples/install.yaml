@@ -3,4 +3,4 @@ kind: Provider
 metadata:
   name: upjet-provider-template
 spec:
-  package: upbound/upjet-provider-template:v0.1.0
+  package: uankasoftco/upjet-provider-vra:v0.1.0
