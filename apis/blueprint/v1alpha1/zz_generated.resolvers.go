@@ -38,3 +38,29 @@ func (mg *Blueprint) ResolveReferences(ctx context.Context, c client.Reader) err
 
 	return nil
 }
+
+// ResolveReferences of this Version.
+func (mg *Version) ResolveReferences(ctx context.Context, c client.Reader) error {
+	r := reference.NewAPIResolver(c, mg)
+
+	var rsp reference.ResolutionResponse
+	var err error
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.BlueprintID),
+		Extract:      reference.ExternalName(),
+		Reference:    mg.Spec.ForProvider.BlueprintIDRef,
+		Selector:     mg.Spec.ForProvider.BlueprintIDSelector,
+		To: reference.To{
+			List:    &BlueprintList{},
+			Managed: &Blueprint{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.BlueprintID")
+	}
+	mg.Spec.ForProvider.BlueprintID = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.BlueprintIDRef = rsp.ResolvedReference
+
+	return nil
+}

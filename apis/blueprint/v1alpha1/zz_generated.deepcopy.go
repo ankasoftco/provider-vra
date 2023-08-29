@@ -537,6 +537,16 @@ func (in *VersionParameters) DeepCopyInto(out *VersionParameters) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.BlueprintIDRef != nil {
+		in, out := &in.BlueprintIDRef, &out.BlueprintIDRef
+		*out = new(v1.Reference)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.BlueprintIDSelector != nil {
+		in, out := &in.BlueprintIDSelector, &out.BlueprintIDSelector
+		*out = new(v1.Selector)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.ChangeLog != nil {
 		in, out := &in.ChangeLog, &out.ChangeLog
 		*out = new(string)

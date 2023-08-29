@@ -53,8 +53,17 @@ type VersionObservation struct {
 
 type VersionParameters struct {
 
+	// +crossplane:generate:reference:type=Blueprint
 	// +kubebuilder:validation:Optional
 	BlueprintID *string `json:"blueprintId,omitempty" tf:"blueprint_id,omitempty"`
+
+	// Reference to a Blueprint to populate blueprintId.
+	// +kubebuilder:validation:Optional
+	BlueprintIDRef *v1.Reference `json:"blueprintIdRef,omitempty" tf:"-"`
+
+	// Selector for a Blueprint to populate blueprintId.
+	// +kubebuilder:validation:Optional
+	BlueprintIDSelector *v1.Selector `json:"blueprintIdSelector,omitempty" tf:"-"`
 
 	// +kubebuilder:validation:Optional
 	ChangeLog *string `json:"changeLog,omitempty" tf:"change_log,omitempty"`
@@ -93,7 +102,6 @@ type VersionStatus struct {
 type Version struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.blueprintId)",message="blueprintId is a required parameter"
 	// +kubebuilder:validation:XValidation:rule="self.managementPolicy == 'ObserveOnly' || has(self.forProvider.version)",message="version is a required parameter"
 	Spec   VersionSpec   `json:"spec"`
 	Status VersionStatus `json:"status,omitempty"`

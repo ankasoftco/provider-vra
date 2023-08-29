@@ -3,4 +3,4 @@ kind: Provider
 metadata:
   name: upjet-provider-vra
 spec:
-  package: uankasoftco/upjet-provider-vra:v0.1.0
+  package: ankasoftco/upjet-provider-vra:v0.1.0
