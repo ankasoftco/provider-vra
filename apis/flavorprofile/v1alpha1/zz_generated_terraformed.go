@@ -13,18 +13,18 @@ import (
 	"github.com/upbound/upjet/pkg/resource/json"
 )
 
-// GetTerraformResourceType returns Terraform resource type for this Blueprint
-func (mg *Blueprint) GetTerraformResourceType() string {
-	return "vra_blueprint"
+// GetTerraformResourceType returns Terraform resource type for this Profile
+func (mg *Profile) GetTerraformResourceType() string {
+	return "vra_flavor_profile"
 }
 
-// GetConnectionDetailsMapping for this Blueprint
-func (tr *Blueprint) GetConnectionDetailsMapping() map[string]string {
+// GetConnectionDetailsMapping for this Profile
+func (tr *Profile) GetConnectionDetailsMapping() map[string]string {
 	return nil
 }
 
-// GetObservation of this Blueprint
-func (tr *Blueprint) GetObservation() (map[string]any, error) {
+// GetObservation of this Profile
+func (tr *Profile) GetObservation() (map[string]any, error) {
 	o, err := json.TFParser.Marshal(tr.Status.AtProvider)
 	if err != nil {
 		return nil, err
@@ -33,8 +33,8 @@ func (tr *Blueprint) GetObservation() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(o, &base)
 }
 
-// SetObservation for this Blueprint
-func (tr *Blueprint) SetObservation(obs map[string]any) error {
+// SetObservation for this Profile
+func (tr *Profile) SetObservation(obs map[string]any) error {
 	p, err := json.TFParser.Marshal(obs)
 	if err != nil {
 		return err
@@ -42,16 +42,16 @@ func (tr *Blueprint) SetObservation(obs map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Status.AtProvider)
 }
 
-// GetID returns ID of underlying Terraform resource of this Blueprint
-func (tr *Blueprint) GetID() string {
+// GetID returns ID of underlying Terraform resource of this Profile
+func (tr *Profile) GetID() string {
 	if tr.Status.AtProvider.ID == nil {
 		return ""
 	}
 	return *tr.Status.AtProvider.ID
 }
 
-// GetParameters of this Blueprint
-func (tr *Blueprint) GetParameters() (map[string]any, error) {
+// GetParameters of this Profile
+func (tr *Profile) GetParameters() (map[string]any, error) {
 	p, err := json.TFParser.Marshal(tr.Spec.ForProvider)
 	if err != nil {
 		return nil, err
@@ -60,8 +60,8 @@ func (tr *Blueprint) GetParameters() (map[string]any, error) {
 	return base, json.TFParser.Unmarshal(p, &base)
 }
 
-// SetParameters for this Blueprint
-func (tr *Blueprint) SetParameters(params map[string]any) error {
+// SetParameters for this Profile
+func (tr *Profile) SetParameters(params map[string]any) error {
 	p, err := json.TFParser.Marshal(params)
 	if err != nil {
 		return err
@@ -69,10 +69,10 @@ func (tr *Blueprint) SetParameters(params map[string]any) error {
 	return json.TFParser.Unmarshal(p, &tr.Spec.ForProvider)
 }
 
-// LateInitialize this Blueprint using its observed tfState.
+// LateInitialize this Profile using its observed tfState.
 // returns True if there are any spec changes for the resource.
-func (tr *Blueprint) LateInitialize(attrs []byte) (bool, error) {
-	params := &BlueprintParameters{}
+func (tr *Profile) LateInitialize(attrs []byte) (bool, error) {
+	params := &ProfileParameters{}
 	if err := json.TFParser.Unmarshal(attrs, params); err != nil {
 		return false, errors.Wrap(err, "failed to unmarshal Terraform state parameters for late-initialization")
 	}
@@ -83,6 +83,6 @@ func (tr *Blueprint) LateInitialize(attrs []byte) (bool, error) {
 }
 
 // GetTerraformSchemaVersion returns the associated Terraform schema version
-func (tr *Blueprint) GetTerraformSchemaVersion() int {
+func (tr *Profile) GetTerraformSchemaVersion() int {
 	return 0
 }

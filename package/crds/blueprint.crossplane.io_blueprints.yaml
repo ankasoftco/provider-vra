@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: deployments.deployment.crossplane.io
+  name: blueprints.blueprint.crossplane.io
 spec:
-  group: deployment.crossplane.io
+  group: blueprint.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Deployment
-    listKind: DeploymentList
-    plural: deployments
-    singular: deployment
+    kind: Blueprint
+    listKind: BlueprintList
+    plural: blueprints
+    singular: blueprint
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Deployment is the Schema for the Deployments API. <no value>
+        description: Blueprint is the Schema for the Blueprints API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: DeploymentSpec defines the desired state of Deployment
+            description: BlueprintSpec defines the desired state of Blueprint
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,50 +67,13 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  blueprintContent:
-                    description: The content of the the cloud template to be used
-                      to request the deployment.
-                    type: string
-                  blueprintId:
-                    description: The id of the cloud template to be used to request
-                      the deployment.
-                    type: string
-                  blueprintVersion:
-                    description: The version of the cloud template to be used to request
-                      the deployment.
-                    type: string
-                  catalogItemId:
-                    description: The id of the catalog item to be used to request
-                      the deployment.
-                    type: string
-                  catalogItemVersion:
-                    description: The version of the catalog item to be used to request
-                      the deployment.
+                  content:
                     type: string
                   description:
-                    description: A human-friendly description.
                     type: string
-                  expandLastRequest:
-                    type: boolean
-                  expandProject:
-                    description: Flag to indicate whether to expand project information.
-                    type: boolean
-                  expandResources:
-                    type: boolean
-                  inputs:
-                    additionalProperties:
-                      type: string
-                    description: Inputs provided by the user. For inputs including
-                      those with default values, refer to inputs_including_defaults.
-                    type: object
                   name:
-                    description: The name of the deployment.
-                    type: string
-                  owner:
-                    description: The user this deployment belongs to.
                     type: string
                   projectId:
-                    description: The id of the project this deployment belongs to.
                     type: string
                   projectIdRef:
                     description: Reference to a Project in project to populate projectId.
@@ -185,9 +148,10 @@ spec:
                             type: string
                         type: object
                     type: object
-                  reason:
-                    description: Reason for requesting/updating a blueprint.
-                    type: string
+                  requestScopeOrg:
+                    description: Flag to indicate blueprint can be requested from
+                      any project in org
+                    type: boolean
                 type: object
               managementPolicy:
                 default: FullControl
@@ -379,227 +343,77 @@ spec:
             - message: name is a required parameter
               rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
           status:
-            description: DeploymentStatus defines the observed state of Deployment.
+            description: BlueprintStatus defines the observed state of Blueprint.
             properties:
               atProvider:
                 properties:
-                  blueprintContent:
-                    description: The content of the the cloud template to be used
-                      to request the deployment.
+                  content:
                     type: string
-                  blueprintId:
-                    description: The id of the cloud template to be used to request
-                      the deployment.
+                  contentSourceId:
                     type: string
-                  blueprintVersion:
-                    description: The version of the cloud template to be used to request
-                      the deployment.
+                  contentSourcePath:
                     type: string
-                  catalogItemId:
-                    description: The id of the catalog item to be used to request
-                      the deployment.
+                  contentSourceSyncAt:
                     type: string
-                  catalogItemVersion:
-                    description: The version of the catalog item to be used to request
-                      the deployment.
+                  contentSourceSyncMessages:
+                    items:
+                      type: string
+                    type: array
+                  contentSourceSyncStatus:
+                    type: string
+                  contentSourceType:
                     type: string
                   createdAt:
-                    description: Date when the entity was created. The date is in
-                      ISO 6801 and UTC.
                     type: string
                   createdBy:
-                    description: The user the entity was created by.
                     type: string
                   description:
-                    description: A human-friendly description.
                     type: string
-                  expandLastRequest:
-                    type: boolean
-                  expandProject:
-                    description: Flag to indicate whether to expand project information.
-                    type: boolean
-                  expandResources:
-                    type: boolean
-                  expense:
-                    items:
-                      properties:
-                        additionalExpense:
-                          type: number
-                        code:
-                          type: string
-                        computeExpense:
-                          type: number
-                        lastUpdateTime:
-                          type: string
-                        message:
-                          type: string
-                        networkExpense:
-                          type: number
-                        storageExpense:
-                          type: number
-                        totalExpense:
-                          type: number
-                        unit:
-                          type: string
-                      type: object
-                    type: array
                   id:
                     type: string
-                  inputs:
-                    additionalProperties:
-                      type: string
-                    description: Inputs provided by the user. For inputs including
-                      those with default values, refer to inputs_including_defaults.
-                    type: object
-                  inputsIncludingDefaults:
-                    additionalProperties:
-                      type: string
-                    description: All the inputs applied during last create/update
-                      operation, including those with default values.
-                    type: object
-                  lastRequest:
-                    items:
-                      properties:
-                        actionId:
-                          type: string
-                        approvedAt:
-                          type: string
-                        blueprintId:
-                          type: string
-                        cancelable:
-                          type: boolean
-                        catalogItemId:
-                          type: string
-                        completedAt:
-                          type: string
-                        completedTasks:
-                          type: number
-                        createdAt:
-                          type: string
-                        details:
-                          type: string
-                        dismissed:
-                          type: boolean
-                        id:
-                          type: string
-                        initializedAt:
-                          type: string
-                        inputs:
-                          additionalProperties:
-                            type: string
-                          type: object
-                        name:
-                          type: string
-                        outputs:
-                          additionalProperties:
-                            type: string
-                          type: object
-                        requestedBy:
-                          type: string
-                        resourceIds:
-                          items:
-                            type: string
-                          type: array
-                        status:
-                          type: string
-                        totalTasks:
-                          type: number
-                        updatedAt:
-                          type: string
-                      type: object
-                    type: array
-                  lastUpdatedAt:
-                    description: Date when the entity was last updated. The date is
-                      in ISO 6801 and UTC.
-                    type: string
-                  lastUpdatedBy:
-                    description: The user that last updated the deployment.
-                    type: string
-                  leaseExpireAt:
-                    description: Date when the deployment lease expire. The date is
-                      in ISO 6801 and UTC.
-                    type: string
                   name:
-                    description: The name of the deployment.
                     type: string
                   orgId:
-                    description: The Id of the organization this deployment belongs
-                      to.
                     type: string
-                  owner:
-                    description: The user this deployment belongs to.
-                    type: string
-                  project:
-                    items:
-                      properties:
-                        description:
-                          type: string
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        version:
-                          type: string
-                      type: object
-                    type: array
                   projectId:
-                    description: The id of the project this deployment belongs to.
                     type: string
-                  reason:
-                    description: Reason for requesting/updating a blueprint.
+                  projectName:
                     type: string
-                  resources:
+                  requestScopeOrg:
+                    description: Flag to indicate blueprint can be requested from
+                      any project in org
+                    type: boolean
+                  selfLink:
+                    type: string
+                  status:
+                    type: string
+                  totalReleasedVersions:
+                    type: number
+                  totalVersions:
+                    type: number
+                  updatedAt:
+                    type: string
+                  updatedBy:
+                    type: string
+                  valid:
+                    type: boolean
+                  validationMessages:
                     items:
                       properties:
-                        createdAt:
+                        message:
                           type: string
-                        dependsOn:
-                          items:
+                        metadata:
+                          additionalProperties:
                             type: string
-                          type: array
-                        description:
+                          type: object
+                        path:
                           type: string
-                        expense:
-                          items:
-                            properties:
-                              additionalExpense:
-                                type: number
-                              code:
-                                type: string
-                              computeExpense:
-                                type: number
-                              lastUpdateTime:
-                                type: string
-                              message:
-                                type: string
-                              networkExpense:
-                                type: number
-                              storageExpense:
-                                type: number
-                              totalExpense:
-                                type: number
-                              unit:
-                                type: string
-                            type: object
-                          type: array
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        propertiesJson:
-                          type: string
-                        state:
-                          type: string
-                        syncStatus:
+                        resourceName:
                           type: string
                         type:
                           type: string
                       type: object
                     type: array
-                  status:
-                    description: The status of the deployment with respect to its
-                      life cycle operations.
-                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.

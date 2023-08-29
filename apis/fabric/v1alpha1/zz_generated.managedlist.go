@@ -15,3 +15,21 @@ func (l *ComputeList) GetItems() []resource.Managed {
 	}
 	return items
 }
+
+// GetItems of this DatastoreVsphereList.
+func (l *DatastoreVsphereList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}
+
+// GetItems of this NetworkVsphereList.
+func (l *NetworkVsphereList) GetItems() []resource.Managed {
+	items := make([]resource.Managed, len(l.Items))
+	for i := range l.Items {
+		items[i] = &l.Items[i]
+	}
+	return items
+}

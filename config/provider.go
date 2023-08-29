@@ -15,6 +15,7 @@ import (
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
+	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 )
 
@@ -46,6 +47,7 @@ func GetProvider() *ujconfig.Provider {
 		deployment.Configure,
 		fabric.Configure,
 		blockDevice.Configure,
+		flavorProfile.Configure,
 	} {
 		configure(pc)
 	}

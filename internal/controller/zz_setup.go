@@ -15,6 +15,9 @@ import (
 	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
 	compute "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/compute"
+	datastorevsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/datastorevsphere"
+	networkvsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/networkvsphere"
+	profile "github.com/ankasoftco/upjet-provider-vra/internal/controller/flavorprofile/profile"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 )
@@ -29,6 +32,9 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		version.Setup,
 		deployment.Setup,
 		compute.Setup,
+		datastorevsphere.Setup,
+		networkvsphere.Setup,
+		profile.Setup,
 		project.Setup,
 		providerconfig.Setup,
 	} {
