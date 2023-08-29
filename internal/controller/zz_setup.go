@@ -9,6 +9,8 @@ import (
 
 	"github.com/upbound/upjet/pkg/controller"
 
+	blockdevice "github.com/ankasoftco/upjet-provider-vra/internal/controller/blockdevice/blockdevice"
+	blockdevicesnapshot "github.com/ankasoftco/upjet-provider-vra/internal/controller/blockdevice/blockdevicesnapshot"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/blueprint"
 	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
@@ -21,6 +23,8 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		blockdevice.Setup,
+		blockdevicesnapshot.Setup,
 		blueprint.Setup,
 		version.Setup,
 		deployment.Setup,

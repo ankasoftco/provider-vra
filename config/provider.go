@@ -8,12 +8,17 @@ import (
 	// Note(turkenh): we are importing this to embed provider schema document
 	_ "embed"
 
+	blockDevice "github.com/ankasoftco/upjet-provider-vra/config/block_device"
+
 	ujconfig "github.com/upbound/upjet/pkg/config"
 
-	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
+<<<<<<< HEAD
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
+=======
+	project "github.com/ankasoftco/upjet-provider-vra/config/project"
+>>>>>>> a5278da (block device and block device snapshot added)
 )
 
 const (
@@ -43,6 +48,8 @@ func GetProvider() *ujconfig.Provider {
 		blueprint.Configure,	
 		deployment.Configure,
 		fabric.Configure,
+		blockDevice.Configure,
+		blockDeviceSnapshot.Configure,
 	} {
 		configure(pc)
 	}
