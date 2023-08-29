@@ -9,6 +9,8 @@ import (
 
 	"github.com/upbound/upjet/pkg/controller"
 
+	blueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/blueprint"
+	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 )
@@ -17,6 +19,8 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		blueprint.Setup,
+		version.Setup,
 		project.Setup,
 		providerconfig.Setup,
 	} {

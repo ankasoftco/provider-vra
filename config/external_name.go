@@ -11,6 +11,8 @@ import "github.com/upbound/upjet/pkg/config"
 var ExternalNameConfigs = map[string]config.ExternalName{
 	// Import requires using a randomly generated ID from provider: nl-2e21sda
 	"vra_project": config.IdentifierFromProvider,
+	"vra_blueprint": config.IdentifierFromProvider,
+	"vra_blueprint_version": config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
