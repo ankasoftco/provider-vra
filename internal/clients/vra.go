@@ -81,10 +81,10 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		}
 		
 		// Set credentials in Terraform provider environment.
-		ps.Env = []string{
+		/*ps.Env = []string{
 			fmt.Sprintf("%s=%s", envURL, vraCreds[keyURL]),
 			fmt.Sprintf("%s=%s", envRefreshToken, vraCreds[keyRefreshToken]),
-		}
+		}*/
 
 		// Set credentials in Terraform provider configuration.
 		/*ps.Configuration = map[string]any{
