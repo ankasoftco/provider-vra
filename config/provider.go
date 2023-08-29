@@ -14,11 +14,8 @@ import (
 
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
-<<<<<<< HEAD
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
-=======
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
->>>>>>> a5278da (block device and block device snapshot added)
 )
 
 const (
@@ -45,11 +42,10 @@ func GetProvider() *ujconfig.Provider {
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
 		project.Configure,
-		blueprint.Configure,	
+		blueprint.Configure,
 		deployment.Configure,
 		fabric.Configure,
 		blockDevice.Configure,
-		blockDeviceSnapshot.Configure,
 	} {
 		configure(pc)
 	}

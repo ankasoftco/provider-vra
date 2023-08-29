@@ -1,0 +1,11 @@
+apiVersion: blockdevice.crossplane.io/v1alpha1
+kind: BlockDeviceSnapshot
+metadata:
+  name: test-block-device-snapshot-1
+spec:
+  forProvider:
+    blockDeviceIdRef:
+      name: 'test-block-device-2'
+
+  providerConfigRef:
+    name: vra-test

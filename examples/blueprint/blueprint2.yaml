@@ -1,0 +1,14 @@
+apiVersion: blueprint.crossplane.io/v1alpha1
+kind: Blueprint
+metadata:
+  name: test-blueprint-2
+spec:
+  forProvider:
+    name: 'test-blueprint-2'
+    description: 'test-blueprint-2 - alpcan - caner'
+    content: 'formatVersion: 1'
+    projectIdRef:
+      name: 'test-project-2'
+
+  providerConfigRef:
+    name: vra-test

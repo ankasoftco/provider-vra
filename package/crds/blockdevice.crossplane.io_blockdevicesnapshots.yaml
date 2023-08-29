@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: blueprints.blueprint.crossplane.io
+  name: blockdevicesnapshots.blockdevice.crossplane.io
 spec:
-  group: blueprint.crossplane.io
+  group: blockdevice.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Blueprint
-    listKind: BlueprintList
-    plural: blueprints
-    singular: blueprint
+    kind: BlockDeviceSnapshot
+    listKind: BlockDeviceSnapshotList
+    plural: blockdevicesnapshots
+    singular: blockdevicesnapshot
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Blueprint is the Schema for the Blueprints API. <no value>
+        description: BlockDeviceSnapshot is the Schema for the BlockDeviceSnapshots
+          API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +51,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: BlueprintSpec defines the desired state of Blueprint
+            description: BlockDeviceSnapshotSpec defines the desired state of BlockDeviceSnapshot
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,16 +68,10 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  content:
+                  blockDeviceId:
                     type: string
-                  description:
-                    type: string
-                  name:
-                    type: string
-                  projectId:
-                    type: string
-                  projectIdRef:
-                    description: Reference to a Project in project to populate projectId.
+                  blockDeviceIdRef:
+                    description: Reference to a BlockDevice to populate blockDeviceId.
                     properties:
                       name:
                         description: Name of the referenced object.
@@ -109,8 +104,8 @@ spec:
                     required:
                     - name
                     type: object
-                  projectIdSelector:
-                    description: Selector for a Project in project to populate projectId.
+                  blockDeviceIdSelector:
+                    description: Selector for a BlockDevice to populate blockDeviceId.
                     properties:
                       matchControllerRef:
                         description: MatchControllerRef ensures an object with the
@@ -148,10 +143,8 @@ spec:
                             type: string
                         type: object
                     type: object
-                  requestScopeOrg:
-                    description: Flag to indicate blueprint can be requested from
-                      any project in org
-                    type: boolean
+                  description:
+                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -339,81 +332,42 @@ spec:
             required:
             - forProvider
             type: object
-            x-kubernetes-validations:
-            - message: name is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
           status:
-            description: BlueprintStatus defines the observed state of Blueprint.
+            description: BlockDeviceSnapshotStatus defines the observed state of BlockDeviceSnapshot.
             properties:
               atProvider:
                 properties:
-                  content:
-                    type: string
-                  contentSourceId:
-                    type: string
-                  contentSourcePath:
-                    type: string
-                  contentSourceSyncAt:
-                    type: string
-                  contentSourceSyncMessages:
-                    items:
-                      type: string
-                    type: array
-                  contentSourceSyncStatus:
-                    type: string
-                  contentSourceType:
+                  blockDeviceId:
                     type: string
                   createdAt:
-                    type: string
-                  createdBy:
                     type: string
                   description:
                     type: string
                   id:
                     type: string
+                  isCurrent:
+                    type: boolean
+                  links:
+                    items:
+                      properties:
+                        href:
+                          type: string
+                        hrefs:
+                          items:
+                            type: string
+                          type: array
+                        rel:
+                          type: string
+                      type: object
+                    type: array
                   name:
                     type: string
                   orgId:
                     type: string
-                  projectId:
+                  owner:
                     type: string
-                  projectName:
-                    type: string
-                  requestScopeOrg:
-                    description: Flag to indicate blueprint can be requested from
-                      any project in org
-                    type: boolean
-                  selfLink:
-                    type: string
-                  status:
-                    type: string
-                  totalReleasedVersions:
-                    type: number
-                  totalVersions:
-                    type: number
                   updatedAt:
                     type: string
-                  updatedBy:
-                    type: string
-                  valid:
-                    type: boolean
-                  validationMessages:
-                    items:
-                      properties:
-                        message:
-                          type: string
-                        metadata:
-                          additionalProperties:
-                            type: string
-                          type: object
-                        path:
-                          type: string
-                        resourceName:
-                          type: string
-                        type:
-                          type: string
-                      type: object
-                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

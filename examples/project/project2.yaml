@@ -1,0 +1,11 @@
+apiVersion: project.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  name: test-project-2
+spec:
+  forProvider:
+    name: 'test-project-2'
+    description: 'test-project-2 - alpcan - caner'
+
+  providerConfigRef:
+    name: vra-test

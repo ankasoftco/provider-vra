@@ -5,18 +5,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
-  name: versions.blueprint.crossplane.io
+  name: blueprints.blueprint.version.crossplane.io
 spec:
-  group: blueprint.crossplane.io
+  group: blueprint.version.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - vra
-    kind: Version
-    listKind: VersionList
-    plural: versions
-    singular: version
+    kind: Blueprint
+    listKind: BlueprintList
+    plural: blueprints
+    singular: blueprint
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Version is the Schema for the Versions API. <no value>
+        description: Blueprint is the Schema for the Blueprints API. <no value>
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: VersionSpec defines the desired state of Version
+            description: BlueprintSpec defines the desired state of Blueprint
             properties:
               deletionPolicy:
                 default: Delete
@@ -67,10 +67,16 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  blueprintId:
+                  content:
                     type: string
-                  blueprintIdRef:
-                    description: Reference to a Blueprint to populate blueprintId.
+                  description:
+                    type: string
+                  name:
+                    type: string
+                  projectId:
+                    type: string
+                  projectIdRef:
+                    description: Reference to a Project in project to populate projectId.
                     properties:
                       name:
                         description: Name of the referenced object.
@@ -103,8 +109,8 @@ spec:
                     required:
                     - name
                     type: object
-                  blueprintIdSelector:
-                    description: Selector for a Blueprint to populate blueprintId.
+                  projectIdSelector:
+                    description: Selector for a Project in project to populate projectId.
                     properties:
                       matchControllerRef:
                         description: MatchControllerRef ensures an object with the
@@ -142,14 +148,10 @@ spec:
                             type: string
                         type: object
                     type: object
-                  changeLog:
-                    type: string
-                  description:
-                    type: string
-                  release:
+                  requestScopeOrg:
+                    description: Flag to indicate blueprint can be requested from
+                      any project in org
                     type: boolean
-                  version:
-                    type: string
                 type: object
               managementPolicy:
                 default: FullControl
@@ -338,20 +340,28 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: version is a required parameter
-              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.version)
+            - message: name is a required parameter
+              rule: self.managementPolicy == 'ObserveOnly' || has(self.forProvider.name)
           status:
-            description: VersionStatus defines the observed state of Version.
+            description: BlueprintStatus defines the observed state of Blueprint.
             properties:
               atProvider:
                 properties:
-                  blueprintDescription:
-                    type: string
-                  blueprintId:
-                    type: string
-                  changeLog:
-                    type: string
                   content:
+                    type: string
+                  contentSourceId:
+                    type: string
+                  contentSourcePath:
+                    type: string
+                  contentSourceSyncAt:
+                    type: string
+                  contentSourceSyncMessages:
+                    items:
+                      type: string
+                    type: array
+                  contentSourceSyncStatus:
+                    type: string
+                  contentSourceType:
                     type: string
                   createdAt:
                     type: string
@@ -369,18 +379,41 @@ spec:
                     type: string
                   projectName:
                     type: string
-                  release:
+                  requestScopeOrg:
+                    description: Flag to indicate blueprint can be requested from
+                      any project in org
                     type: boolean
+                  selfLink:
+                    type: string
                   status:
                     type: string
+                  totalReleasedVersions:
+                    type: number
+                  totalVersions:
+                    type: number
                   updatedAt:
                     type: string
                   updatedBy:
                     type: string
                   valid:
-                    type: string
-                  version:
-                    type: string
+                    type: boolean
+                  validationMessages:
+                    items:
+                      properties:
+                        message:
+                          type: string
+                        metadata:
+                          additionalProperties:
+                            type: string
+                          type: object
+                        path:
+                          type: string
+                        resourceName:
+                          type: string
+                        type:
+                          type: string
+                      type: object
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.
