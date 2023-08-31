@@ -1,0 +1,18 @@
+apiVersion: loadbalancer.crossplane.io/v1alpha1
+kind: LoadBalancer
+metadata:
+  name: test-load-balancer-2
+spec:
+  forProvider:
+    name: 'test-load-balancer-2'
+    description: 'test-load-balancer-2'
+    nics:
+    - networkId: ''
+    routes:
+    - memberPort: ''
+      memberProtocol: ''
+      port: ''
+      protocol: ''
+
+  providerConfigRef:
+    name: vra-test

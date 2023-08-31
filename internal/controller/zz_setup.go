@@ -24,6 +24,7 @@ import (
 	profile "github.com/ankasoftco/upjet-provider-vra/internal/controller/flavorprofile/profile"
 	profileimageprofile "github.com/ankasoftco/upjet-provider-vra/internal/controller/imageprofile/profile"
 	integration "github.com/ankasoftco/upjet-provider-vra/internal/controller/integration/integration"
+	loadbalancer "github.com/ankasoftco/upjet-provider-vra/internal/controller/loadbalancer/loadbalancer"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 	profilestorage "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profile"
@@ -51,6 +52,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		profile.Setup,
 		profileimageprofile.Setup,
 		integration.Setup,
+		loadbalancer.Setup,
 		project.Setup,
 		providerconfig.Setup,
 		profilestorage.Setup,

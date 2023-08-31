@@ -18,6 +18,7 @@ import (
 	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
 	imageProfile "github.com/ankasoftco/upjet-provider-vra/config/image_profile"
 	integration "github.com/ankasoftco/upjet-provider-vra/config/integration"
+	loadBalancer "github.com/ankasoftco/upjet-provider-vra/config/load_balancer"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	storage "github.com/ankasoftco/upjet-provider-vra/config/storage"
 	ujconfig "github.com/upbound/upjet/pkg/config"
@@ -58,6 +59,7 @@ func GetProvider() *ujconfig.Provider {
 		catalogItemEntitlement.Configure,
 		contentSource.Configure,
 		integration.Configure,
+		loadBalancer.Configure,
 	} {
 		configure(pc)
 	}
