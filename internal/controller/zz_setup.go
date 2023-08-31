@@ -13,6 +13,7 @@ import (
 	blockdevicesnapshot "github.com/ankasoftco/upjet-provider-vra/internal/controller/blockdevice/blockdevicesnapshot"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/blueprint"
 	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
+	itementitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalog/itementitlement"
 	catalogsourceblueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceblueprint/catalogsourceblueprint"
 	catalogsourceentitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceentitlement/catalogsourceentitlement"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
@@ -37,6 +38,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		blockdevicesnapshot.Setup,
 		blueprint.Setup,
 		version.Setup,
+		itementitlement.Setup,
 		catalogsourceblueprint.Setup,
 		catalogsourceentitlement.Setup,
 		deployment.Setup,
