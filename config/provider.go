@@ -13,6 +13,8 @@ import (
 	ujconfig "github.com/upbound/upjet/pkg/config"
 
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
+
+	catalogSource "github.com/ankasoftco/upjet-provider-vra/config/catalog_source"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
 	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
@@ -52,6 +54,7 @@ func GetProvider() *ujconfig.Provider {
 		flavorProfile.Configure,
 		imageProfile.Configure,
 		storage.Configure,
+		catalogSource.Configure,
 	} {
 		configure(pc)
 	}

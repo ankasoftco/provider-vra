@@ -10,21 +10,23 @@ import "github.com/upbound/upjet/pkg/config"
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
 	// Import requires using a randomly generated ID from provider: nl-2e21sda
-	"vra_project":               		config.IdentifierFromProvider,
-	"vra_blueprint":             		config.IdentifierFromProvider,
-	"vra_blueprint_version":     		config.IdentifierFromProvider,
-	"vra_deployment":            		config.IdentifierFromProvider,
-	"vra_fabric_compute":        		config.IdentifierFromProvider,
-	"vra_fabric_datastore_vsphere":     config.IdentifierFromProvider,
-	"vra_fabric_network_vsphere":       config.IdentifierFromProvider,
-	"vra_flavor_profile":				config.IdentifierFromProvider,
-	"vra_image_profile":				config.IdentifierFromProvider,
-	"vra_storage_profile":				config.IdentifierFromProvider,
-	"vra_storage_profile_aws":			config.IdentifierFromProvider,
-	"vra_storage_profile_azure":		config.IdentifierFromProvider,
-	"vra_storage_profile_vsphere":		config.IdentifierFromProvider,
-	"vra_block_device":          		config.IdentifierFromProvider,
-	"vra_block_device_snapshot": 		config.IdentifierFromProvider,
+	"vra_project":                    config.IdentifierFromProvider,
+	"vra_blueprint":                  config.IdentifierFromProvider,
+	"vra_blueprint_version":          config.IdentifierFromProvider,
+	"vra_deployment":                 config.IdentifierFromProvider,
+	"vra_fabric_compute":             config.IdentifierFromProvider,
+	"vra_fabric_datastore_vsphere":   config.IdentifierFromProvider,
+	"vra_fabric_network_vsphere":     config.IdentifierFromProvider,
+	"vra_flavor_profile":             config.IdentifierFromProvider,
+	"vra_image_profile":              config.IdentifierFromProvider,
+	"vra_storage_profile":            config.IdentifierFromProvider,
+	"vra_storage_profile_aws":        config.IdentifierFromProvider,
+	"vra_storage_profile_azure":      config.IdentifierFromProvider,
+	"vra_storage_profile_vsphere":    config.IdentifierFromProvider,
+	"vra_block_device":               config.IdentifierFromProvider,
+	"vra_block_device_snapshot":      config.IdentifierFromProvider,
+	"vra_catalog_source_blueprint":   config.IdentifierFromProvider,
+	"vra_catalog_source_entitlement": config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
