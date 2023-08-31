@@ -17,6 +17,7 @@ import (
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
 	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
 	imageProfile "github.com/ankasoftco/upjet-provider-vra/config/image_profile"
+	integration "github.com/ankasoftco/upjet-provider-vra/config/integration"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	storage "github.com/ankasoftco/upjet-provider-vra/config/storage"
 	ujconfig "github.com/upbound/upjet/pkg/config"
@@ -56,6 +57,7 @@ func GetProvider() *ujconfig.Provider {
 		catalogSource.Configure,
 		catalogItemEntitlement.Configure,
 		contentSource.Configure,
+		integration.Configure,
 	} {
 		configure(pc)
 	}

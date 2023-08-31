@@ -23,6 +23,7 @@ import (
 	networkvsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/networkvsphere"
 	profile "github.com/ankasoftco/upjet-provider-vra/internal/controller/flavorprofile/profile"
 	profileimageprofile "github.com/ankasoftco/upjet-provider-vra/internal/controller/imageprofile/profile"
+	integration "github.com/ankasoftco/upjet-provider-vra/internal/controller/integration/integration"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 	profilestorage "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profile"
@@ -49,6 +50,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		networkvsphere.Setup,
 		profile.Setup,
 		profileimageprofile.Setup,
+		integration.Setup,
 		project.Setup,
 		providerconfig.Setup,
 		profilestorage.Setup,

@@ -1,0 +1,14 @@
+apiVersion: integration.crossplane.io/v1alpha1
+kind: Integration
+metadata:
+  name: test-integration-2
+spec:
+  forProvider:
+    name: 'test-integration-2'
+    description: 'test-integration-2'
+    integrationType: 'saltstack'
+    integrationProperties: 
+      additionalProperties: ''
+
+  providerConfigRef:
+    name: vra-test

@@ -29,6 +29,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_catalog_source_entitlement": config.IdentifierFromProvider,
 	"vra_catalog_item_entitlement":   config.IdentifierFromProvider,
 	"vra_content_source":             config.IdentifierFromProvider,
+	"vra_integration":                config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
