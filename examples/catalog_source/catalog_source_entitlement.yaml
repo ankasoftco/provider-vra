@@ -1,0 +1,12 @@
+apiVersion: catalogsourceentitlement.crossplane.io/v1alpha1
+kind: CatalogSourceEntitlement
+metadata:
+  name: test-catalog-source-entitlement-2
+spec:
+  forProvider:
+    name: 'test-catalog-source-entitlement-2'
+    description: 'test-catalog-source-entitlement-2'
+    catalog_source_id: 
+
+  providerConfigRef:
+    name: vra-test

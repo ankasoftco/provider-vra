@@ -1,0 +1,12 @@
+apiVersion: catalogsourceblueprint.crossplane.io/v1alpha1
+kind: CatalogSourceBlueprint
+metadata:
+  name: test-catalog-source-blueprint-2
+spec:
+  forProvider:
+    name: 'test-catalog-source-blueprint-2'
+    description: 'test-catalog-source-blueprint-2'
+    catalog_source_id: ''
+
+  providerConfigRef:
+    name: vra-test
