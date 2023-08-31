@@ -19,6 +19,7 @@ import (
 	imageProfile "github.com/ankasoftco/upjet-provider-vra/config/image_profile"
 	integration "github.com/ankasoftco/upjet-provider-vra/config/integration"
 	loadBalancer "github.com/ankasoftco/upjet-provider-vra/config/load_balancer"
+	machine "github.com/ankasoftco/upjet-provider-vra/config/machine"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	storage "github.com/ankasoftco/upjet-provider-vra/config/storage"
 	ujconfig "github.com/upbound/upjet/pkg/config"
@@ -60,6 +61,7 @@ func GetProvider() *ujconfig.Provider {
 		contentSource.Configure,
 		integration.Configure,
 		loadBalancer.Configure,
+		machine.Configure,
 	} {
 		configure(pc)
 	}

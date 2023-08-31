@@ -1,0 +1,12 @@
+apiVersion: machine.crossplane.io/v1alpha1
+kind: Machine
+metadata:
+  name: test-machine-2
+spec:
+  forProvider:
+    name: 'test-machine-2'
+    description: 'test-machine-2'
+    flavor: ''
+
+  providerConfigRef:
+    name: vra-test
