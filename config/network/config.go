@@ -12,4 +12,20 @@ func Configure(p *config.Provider) {
 			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
 		}
 	})
+	p.AddResourceConfigurator("vra_network_ip_range", func(r *config.Resource) {
+		r.ShortGroup = "network"
+		r.Kind = "NetworkIPRange"
+		r.Version = "v1alpha1"
+		r.References["project_id"] = config.Reference{
+			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+		}
+	})
+	p.AddResourceConfigurator("vra_network_profile", func(r *config.Resource) {
+		r.ShortGroup = "network"
+		r.Kind = "NetworkProfile"
+		r.Version = "v1alpha1"
+		r.References["project_id"] = config.Reference{
+			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+		}
+	})
 }

@@ -1,0 +1,12 @@
+apiVersion: network.crossplane.io/v1alpha1
+kind: NetworkProfile
+metadata:
+  name: test-network-profile-2
+spec:
+  forProvider:
+    name: 'test-network-profile-2'
+    description: 'test-network-profile-2'
+    regionId: ''
+
+  providerConfigRef:
+    name: vra-test
