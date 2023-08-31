@@ -1,0 +1,19 @@
+apiVersion: contentsource.crossplane.io/v1alpha1
+kind: ContentSource
+metadata:
+  name: test-content-source-2
+spec:
+  forProvider:
+    name: 'test-content-source-2'
+    description: 'test-content-source-2'
+    syncEnabled: false
+    config: 
+    - path: 'test-blueprint-2'
+      projectName: 'master'
+      repository:  'vracontent/vra8_content_source_test'
+      integrationId: var.integration_id
+    typeId: ''
+    
+
+  providerConfigRef:
+    name: vra-test

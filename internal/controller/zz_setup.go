@@ -13,9 +13,10 @@ import (
 	blockdevicesnapshot "github.com/ankasoftco/upjet-provider-vra/internal/controller/blockdevice/blockdevicesnapshot"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/blueprint"
 	version "github.com/ankasoftco/upjet-provider-vra/internal/controller/blueprint/version"
-	itementitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalog/itementitlement"
+	catalogitementitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogitementitlement/catalogitementitlement"
 	catalogsourceblueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceblueprint/catalogsourceblueprint"
 	catalogsourceentitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceentitlement/catalogsourceentitlement"
+	contentsource "github.com/ankasoftco/upjet-provider-vra/internal/controller/contentsource/contentsource"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
 	compute "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/compute"
 	datastorevsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/datastorevsphere"
@@ -38,9 +39,10 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		blockdevicesnapshot.Setup,
 		blueprint.Setup,
 		version.Setup,
-		itementitlement.Setup,
+		catalogitementitlement.Setup,
 		catalogsourceblueprint.Setup,
 		catalogsourceentitlement.Setup,
+		contentsource.Setup,
 		deployment.Setup,
 		compute.Setup,
 		datastorevsphere.Setup,

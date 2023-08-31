@@ -1,0 +1,10 @@
+apiVersion: catalogitementitlement.crossplane.io/v1alpha1
+kind: CatalogItemEntitlement
+metadata:
+  name: test-catalog-item-entitlement-2
+spec:
+  forProvider:
+    catalogItemId: ''
+
+  providerConfigRef:
+    name: vra-test

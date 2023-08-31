@@ -12,9 +12,10 @@ import (
 
 	v1alpha1 "github.com/ankasoftco/upjet-provider-vra/apis/blockdevice/v1alpha1"
 	v1alpha1blueprint "github.com/ankasoftco/upjet-provider-vra/apis/blueprint/v1alpha1"
-	v1alpha1catalog "github.com/ankasoftco/upjet-provider-vra/apis/catalog/v1alpha1"
+	v1alpha1catalogitementitlement "github.com/ankasoftco/upjet-provider-vra/apis/catalogitementitlement/v1alpha1"
 	v1alpha1catalogsourceblueprint "github.com/ankasoftco/upjet-provider-vra/apis/catalogsourceblueprint/v1alpha1"
 	v1alpha1catalogsourceentitlement "github.com/ankasoftco/upjet-provider-vra/apis/catalogsourceentitlement/v1alpha1"
+	v1alpha1contentsource "github.com/ankasoftco/upjet-provider-vra/apis/contentsource/v1alpha1"
 	v1alpha1deployment "github.com/ankasoftco/upjet-provider-vra/apis/deployment/v1alpha1"
 	v1alpha1fabric "github.com/ankasoftco/upjet-provider-vra/apis/fabric/v1alpha1"
 	v1alpha1flavorprofile "github.com/ankasoftco/upjet-provider-vra/apis/flavorprofile/v1alpha1"
@@ -30,9 +31,10 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
 		v1alpha1blueprint.SchemeBuilder.AddToScheme,
-		v1alpha1catalog.SchemeBuilder.AddToScheme,
+		v1alpha1catalogitementitlement.SchemeBuilder.AddToScheme,
 		v1alpha1catalogsourceblueprint.SchemeBuilder.AddToScheme,
 		v1alpha1catalogsourceentitlement.SchemeBuilder.AddToScheme,
+		v1alpha1contentsource.SchemeBuilder.AddToScheme,
 		v1alpha1deployment.SchemeBuilder.AddToScheme,
 		v1alpha1fabric.SchemeBuilder.AddToScheme,
 		v1alpha1flavorprofile.SchemeBuilder.AddToScheme,

@@ -9,9 +9,10 @@ import (
 	_ "embed"
 
 	blockDevice "github.com/ankasoftco/upjet-provider-vra/config/block_device"
-	catalogItemEntitlement "github.com/ankasoftco/upjet-provider-vra/config/block_device"
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
+	catalogItemEntitlement "github.com/ankasoftco/upjet-provider-vra/config/catalog_item"
 	catalogSource "github.com/ankasoftco/upjet-provider-vra/config/catalog_source"
+	contentSource "github.com/ankasoftco/upjet-provider-vra/config/content_source"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
 	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
@@ -54,6 +55,7 @@ func GetProvider() *ujconfig.Provider {
 		storage.Configure,
 		catalogSource.Configure,
 		catalogItemEntitlement.Configure,
+		contentSource.Configure,
 	} {
 		configure(pc)
 	}

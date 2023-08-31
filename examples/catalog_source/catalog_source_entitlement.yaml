@@ -4,9 +4,7 @@ metadata:
   name: test-catalog-source-entitlement-2
 spec:
   forProvider:
-    name: 'test-catalog-source-entitlement-2'
-    description: 'test-catalog-source-entitlement-2'
-    catalog_source_id: 
+    catalogSourceId: ''
 
   providerConfigRef:
     name: vra-test
