@@ -23,6 +23,7 @@ import (
 	v1alpha1integration "github.com/ankasoftco/upjet-provider-vra/apis/integration/v1alpha1"
 	v1alpha1loadbalancer "github.com/ankasoftco/upjet-provider-vra/apis/loadbalancer/v1alpha1"
 	v1alpha1machine "github.com/ankasoftco/upjet-provider-vra/apis/machine/v1alpha1"
+	v1alpha1network "github.com/ankasoftco/upjet-provider-vra/apis/network/v1alpha1"
 	v1alpha1project "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1"
 	v1alpha1storage "github.com/ankasoftco/upjet-provider-vra/apis/storage/v1alpha1"
 	v1alpha1apis "github.com/ankasoftco/upjet-provider-vra/apis/v1alpha1"
@@ -45,6 +46,7 @@ func init() {
 		v1alpha1integration.SchemeBuilder.AddToScheme,
 		v1alpha1loadbalancer.SchemeBuilder.AddToScheme,
 		v1alpha1machine.SchemeBuilder.AddToScheme,
+		v1alpha1network.SchemeBuilder.AddToScheme,
 		v1alpha1project.SchemeBuilder.AddToScheme,
 		v1alpha1storage.SchemeBuilder.AddToScheme,
 		v1alpha1apis.SchemeBuilder.AddToScheme,

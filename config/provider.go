@@ -20,6 +20,7 @@ import (
 	integration "github.com/ankasoftco/upjet-provider-vra/config/integration"
 	loadBalancer "github.com/ankasoftco/upjet-provider-vra/config/load_balancer"
 	machine "github.com/ankasoftco/upjet-provider-vra/config/machine"
+	network "github.com/ankasoftco/upjet-provider-vra/config/network"
 	project "github.com/ankasoftco/upjet-provider-vra/config/project"
 	storage "github.com/ankasoftco/upjet-provider-vra/config/storage"
 	ujconfig "github.com/upbound/upjet/pkg/config"
@@ -62,6 +63,7 @@ func GetProvider() *ujconfig.Provider {
 		integration.Configure,
 		loadBalancer.Configure,
 		machine.Configure,
+		network.Configure,
 	} {
 		configure(pc)
 	}

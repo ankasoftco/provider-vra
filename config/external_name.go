@@ -32,6 +32,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_integration":                config.IdentifierFromProvider,
 	"vra_load_balancer":              config.IdentifierFromProvider,
 	"vra_machine":                    config.IdentifierFromProvider,
+	"vra_network":                    config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

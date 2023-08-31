@@ -26,6 +26,7 @@ import (
 	integration "github.com/ankasoftco/upjet-provider-vra/internal/controller/integration/integration"
 	loadbalancer "github.com/ankasoftco/upjet-provider-vra/internal/controller/loadbalancer/loadbalancer"
 	machine "github.com/ankasoftco/upjet-provider-vra/internal/controller/machine/machine"
+	network "github.com/ankasoftco/upjet-provider-vra/internal/controller/network/network"
 	project "github.com/ankasoftco/upjet-provider-vra/internal/controller/project/project"
 	providerconfig "github.com/ankasoftco/upjet-provider-vra/internal/controller/providerconfig"
 	profilestorage "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profile"
@@ -55,6 +56,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		integration.Setup,
 		loadbalancer.Setup,
 		machine.Setup,
+		network.Setup,
 		project.Setup,
 		providerconfig.Setup,
 		profilestorage.Setup,
