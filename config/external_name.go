@@ -35,6 +35,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"vra_network":                    config.IdentifierFromProvider,
 	"vra_network_ip_range":           config.IdentifierFromProvider,
 	"vra_network_profile":            config.IdentifierFromProvider,
+	"vra_zone":                       config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

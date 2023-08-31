@@ -1,0 +1,12 @@
+apiVersion: zone.crossplane.io/v1alpha1
+kind: Zone
+metadata:
+  name: test-zone-2
+spec:
+  forProvider:
+    name: 'test-zone-2'
+    description: 'test-zone-2'
+    regionId: ''
+
+  providerConfigRef:
+    name: vra-test

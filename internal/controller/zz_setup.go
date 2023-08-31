@@ -35,6 +35,7 @@ import (
 	profileaws "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profileaws"
 	profileazure "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profileazure"
 	profilevsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/storage/profilevsphere"
+	zone "github.com/ankasoftco/upjet-provider-vra/internal/controller/zone/zone"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
@@ -67,6 +68,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		profileaws.Setup,
 		profileazure.Setup,
 		profilevsphere.Setup,
+		zone.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
