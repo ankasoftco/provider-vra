@@ -1,11 +1,13 @@
 apiVersion: network.crossplane.io/v1alpha1
 kind: Network
 metadata:
-  name: test-network-2
+  name: test-network-4
 spec:
   forProvider:
-    name: 'test-network-2'
-    description: 'test-network-2'
+    name: 'test-network-4'
+    description: 'test-network-4'
+    projectIdRef:
+      name: 'test-project-2'
 
   providerConfigRef:
     name: vra-test

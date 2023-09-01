@@ -1,15 +1,14 @@
 apiVersion: network.crossplane.io/v1alpha1
 kind: NetworkIPRange
 metadata:
-  name: test-network-ip-range-2
+  name: test-network-ip-range-4
 spec:
   forProvider:
-    name: 'test-network-ip-range-2'
-    description: 'test-network-ip-range-2'
+    name: 'test-network-ip-range-4'
+    description: 'test-network-ip-range-4'
     endIpAddress: ''
     startIpAddress: ''
-    ipVersion: ''
-
+    ipVersion: 'IPv4'
 
   providerConfigRef:
     name: vra-test

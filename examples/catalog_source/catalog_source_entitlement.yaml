@@ -1,10 +1,12 @@
 apiVersion: catalogsourceentitlement.crossplane.io/v1alpha1
 kind: CatalogSourceEntitlement
 metadata:
-  name: test-catalog-source-entitlement-2
+  name: test-catalog-source-entitlement-5
 spec:
   forProvider:
-    catalogSourceId: ''
+    catalogSourceId: 'd8eedcfb-14af-4f9c-8e83-97c8ddf794ee'
+    projectIdRef:
+      name: 'test-project-2'
 
   providerConfigRef:
     name: vra-test

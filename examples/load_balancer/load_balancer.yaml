@@ -13,6 +13,8 @@ spec:
       memberProtocol: ''
       port: ''
       protocol: ''
+    projectIdRef:
+      name: 'test-project-2'
 
   providerConfigRef:
     name: vra-test

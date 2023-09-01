@@ -7,7 +7,7 @@ spec:
     name: 'test-block-device-2'
     description: 'test-block-device-2'
     projectId: c6d5cd18-a30b-447c-a8f0-24d9363fb6d8
-    capacityInGb: 20
+    capacityInGb: 2
 
   providerConfigRef:
     name: vra-test
