@@ -16,6 +16,12 @@ import (
 	catalogitementitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogitementitlement/catalogitementitlement"
 	catalogsourceblueprint "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceblueprint/catalogsourceblueprint"
 	catalogsourceentitlement "github.com/ankasoftco/upjet-provider-vra/internal/controller/catalogsourceentitlement/catalogsourceentitlement"
+	accountaws "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountaws"
+	accountazure "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountazure"
+	accountgcp "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountgcp"
+	accountnsxt "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountnsxt"
+	accountvmc "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountvmc"
+	accountvsphere "github.com/ankasoftco/upjet-provider-vra/internal/controller/cloudaccount/accountvsphere"
 	contentsource "github.com/ankasoftco/upjet-provider-vra/internal/controller/contentsource/contentsource"
 	deployment "github.com/ankasoftco/upjet-provider-vra/internal/controller/deployment/deployment"
 	compute "github.com/ankasoftco/upjet-provider-vra/internal/controller/fabric/compute"
@@ -49,6 +55,12 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		catalogitementitlement.Setup,
 		catalogsourceblueprint.Setup,
 		catalogsourceentitlement.Setup,
+		accountaws.Setup,
+		accountazure.Setup,
+		accountgcp.Setup,
+		accountnsxt.Setup,
+		accountvmc.Setup,
+		accountvsphere.Setup,
 		contentsource.Setup,
 		deployment.Setup,
 		compute.Setup,

@@ -12,6 +12,7 @@ import (
 	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
 	catalogItemEntitlement "github.com/ankasoftco/upjet-provider-vra/config/catalog_item"
 	catalogSource "github.com/ankasoftco/upjet-provider-vra/config/catalog_source"
+	cloudAccount "github.com/ankasoftco/upjet-provider-vra/config/cloud_account"
 	contentSource "github.com/ankasoftco/upjet-provider-vra/config/content_source"
 	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
@@ -60,6 +61,7 @@ func GetProvider() *ujconfig.Provider {
 		storage.Configure,
 		catalogSource.Configure,
 		catalogItemEntitlement.Configure,
+		cloudAccount.Configure,
 		contentSource.Configure,
 		integration.Configure,
 		loadBalancer.Configure,
