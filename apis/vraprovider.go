@@ -20,15 +20,15 @@ package apis
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 
-	samplev1alpha1 "github.com/crossplane/provider-vraprovider/apis/sample/v1alpha1"
 	vraproviderv1alpha1 "github.com/crossplane/provider-vraprovider/apis/v1alpha1"
+	vragroup "github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 )
 
 func init() {
 	// Register the types with the Scheme so the components can map objects to GroupVersionKinds and back
 	AddToSchemes = append(AddToSchemes,
 		vraproviderv1alpha1.SchemeBuilder.AddToScheme,
-		samplev1alpha1.SchemeBuilder.AddToScheme,
+		vragroup.SchemeBuilder.AddToScheme,
 	)
 }
 
