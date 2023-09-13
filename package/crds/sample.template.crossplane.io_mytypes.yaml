@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.12.1
-  name: mytypes.sample.template.crossplane.io
+  name: mytypes.sample.vraprovider.crossplane.io
 spec:
-  group: sample.template.crossplane.io
+  group: sample.vraprovider.crossplane.io
   names:
     categories:
     - crossplane
     - managed
-    - template
+    - vraprovider
     kind: MyType
     listKind: MyTypeList
     plural: mytypes
