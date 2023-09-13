@@ -1,12 +1,20 @@
-apiVersion: vra.crossplane.io/v1alpha1
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: crossplane-system
+  name: example-provider-secret
+type: Opaque
+data:
+  # credentials: BASE64ENCODED_PROVIDER_CREDS
+---
+apiVersion: template.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
-  name: default
+  name: example
 spec:
-  baseUrl: "api.mgmt.cloud.vmware.com"
   credentials:
     source: Secret
     secretRef:
       namespace: crossplane-system
-      name: provider-vra-secret
+      name: example-provider-secret
       key: credentials

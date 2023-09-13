@@ -1,15 +1,19 @@
 # ====================================================================================
 # Setup Project
-PROJECT_NAME := provider-vra
+PROJECT_NAME := provider-template
 PROJECT_REPO := github.com/crossplane/$(PROJECT_NAME)
 
 PLATFORMS ?= linux_amd64 linux_arm64
 -include build/makelib/common.mk
 
+# ====================================================================================
 # Setup Output
+
 -include build/makelib/output.mk
 
+# ====================================================================================
 # Setup Go
+
 NPROCS ?= 1
 GO_TEST_PARALLEL := $(shell echo $$(( $(NPROCS) / 2 )))
 GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider
@@ -18,29 +22,34 @@ GO_SUBDIRS += cmd internal apis
 GO111MODULE = on
 -include build/makelib/golang.mk
 
-# kind-related versions
-KIND_VERSION ?= v0.12.0
-KIND_NODE_IMAGE_TAG ?= v1.23.4
-
+# ====================================================================================
 # Setup Kubernetes tools
+
 -include build/makelib/k8s_tools.mk
 
+# ====================================================================================
 # Setup Images
-DOCKER_REGISTRY ?= ankasoftware
-IMAGES = $(PROJECT_NAME) $(PROJECT_NAME)-controller
--include build/makelib/image.mk
+
+IMAGES = provider-template
+-include build/makelib/imagelight.mk
+
+# ====================================================================================
+# Setup XPKG
+
+XPKG_REG_ORGS ?= xpkg.upbound.io/crossplane
+# NOTE(hasheddan): skip promoting on xpkg.upbound.io as channel tags are
+# inferred.
+XPKG_REG_ORGS_NO_PROMOTE ?= xpkg.upbound.io/crossplane
+XPKGS = provider-template
+-include build/makelib/xpkg.mk
+
+# NOTE(hasheddan): we force image building to happen prior to xpkg build so that
+# we ensure image is present in daemon.
+xpkg.build.provider-template: do.build.images
 
 fallthrough: submodules
 	@echo Initial setup complete. Running make again . . .
 	@make
-
-crds.clean:
-	@$(INFO) cleaning generated CRDs
-	@find package/crds -name *.yaml -exec sed -i.sed -e '1,2d' {} \; || $(FAIL)
-	@find package/crds -name *.yaml.sed -delete || $(FAIL)
-	@$(OK) cleaned generated CRDs
-
-generate: crds.clean
 
 # integration tests
 e2e.run: test-integration
@@ -65,6 +74,11 @@ submodules:
 go.cachedir:
 	@go env GOCACHE
 
+# NOTE(hasheddan): we must ensure up is installed in tool cache prior to build
+# as including the k8s_tools machinery prior to the xpkg machinery sets UP to
+# point to tool cache.
+build.init: $(UP)
+
 # This is for running out-of-cluster locally, and is for convenience. Running
 # this make target will print out the command which was used. For more control,
 # try running the binary directly with different arguments.
@@ -79,16 +93,16 @@ dev: $(KIND) $(KUBECTL)
 	@$(KUBECTL) cluster-info --context kind-$(PROJECT_NAME)-dev
 	@$(INFO) Installing Crossplane CRDs
 	@$(KUBECTL) apply -k https://github.com/crossplane/crossplane//cluster?ref=master
-	@$(INFO) Installing Provider vRA CRDs
+	@$(INFO) Installing Provider Template CRDs
 	@$(KUBECTL) apply -R -f package/crds
-	@$(INFO) Starting Provider vRA controllers
+	@$(INFO) Starting Provider Template controllers
 	@$(GO) run cmd/provider/main.go --debug
 
 dev-clean: $(KIND) $(KUBECTL)
 	@$(INFO) Deleting kind cluster
 	@$(KIND) delete cluster --name=$(PROJECT_NAME)-dev
 
-.PHONY: submodules fallthrough test-integration run crds.clean dev dev-clean
+.PHONY: submodules fallthrough test-integration run dev dev-clean
 
 # ====================================================================================
 # Special Targets
@@ -128,7 +142,7 @@ provider.addtype: $(GOMPLATE)
 	@[ "${provider}" ] || ( echo "argument \"provider\" is not set"; exit 1 )
 	@[ "${group}" ] || ( echo "argument \"group\" is not set"; exit 1 )
 	@[ "${kind}" ] || ( echo "argument \"kind\" is not set"; exit 1 )
-	@PROVIDER=$(provider) GROUP=$(group) KIND=$(kind) APIVERSION=$(apiversion) ./hack/helpers/addtype.sh
+	@PROVIDER=$(provider) GROUP=$(group) KIND=$(kind) APIVERSION=$(apiversion) PROJECT_REPO=$(PROJECT_REPO) ./hack/helpers/addtype.sh
 
 define CROSSPLANE_MAKE_HELP
 Crossplane Targets:

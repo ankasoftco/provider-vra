@@ -1,24 +1,10 @@
 apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Provider
 metadata:
-  name: provider-vra
+  name: provider-template
   annotations:
-    meta.crossplane.io/maintainer: Crossplane Maintainers <support@ankasoft.co>
-    meta.crossplane.io/source: github.com/ankasoftco/provider-vra
+    meta.crossplane.io/maintainer: Crossplane Maintainers <info@crossplane.io>
+    meta.crossplane.io/source: github.com/crossplane/provider-template
     meta.crossplane.io/license: Apache-2.0
     meta.crossplane.io/description: |
-      VMware Aria Automation (vRA) Crossplane provider adds support for
-      managing vRA resources with custom GO SDK in Kubernetes.
-    meta.crossplane.io/readme: |
-      `provider-vra` is the Crossplane infrastructure provider for [VMware Aria
-      Automation (vRA)](https://www.vmware.com/tr/products/vrealize-automation.html).
-      If you encounter an issue please reach out on
-      [slack.crossplane.io](https://slack.crossplane.io) and create an issue in
-      the
-      [ankasoftco/provider-jet-vra](https://github.com/ankasoftco/provider-vra)
-      repo.
-
-spec:
-  controller:
-    image: ankasoftware/provider-vra-controller:v0.0.1
-    # image: DOCKER_REGISTRY/provider-vra-controller:VERSION
+      A template that can be used to create Crossplane providers.

@@ -1,4 +1,4 @@
-w3w4w#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 
 # setting up colors
@@ -34,7 +34,7 @@ echo_error(){
 
 
 # The name of your provider. Many provider Makefiles override this value.
-PACKAGE_NAME="provider-vra"
+PACKAGE_NAME="provider-template"
 
 
 # ------------------------------
