@@ -40,8 +40,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: A ProviderConfigSpec defines the desired state of a ProviderConfig.
             properties:
+              baseUrl:
+                description: Base URL of the vRA Endpoint
+                type: string
               credentials:
                 description: Credentials required to authenticate to this provider.
                 properties:

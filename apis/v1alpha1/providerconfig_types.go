@@ -25,8 +25,10 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
 
-// A ProviderConfigSpec defines the desired state of a ProviderConfig.
 type ProviderConfigSpec struct {
+	// Base URL of the vRA Endpoint
+	BaseURL string `json:"baseUrl,omitempty"`
+
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`
 }

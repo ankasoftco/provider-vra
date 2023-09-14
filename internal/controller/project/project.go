@@ -21,7 +21,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/types"
+	"github.com/vmware/vra-sdk-go/pkg/client/project"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -32,18 +32,24 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
-	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	apisv1alpha1 "github.com/crossplane/provider-vraprovider/apis/v1alpha1"
+	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/features"
+
+	"github.com/crossplane/provider-vraprovider/internal/clients"
+	p "github.com/crossplane/provider-vraprovider/internal/clients/project"
 )
 
 const (
-	errNotProject    = "managed resource is not a Project custom resource"
+	errNotProject   = "managed resource is not a Project custom resource"
 	errTrackPCUsage = "cannot track ProviderConfig usage"
+	errCreateFailed = "cannot create project with vRA API"
+	// errGetFailed    = "cannot get project from vRA API"
+	errDeleteFailed = "cannot delete project from vRA API"
+	errUpdateFailed = "cannot update project from vRA API"
 	errGetPC        = "cannot get ProviderConfig"
 	errGetCreds     = "cannot get credentials"
-
-	errNewClient = "cannot create new Service"
+	errNewClient    = "cannot create new Service"
 )
 
 // A NoOpService does nothing.
@@ -67,7 +73,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: newNoOpService}),
+			newServiceFn: p.NewProjectClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
@@ -86,7 +92,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(creds []byte) (interface{}, error)
+	newServiceFn func(cfg clients.Config) project.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -95,6 +101,34 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
+	/*
+		cr, ok := mg.(*v1alpha1.Project)
+		if !ok {
+			return nil, errors.New(errNotProject)
+		}
+
+		if err := c.usage.Track(ctx, mg); err != nil {
+			return nil, errors.Wrap(err, errTrackPCUsage)
+		}
+
+		pc := &apisv1alpha1.ProviderConfig{}
+		if err := c.kube.Get(ctx, types.NamespacedName{Name: cr.GetProviderConfigReference().Name}, pc); err != nil {
+			return nil, errors.Wrap(err, errGetPC)
+		}
+
+		cd := pc.Spec.Credentials
+		data, err := resource.CommonCredentialExtractor(ctx, cd.Source, c.kube, cd.CommonCredentialSelectors)
+		if err != nil {
+			return nil, errors.Wrap(err, errGetCreds)
+		}
+
+		svc, err := c.newServiceFn(data)
+		if err != nil {
+			return nil, errors.Wrap(err, errNewClient)
+		}
+
+		return &external{service: svc}, nil
+	*/
 	cr, ok := mg.(*v1alpha1.Project)
 	if !ok {
 		return nil, errors.New(errNotProject)
@@ -104,31 +138,20 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 		return nil, errors.Wrap(err, errTrackPCUsage)
 	}
 
-	pc := &apisv1alpha1.ProviderConfig{}
-	if err := c.kube.Get(ctx, types.NamespacedName{Name: cr.GetProviderConfigReference().Name}, pc); err != nil {
-		return nil, errors.Wrap(err, errGetPC)
-	}
-
-	cd := pc.Spec.Credentials
-	data, err := resource.CommonCredentialExtractor(ctx, cd.Source, c.kube, cd.CommonCredentialSelectors)
+	cfg, err := clients.GetConfig(ctx, c.kube, cr)
 	if err != nil {
-		return nil, errors.Wrap(err, errGetCreds)
+		return nil, err
 	}
-
-	svc, err := c.newServiceFn(data)
-	if err != nil {
-		return nil, errors.Wrap(err, errNewClient)
-	}
-
-	return &external{service: svc}, nil
+	return &external{kube: c.kube, service: c.newServiceFn(*cfg)}, nil
 }
 
 // An ExternalClient observes, then either creates, updates, or deletes an
 // external resource to ensure it reflects the managed resource's desired state.
 type external struct {
+	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service interface{}
+	service project.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
