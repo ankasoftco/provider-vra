@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/pkg/errors"
 	"github.com/vmware/vra-sdk-go/pkg/client/project"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -28,6 +29,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
@@ -163,6 +165,32 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
 
+	externalName := meta.GetExternalName(cr)
+	if externalName == "" {
+		return managed.ExternalObservation{ResourceExists: false}, nil
+	}
+
+	projectID := externalName
+
+	params := p.GenerateGetProjectOptions(projectID)
+
+	// current value of the resource.
+	proj, _ := c.service.GetProject(params)
+
+	// desired value of the resource. (it reads the current yaml to determine desired state)
+	desired := cr.Spec.ForProvider.DeepCopy()
+
+	if proj == nil {
+		return managed.ExternalObservation{ResourceExists: false}, nil
+	}
+
+	resourceUpToDate := p.IsResourceUpToDate(desired, proj.Payload)
+
+	// TODO: Check the deployment process here...
+	cr.Status.AtProvider = p.GenerateProjectObservation(proj)
+	cr.Status.SetConditions(xpv1.Available())
+	// dep.Status
+
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
 		// the managed resource reconciler know that it needs to call Create to
@@ -172,7 +200,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		// Return false when the external resource exists, but it not up to date
 		// with the desired managed resource state. This lets the managed
 		// resource reconciler know that it needs to call Update.
-		ResourceUpToDate: true,
+		ResourceUpToDate: resourceUpToDate,
 
 		// Return any details that may be required to connect to the external
 		// resource. These will be stored as the connection secret.
@@ -187,6 +215,20 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 	}
 
 	fmt.Printf("Creating: %+v", cr)
+
+	cr.Status.SetConditions(xpv1.Creating())
+
+	projectParams := p.GenerateCreateProjectOptions(&cr.Spec.ForProvider)
+
+	response, err := c.service.CreateProject(projectParams)
+	if err != nil {
+		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
+	}
+
+	fmt.Println("Project Id: " + *response.Payload.ID)
+	meta.SetExternalName(cr, fmt.Sprint(*response.Payload.ID))
+
+	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalCreation{
 		// Optionally return any details that may be required to connect to the
@@ -203,6 +245,16 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	fmt.Printf("Updating: %+v", cr)
 
+	cr.Status.SetConditions(xpv1.Creating())
+
+	externalName := meta.GetExternalName(cr)
+	params := p.GenerateUpdateProjectOptions(externalName, &cr.Spec.ForProvider)
+
+	if _, err := c.service.UpdateProject(params); err != nil {
+		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
+	}
+	cr.Status.SetConditions(xpv1.Available())
+
 	return managed.ExternalUpdate{
 		// Optionally return any details that may be required to connect to the
 		// external resource. These will be stored as the connection secret.
@@ -217,6 +269,16 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
+
+	externalName := meta.GetExternalName(cr)
+
+	params := p.GenerateDeleteProjectOptions(externalName)
+	if _, err := c.service.DeleteProject(params); err != nil {
+		return errors.Wrap(err, errDeleteFailed)
+	}
+	// todo: check the decommissioning process here...
+
+	cr.Status.SetConditions(xpv1.Deleting())
 
 	return nil
 }
