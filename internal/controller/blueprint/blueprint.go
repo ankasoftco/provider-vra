@@ -27,6 +27,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
@@ -35,6 +36,7 @@ import (
 	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/features"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/provider-vraprovider/internal/clients"
 	p "github.com/crossplane/provider-vraprovider/internal/clients/blueprint"
 	"github.com/vmware/vra-sdk-go/pkg/client/blueprint"
@@ -135,6 +137,32 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
 
+	externalName := meta.GetExternalName(cr)
+	if externalName == "" {
+		return managed.ExternalObservation{ResourceExists: false}, nil
+	}
+
+	blueprintID := externalName
+
+	params := p.GenerateGetBlueprintOptions(blueprintID)
+
+	// current value of the resource.
+	b, _ := c.service.GetBlueprintUsingGET1(params)
+
+	// desired value of the resource. (it reads the current yaml to determine desired state)
+	desired := cr.Spec.ForProvider.DeepCopy()
+
+	if b == nil {
+		return managed.ExternalObservation{ResourceExists: false}, nil
+	}
+
+	ResourceUpToDate := p.IsResourceUpToDate(desired, b.Payload)
+
+	// TODO: Check the deployment process here...
+	cr.Status.AtProvider = p.GenerateBlueprintObservation(b)
+	cr.Status.SetConditions(xpv1.Available())
+	// dep.Status
+
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
 		// the managed resource reconciler know that it needs to call Create to
@@ -144,7 +172,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		// Return false when the external resource exists, but it not up to date
 		// with the desired managed resource state. This lets the managed
 		// resource reconciler know that it needs to call Update.
-		ResourceUpToDate: true,
+		ResourceUpToDate: ResourceUpToDate,
 
 		// Return any details that may be required to connect to the external
 		// resource. These will be stored as the connection secret.

@@ -7,10 +7,13 @@ package blueprint
 import (
 	"fmt"
 
+	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/clients"
 	"github.com/crossplane/provider-vraprovider/internal/clients/login"
+	"github.com/go-openapi/strfmt"
 
 	"github.com/vmware/vra-sdk-go/pkg/client/blueprint"
+	"github.com/vmware/vra-sdk-go/pkg/models"
 )
 
 // NewBlueprintClient returns a new vRA Blueprint service
@@ -25,16 +28,13 @@ func NewBlueprintClient(cfg clients.Config) blueprint.ClientService {
 	return vra.Blueprint
 }
 
-// GenerateGetBlueprintOptions fetches a specific blueprint
-/*
-func GenerateGetBlueprintOptions(blueprintID string) *blueprint.GetBlueprintParams {
-
-	var params = blueprint.NewGetBlueprintParams().WithID(
-		blueprintID,
+// GenerateGetBlueprintOptions fetches a specific blueprintGetBlueprintParams
+func GenerateGetBlueprintOptions(blueprintID string) *blueprint.GetBlueprintUsingGET1Params {
+	var params = blueprint.NewGetBlueprintUsingGET1Params().WithBlueprintID(
+		strfmt.UUID(blueprintID),
 	)
 	return params
 }
-*/
 
 /*func convertUser(users []*v1alpha1.User) []*models.User {
 	convertedUsers := []*models.User{}
@@ -46,29 +46,30 @@ func GenerateGetBlueprintOptions(blueprintID string) *blueprint.GetBlueprintPara
 }*/
 
 // GenerateCreateBlueprintOptions generates blueprint creation options
-/*
-func GenerateCreateBlueprintOptions(p *v1alpha1.BlueprintParameters) *blueprint.CreateBlueprintParams {
+func GenerateCreateBlueprintOptions(p *v1alpha1.BlueprintParameters) *blueprint.CreateBlueprintUsingPOST1Params {
 
-	var params = blueprint.NewCreateBlueprintParams().WithBody(
-		&models.IaaSBlueprintSpecification{
-			Administrators:        *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
-			Constraints:           *(*map[string][]models.Constraint)(unsafe.Pointer(&p.Constraints)),
-			CustomProperties:      p.CustomProperties,
-			Description:           p.Description,
-			MachineNamingTemplate: p.MachineNamingTemplate,
-			Members:               *(*[]*models.User)(unsafe.Pointer(&p.Members)),
-			Name:                  p.Name,
-			OperationTimeout:      p.OperationTimeout,
-			PlacementPolicy:       p.PlacementPolicy,
-			//SharedResources:              p.SharedResources,
-			Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
-			ZoneAssignmentConfigurations: *(*[]*models.ZoneAssignmentSpecification)(unsafe.Pointer(&p.ZoneAssignmentConfigurations)),
+	var params = blueprint.NewCreateBlueprintUsingPOST1Params().WithBlueprint(
+		&models.Blueprint{
+			/*
+				Administrators:        *(*[]*models.User)(unsafe.Pointer(&p.Administrators)),
+				Constraints:           *(*map[string][]models.Constraint)(unsafe.Pointer(&p.Constraints)),
+				CustomProperties:      p.CustomProperties,
+				Description:           p.Description,
+				MachineNamingTemplate: p.MachineNamingTemplate,
+				Members:               *(*[]*models.User)(unsafe.Pointer(&p.Members)),
+				Name:                  p.Name,
+				OperationTimeout:      p.OperationTimeout,
+				PlacementPolicy:       p.PlacementPolicy,
+				//SharedResources:              p.SharedResources,
+				Viewers:                      *(*[]*models.User)(unsafe.Pointer(&p.Viewers)),
+				ZoneAssignmentConfigurations: *(*[]*models.ZoneAssignmentSpecification)(unsafe.Pointer(&p.ZoneAssignmentConfigurations)),
+			*/
 		},
 	)
 
 	return params
 }
-*/
+
 /*
 // GenerateDeleteBlueprintOptions test
 func GenerateDeleteBlueprintOptions(blueprintID string) *blueprint.DeleteBlueprintParams {
@@ -99,61 +100,64 @@ func GenerateUpdateBlueprintOptions(blueprintID string, p *v1alpha1.BlueprintPar
 	})
 	return params
 }
-
+*/
 // GenerateBlueprintObservation is used to produce v1alpha1.BlueprintObservation
-func GenerateBlueprintObservation(blueprint *blueprint.GetBlueprintOK) v1alpha1.BlueprintObservation { // nolint:gocyclo
+func GenerateBlueprintObservation(blueprint *blueprint.GetBlueprintUsingGET1OK) v1alpha1.BlueprintObservation { // nolint:gocyclo
 	if blueprint.Payload == nil {
 		return v1alpha1.BlueprintObservation{}
 	}
 
 	o := v1alpha1.BlueprintObservation{
-		Name:            &blueprint.Payload.Name,
-		ID:              *blueprint.Payload.ID,
-		Administrators:  *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Administrators)),
-		Members:         *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Members)),
-		Viewers:         *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Viewers)),
-		PlacementPolicy: blueprint.Payload.PlacementPolicy,
-		//SharedResources:              blueprint.Payload.SharedResources,
-		OperationTimeout:             &blueprint.Payload.OperationTimeout,
-		MachineNamingTemplate:        blueprint.Payload.MachineNamingTemplate,
-		Description:                  blueprint.Payload.Description,
-		ZoneAssignmentConfigurations: *(*[]*v1alpha1.ZoneAssignmentSpecification)(unsafe.Pointer(&blueprint.Payload.Zones)),
-		Constraints:                  *(*map[string][]v1alpha1.Constraint)(unsafe.Pointer(&blueprint.Payload.Constraints)),
-		CustomProperties:             blueprint.Payload.CustomProperties,
+		/*
+			Name:            &blueprint.Payload.Name,
+			ID:              *blueprint.Payload.ID,
+			Administrators:  *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Administrators)),
+			Members:         *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Members)),
+			Viewers:         *(*[]*v1alpha1.User)(unsafe.Pointer(&blueprint.Payload.Viewers)),
+			PlacementPolicy: blueprint.Payload.PlacementPolicy,
+			//SharedResources:              blueprint.Payload.SharedResources,
+			OperationTimeout:             &blueprint.Payload.OperationTimeout,
+			MachineNamingTemplate:        blueprint.Payload.MachineNamingTemplate,
+			Description:                  blueprint.Payload.Description,
+			ZoneAssignmentConfigurations: *(*[]*v1alpha1.ZoneAssignmentSpecification)(unsafe.Pointer(&blueprint.Payload.Zones)),
+			Constraints:                  *(*map[string][]v1alpha1.Constraint)(unsafe.Pointer(&blueprint.Payload.Constraints)),
+			CustomProperties:             blueprint.Payload.CustomProperties,
+		*/
 	}
 
 	return o
 }
 
-func IsResourceUpToDate(desired *v1alpha1.BlueprintParameters, current *models.IaaSBlueprint) bool {
-
-	if current.Name != *desired.Name || current.Description != desired.Description ||
-		current.PlacementPolicy != desired.PlacementPolicy || current.MachineNamingTemplate != desired.MachineNamingTemplate ||
-		current.OperationTimeout != *desired.OperationTimeout {
-		return false
-	}
-	if !CompareUsers(current.Administrators, desired.Administrators) {
-		return false
-	}
-	if !CompareUsers(current.Members, desired.Members) {
-		return false
-	}
-	if !CompareUsers(current.Viewers, desired.Viewers) {
-		return false
-	}
-	if !CompareZones(current.Zones, desired.ZoneAssignmentConfigurations) {
-		return false
-	}
-	if !CompareCustomProperties(current.CustomProperties, desired.CustomProperties) {
-		return false
-	}
-	if !CompareConstraints(current.Constraints, desired.Constraints) {
-		return false
-	}
-
+func IsResourceUpToDate(desired *v1alpha1.BlueprintParameters, current *models.Blueprint) bool {
+	/*
+		if current.Name != *desired.Name || current.Description != desired.Description ||
+			current.PlacementPolicy != desired.PlacementPolicy || current.MachineNamingTemplate != desired.MachineNamingTemplate ||
+			current.OperationTimeout != *desired.OperationTimeout {
+			return false
+		}
+		if !CompareUsers(current.Administrators, desired.Administrators) {
+			return false
+		}
+		if !CompareUsers(current.Members, desired.Members) {
+			return false
+		}
+		if !CompareUsers(current.Viewers, desired.Viewers) {
+			return false
+		}
+		if !CompareZones(current.Zones, desired.ZoneAssignmentConfigurations) {
+			return false
+		}
+		if !CompareCustomProperties(current.CustomProperties, desired.CustomProperties) {
+			return false
+		}
+		if !CompareConstraints(current.Constraints, desired.Constraints) {
+			return false
+		}
+	*/
 	return true
 }
 
+/*
 func CompareConstraints(c1 map[string][]models.Constraint, c2 map[string][]v1alpha1.Constraint) bool {
 	if len(c1) != len(c2) {
 		return false
