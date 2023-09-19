@@ -20,6 +20,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	blueprint "github.com/crossplane/provider-vraprovider/internal/controller/Blueprint"
 	project "github.com/crossplane/provider-vraprovider/internal/controller/Project"
 	"github.com/crossplane/provider-vraprovider/internal/controller/config"
 )
@@ -30,6 +31,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
 		project.Setup,
+		blueprint.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

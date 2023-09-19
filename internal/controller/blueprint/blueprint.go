@@ -14,22 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package project
+package blueprint
 
 import (
 	"context"
 	"fmt"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/pkg/errors"
-	"github.com/vmware/vra-sdk-go/pkg/client/project"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
@@ -39,18 +36,20 @@ import (
 	"github.com/crossplane/provider-vraprovider/internal/features"
 
 	"github.com/crossplane/provider-vraprovider/internal/clients"
-	p "github.com/crossplane/provider-vraprovider/internal/clients/project"
+	p "github.com/crossplane/provider-vraprovider/internal/clients/blueprint"
+	"github.com/vmware/vra-sdk-go/pkg/client/blueprint"
 )
 
 const (
-	errNotProject   = "managed resource is not a Project custom resource"
+	errNotBlueprint = "managed resource is not a Blueprint custom resource"
 	errTrackPCUsage = "cannot track ProviderConfig usage"
-	errCreateFailed = "cannot create project with vRA API"
-	errDeleteFailed = "cannot delete project from vRA API"
-	errUpdateFailed = "cannot update project from vRA API"
 	errGetPC        = "cannot get ProviderConfig"
 	errGetCreds     = "cannot get credentials"
-	errNewClient    = "cannot create new Service"
+	errCreateFailed = "cannot create blueprint with vRA API"
+	errDeleteFailed = "cannot delete blueprint from vRA API"
+	errUpdateFailed = "cannot update blueprint from vRA API"
+
+	errNewClient = "cannot create new Service"
 )
 
 // A NoOpService does nothing.
@@ -60,9 +59,9 @@ var (
 	newNoOpService = func(_ []byte) (interface{}, error) { return &NoOpService{}, nil }
 )
 
-// Setup adds a controller that reconciles Project managed resources.
+// Setup adds a controller that reconciles Blueprint managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.ProjectGroupKind)
+	name := managed.ControllerName(v1alpha1.BlueprintGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
 	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
@@ -70,11 +69,11 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.ProjectGroupVersionKind),
+		resource.ManagedKind(v1alpha1.BlueprintGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: p.NewProjectClient}),
+			newServiceFn: p.NewBlueprintClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
@@ -84,7 +83,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.Project{}).
+		For(&v1alpha1.Blueprint{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -93,7 +92,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(cfg clients.Config) project.ClientService
+	newServiceFn func(cfg clients.Config) blueprint.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -102,9 +101,9 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.Project)
+	cr, ok := mg.(*v1alpha1.Blueprint)
 	if !ok {
-		return nil, errors.New(errNotProject)
+		return nil, errors.New(errNotBlueprint)
 	}
 
 	if err := c.usage.Track(ctx, mg); err != nil {
@@ -124,43 +123,17 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service project.ClientService
+	service blueprint.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.Project)
+	cr, ok := mg.(*v1alpha1.Blueprint)
 	if !ok {
-		return managed.ExternalObservation{}, errors.New(errNotProject)
+		return managed.ExternalObservation{}, errors.New(errNotBlueprint)
 	}
 
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
-
-	externalName := meta.GetExternalName(cr)
-	if externalName == "" {
-		return managed.ExternalObservation{ResourceExists: false}, nil
-	}
-
-	projectID := externalName
-
-	params := p.GenerateGetProjectOptions(projectID)
-
-	// current value of the resource.
-	proj, _ := c.service.GetProject(params)
-
-	// desired value of the resource. (it reads the current yaml to determine desired state)
-	desired := cr.Spec.ForProvider.DeepCopy()
-
-	if proj == nil {
-		return managed.ExternalObservation{ResourceExists: false}, nil
-	}
-
-	resourceUpToDate := p.IsResourceUpToDate(desired, proj.Payload)
-
-	// TODO: Check the deployment process here...
-	cr.Status.AtProvider = p.GenerateProjectObservation(proj)
-	cr.Status.SetConditions(xpv1.Available())
-	// dep.Status
 
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
@@ -171,7 +144,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		// Return false when the external resource exists, but it not up to date
 		// with the desired managed resource state. This lets the managed
 		// resource reconciler know that it needs to call Update.
-		ResourceUpToDate: resourceUpToDate,
+		ResourceUpToDate: true,
 
 		// Return any details that may be required to connect to the external
 		// resource. These will be stored as the connection secret.
@@ -180,26 +153,12 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.Project)
+	cr, ok := mg.(*v1alpha1.Blueprint)
 	if !ok {
-		return managed.ExternalCreation{}, errors.New(errNotProject)
+		return managed.ExternalCreation{}, errors.New(errNotBlueprint)
 	}
 
 	fmt.Printf("Creating: %+v", cr)
-
-	cr.Status.SetConditions(xpv1.Creating())
-
-	projectParams := p.GenerateCreateProjectOptions(&cr.Spec.ForProvider)
-
-	response, err := c.service.CreateProject(projectParams)
-	if err != nil {
-		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
-	}
-
-	fmt.Println("Project Id: " + *response.Payload.ID)
-	meta.SetExternalName(cr, fmt.Sprint(*response.Payload.ID))
-
-	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalCreation{
 		// Optionally return any details that may be required to connect to the
@@ -209,22 +168,12 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.Project)
+	cr, ok := mg.(*v1alpha1.Blueprint)
 	if !ok {
-		return managed.ExternalUpdate{}, errors.New(errNotProject)
+		return managed.ExternalUpdate{}, errors.New(errNotBlueprint)
 	}
 
 	fmt.Printf("Updating: %+v", cr)
-
-	cr.Status.SetConditions(xpv1.Creating())
-
-	externalName := meta.GetExternalName(cr)
-	params := p.GenerateUpdateProjectOptions(externalName, &cr.Spec.ForProvider)
-
-	if _, err := c.service.UpdateProject(params); err != nil {
-		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
-	}
-	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalUpdate{
 		// Optionally return any details that may be required to connect to the
@@ -234,22 +183,12 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
-	cr, ok := mg.(*v1alpha1.Project)
+	cr, ok := mg.(*v1alpha1.Blueprint)
 	if !ok {
-		return errors.New(errNotProject)
+		return errors.New(errNotBlueprint)
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
-
-	externalName := meta.GetExternalName(cr)
-
-	params := p.GenerateDeleteProjectOptions(externalName)
-	if _, err := c.service.DeleteProject(params); err != nil {
-		return errors.Wrap(err, errDeleteFailed)
-	}
-	// todo: check the decommissioning process here...
-
-	cr.Status.SetConditions(xpv1.Deleting())
 
 	return nil
 }
