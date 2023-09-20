@@ -1,0 +1,7 @@
+apiVersion: vra.vraprovider.crossplane.io/v1alpha1
+kind: CatalogItem
+metadata:
+  name: vra-workflow-crossplane-testv2-1
+spec:
+  forProvider:
+    configurableField: "test"

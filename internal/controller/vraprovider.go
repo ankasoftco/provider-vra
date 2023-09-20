@@ -21,6 +21,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	blueprint "github.com/crossplane/provider-vraprovider/internal/controller/Blueprint"
+	catalogitem "github.com/crossplane/provider-vraprovider/internal/controller/CatalogItem"
+	deployment "github.com/crossplane/provider-vraprovider/internal/controller/Deployment"
 	project "github.com/crossplane/provider-vraprovider/internal/controller/Project"
 	"github.com/crossplane/provider-vraprovider/internal/controller/config"
 )
@@ -32,6 +34,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		config.Setup,
 		project.Setup,
 		blueprint.Setup,
+		deployment.Setup,
+		catalogitem.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
