@@ -1,0 +1,15 @@
+apiVersion: vra.vraprovider.crossplane.io/v1alpha1
+kind: DeploymentActions
+metadata:
+  name: vra-action-crossplane-testv2-1
+spec:
+  forProvider:
+    actionId: Deployment.EditDeployment
+    deploymentId: 02708d8f-8a67-42be-bfea-a05ffc82dc08
+    reason: Crossplane Test
+    inputs:
+      Name: ABC_ANKATEST-5
+      Description: Pipeline Service triggered operation
+
+  providerConfigRef:
+    name: default

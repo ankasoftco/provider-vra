@@ -23,6 +23,7 @@ import (
 	blueprint "github.com/crossplane/provider-vraprovider/internal/controller/Blueprint"
 	catalogitem "github.com/crossplane/provider-vraprovider/internal/controller/CatalogItem"
 	deployment "github.com/crossplane/provider-vraprovider/internal/controller/Deployment"
+	deployment_actions "github.com/crossplane/provider-vraprovider/internal/controller/DeploymentActions"
 	project "github.com/crossplane/provider-vraprovider/internal/controller/Project"
 	"github.com/crossplane/provider-vraprovider/internal/controller/config"
 )
@@ -36,6 +37,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		blueprint.Setup,
 		deployment.Setup,
 		catalogitem.Setup,
+		deployment_actions.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
