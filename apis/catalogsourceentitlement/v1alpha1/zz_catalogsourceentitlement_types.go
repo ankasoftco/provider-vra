@@ -33,7 +33,7 @@ type CatalogSourceEntitlementParameters struct {
 	CatalogSourceID *string `json:"catalogSourceId,omitempty" tf:"catalog_source_id,omitempty"`
 
 	// Project id.
-	// +crossplane:generate:reference:type=github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project
+	// +crossplane:generate:reference:type=github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project
 	// +kubebuilder:validation:Optional
 	ProjectID *string `json:"projectId,omitempty" tf:"project_id,omitempty"`
 

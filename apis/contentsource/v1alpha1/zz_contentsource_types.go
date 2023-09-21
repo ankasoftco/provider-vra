@@ -85,7 +85,7 @@ type ContentSourceParameters struct {
 	// +kubebuilder:validation:Optional
 	Name *string `json:"name,omitempty" tf:"name,omitempty"`
 
-	// +crossplane:generate:reference:type=github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project
+	// +crossplane:generate:reference:type=github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project
 	// +kubebuilder:validation:Optional
 	ProjectID *string `json:"projectId,omitempty" tf:"project_id,omitempty"`
 

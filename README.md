@@ -1,6 +1,6 @@
 # Provider vRA
 
-`upjet-provider-vra` is a [Crossplane](https://crossplane.io/) provider that
+`provider-vra` is a [Crossplane](https://crossplane.io/) provider that
 is built using [Upjet](https://github.com/upbound/upjet) code
 generation tools and exposes XRM-conformant managed resources for the
 vRA API.
@@ -8,10 +8,10 @@ vRA API.
 ## Getting Started
 
 Install the provider by using the following command after changing the image tag
-to the [latest release](https://marketplace.upbound.io/providers/ankasoftco/upjet-provider-vra):
+to the [latest release](https://marketplace.upbound.io/providers/ankasoftco/provider-vra):
 
 ```
-up ctp provider install ankasoftco/upjet-provider-vra:v0.1.0
+up ctp provider install ankasoftco/provider-vra:v0.1.0
 ```
 
 Alternatively, you can use declarative installation:
@@ -21,15 +21,15 @@ cat <<EOF | kubectl apply -f -
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: upjet-provider-vra
+  name: provider-vra
 spec:
-  package: ankasoftco/upjet-provider-vra:v0.1.0
+  package: ankasoftco/provider-vra:v0.1.0
 EOF
 ```
 
 Notice that in this example Provider resource is referencing ControllerConfig with debug enabled.
 
-You can see the API reference [here](https://doc.crds.dev/github.com/ankasoftco/upjet-provider-vra).
+You can see the API reference [here](https://doc.crds.dev/github.com/ankasoftco/provider-vra).
 
 ## Developing
 
@@ -60,4 +60,4 @@ make build
 ## Report a Bug
 
 For filing bugs, suggesting improvements, or requesting new features, please
-open an [issue](https://github.com/ankasoftco/upjet-provider-vra/issues).
+open an [issue](https://github.com/ankasoftco/provider-vra/issues).

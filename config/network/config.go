@@ -9,7 +9,7 @@ func Configure(p *config.Provider) {
 		r.Kind = "Network"
 		r.Version = "v1alpha1"
 		r.References["project_id"] = config.Reference{
-			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+			Type: "github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project",
 		}
 	})
 	p.AddResourceConfigurator("vra_network_ip_range", func(r *config.Resource) {
@@ -17,7 +17,7 @@ func Configure(p *config.Provider) {
 		r.Kind = "NetworkIPRange"
 		r.Version = "v1alpha1"
 		r.References["project_id"] = config.Reference{
-			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+			Type: "github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project",
 		}
 	})
 	p.AddResourceConfigurator("vra_network_profile", func(r *config.Resource) {
@@ -25,7 +25,7 @@ func Configure(p *config.Provider) {
 		r.Kind = "NetworkProfile"
 		r.Version = "v1alpha1"
 		r.References["project_id"] = config.Reference{
-			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+			Type: "github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project",
 		}
 	})
 }

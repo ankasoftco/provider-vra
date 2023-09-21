@@ -8,29 +8,29 @@ import (
 	// Note(turkenh): we are importing this to embed provider schema document
 	_ "embed"
 
-	blockDevice "github.com/ankasoftco/upjet-provider-vra/config/block_device"
-	blueprint "github.com/ankasoftco/upjet-provider-vra/config/blueprint"
-	catalogItemEntitlement "github.com/ankasoftco/upjet-provider-vra/config/catalog_item"
-	catalogSource "github.com/ankasoftco/upjet-provider-vra/config/catalog_source"
-	cloudAccount "github.com/ankasoftco/upjet-provider-vra/config/cloud_account"
-	contentSource "github.com/ankasoftco/upjet-provider-vra/config/content_source"
-	deployment "github.com/ankasoftco/upjet-provider-vra/config/deployment"
-	fabric "github.com/ankasoftco/upjet-provider-vra/config/fabric"
-	flavorProfile "github.com/ankasoftco/upjet-provider-vra/config/flavor_profile"
-	imageProfile "github.com/ankasoftco/upjet-provider-vra/config/image_profile"
-	integration "github.com/ankasoftco/upjet-provider-vra/config/integration"
-	loadBalancer "github.com/ankasoftco/upjet-provider-vra/config/load_balancer"
-	machine "github.com/ankasoftco/upjet-provider-vra/config/machine"
-	network "github.com/ankasoftco/upjet-provider-vra/config/network"
-	project "github.com/ankasoftco/upjet-provider-vra/config/project"
-	storage "github.com/ankasoftco/upjet-provider-vra/config/storage"
-	zone "github.com/ankasoftco/upjet-provider-vra/config/zone"
+	blockDevice "github.com/ankasoftco/provider-vra/config/block_device"
+	blueprint "github.com/ankasoftco/provider-vra/config/blueprint"
+	catalogItemEntitlement "github.com/ankasoftco/provider-vra/config/catalog_item"
+	catalogSource "github.com/ankasoftco/provider-vra/config/catalog_source"
+	cloudAccount "github.com/ankasoftco/provider-vra/config/cloud_account"
+	contentSource "github.com/ankasoftco/provider-vra/config/content_source"
+	deployment "github.com/ankasoftco/provider-vra/config/deployment"
+	fabric "github.com/ankasoftco/provider-vra/config/fabric"
+	flavorProfile "github.com/ankasoftco/provider-vra/config/flavor_profile"
+	imageProfile "github.com/ankasoftco/provider-vra/config/image_profile"
+	integration "github.com/ankasoftco/provider-vra/config/integration"
+	loadBalancer "github.com/ankasoftco/provider-vra/config/load_balancer"
+	machine "github.com/ankasoftco/provider-vra/config/machine"
+	network "github.com/ankasoftco/provider-vra/config/network"
+	project "github.com/ankasoftco/provider-vra/config/project"
+	storage "github.com/ankasoftco/provider-vra/config/storage"
+	zone "github.com/ankasoftco/provider-vra/config/zone"
 	ujconfig "github.com/upbound/upjet/pkg/config"
 )
 
 const (
 	resourcePrefix = "vra"
-	modulePath     = "github.com/ankasoftco/upjet-provider-vra"
+	modulePath     = "github.com/ankasoftco/provider-vra"
 )
 
 //go:embed schema.json

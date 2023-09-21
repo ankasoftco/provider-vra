@@ -25,12 +25,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/ankasoftco/upjet-provider-vra/apis"
-	"github.com/ankasoftco/upjet-provider-vra/apis/v1alpha1"
-	"github.com/ankasoftco/upjet-provider-vra/config"
-	"github.com/ankasoftco/upjet-provider-vra/internal/clients"
-	"github.com/ankasoftco/upjet-provider-vra/internal/controller"
-	"github.com/ankasoftco/upjet-provider-vra/internal/features"
+	"github.com/ankasoftco/provider-vra/apis"
+	"github.com/ankasoftco/provider-vra/apis/v1alpha1"
+	"github.com/ankasoftco/provider-vra/config"
+	"github.com/ankasoftco/provider-vra/internal/clients"
+	"github.com/ankasoftco/provider-vra/internal/controller"
+	"github.com/ankasoftco/provider-vra/internal/features"
 )
 
 func main() {
@@ -54,7 +54,7 @@ func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	zl := zap.New(zap.UseDevMode(*debug))
-	log := logging.NewLogrLogger(zl.WithName("upjet-provider-vra"))
+	log := logging.NewLogrLogger(zl.WithName("provider-vra"))
 	if *debug {
 		// The controller-runtime runs with a no-op logger by default. It is
 		// *very* verbose even at info level, so we only provide it a real
@@ -69,7 +69,7 @@ func main() {
 
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		LeaderElection:             *leaderElection,
-		LeaderElectionID:           "crossplane-leader-election-upjet-provider-vra",
+		LeaderElectionID:           "crossplane-leader-election-provider-vra",
 		SyncPeriod:                 syncPeriod,
 		LeaderElectionResourceLock: resourcelock.LeasesResourceLock,
 		LeaseDuration:              func() *time.Duration { d := 60 * time.Second; return &d }(),

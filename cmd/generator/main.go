@@ -11,7 +11,7 @@ import (
 
 	"github.com/upbound/upjet/pkg/pipeline"
 
-	"github.com/ankasoftco/upjet-provider-vra/config"
+	"github.com/ankasoftco/provider-vra/config"
 )
 
 func main() {

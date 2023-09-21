@@ -18,8 +18,8 @@ import (
 	"github.com/upbound/upjet/pkg/terraform"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	v1alpha1 "github.com/ankasoftco/upjet-provider-vra/apis/fabric/v1alpha1"
-	features "github.com/ankasoftco/upjet-provider-vra/internal/features"
+	v1alpha1 "github.com/ankasoftco/provider-vra/apis/fabric/v1alpha1"
+	features "github.com/ankasoftco/provider-vra/internal/features"
 )
 
 // Setup adds a controller that reconciles NetworkVsphere managed resources.

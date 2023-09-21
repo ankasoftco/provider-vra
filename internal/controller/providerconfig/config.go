@@ -13,7 +13,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/upbound/upjet/pkg/controller"
 
-	"github.com/ankasoftco/upjet-provider-vra/apis/v1beta1"
+	"github.com/ankasoftco/provider-vra/apis/v1beta1"
 )
 
 // Setup adds a controller that reconciles ProviderConfigs by accounting for

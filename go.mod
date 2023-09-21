@@ -1,4 +1,4 @@
-module github.com/ankasoftco/upjet-provider-vra
+module github.com/ankasoftco/provider-vra
 
 go 1.19
 

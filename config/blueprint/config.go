@@ -9,7 +9,7 @@ func Configure(p *config.Provider) {
 		r.ShortGroup = "blueprint"
 		r.Version = "v1alpha1"
 		r.References["project_id"] = config.Reference{
-			Type: "github.com/ankasoftco/upjet-provider-vra/apis/project/v1alpha1.Project",
+			Type: "github.com/ankasoftco/provider-vra/apis/project/v1alpha1.Project",
 		}
 	})
 
@@ -18,7 +18,7 @@ func Configure(p *config.Provider) {
 		r.ShortGroup = "blueprint"
 		r.Version = "v1alpha1"
 		r.References["blueprint_id"] = config.Reference{
-			Type: "Blueprint", //github.com/crossplane-contrib/upjet-provider-vra/apis/blueprint/v1alpha1.Blueprint
+			Type: "Blueprint", //github.com/crossplane-contrib/provider-vra/apis/blueprint/v1alpha1.Blueprint
 		}
 	})
 }

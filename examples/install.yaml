@@ -1,6 +1,6 @@
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: upjet-provider-vra
+  name: provider-vra
 spec:
-  package: ankasoftco/upjet-provider-vra:v0.1.0
+  package: ankasoftco/provider-vra:v0.1.0
