@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package deploymentactions
+package resourceactions
 
 import (
 	"context"
@@ -32,24 +32,24 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	sdkDeploymentActions "github.com/vmware/vra-sdk-go/pkg/client/deployment_actions"
+	sdkResourceActions "github.com/vmware/vra-sdk-go/pkg/client/resource_actions"
 
 	apisv1alpha1 "github.com/crossplane/provider-vraprovider/apis/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/clients"
-	deployment_actions "github.com/crossplane/provider-vraprovider/internal/clients/deployment_actions"
+	resource_actions "github.com/crossplane/provider-vraprovider/internal/clients/resource_actions"
 	"github.com/crossplane/provider-vraprovider/internal/features"
 )
 
 const (
-	errNotDeploymentActions = "managed resource is not a DeploymentActions custom resource"
-	errTrackPCUsage         = "cannot track ProviderConfig usage"
-	errGetPC                = "cannot get ProviderConfig"
-	errGetCreds             = "cannot get credentials"
+	errNotResourceActions = "managed resource is not a ResourceActions custom resource"
+	errTrackPCUsage       = "cannot track ProviderConfig usage"
+	errGetPC              = "cannot get ProviderConfig"
+	errGetCreds           = "cannot get credentials"
 
-	errCreateFailed = "cannot create Deployment Action with vRA API"
-	errDeleteFailed = "cannot delete Deployment Action from vRA API"
-	errUpdateFailed = "cannot update Deployment Action from vRA API"
+	errCreateFailed = "cannot create Resource Action with vRA API"
+	errDeleteFailed = "cannot delete Resource Action from vRA API"
+	errUpdateFailed = "cannot update Resource Action from vRA API"
 
 	errNewClient = "cannot create new Service"
 )
@@ -61,9 +61,9 @@ var (
 	newNoOpService = func(_ []byte) (interface{}, error) { return &NoOpService{}, nil }
 )
 
-// Setup adds a controller that reconciles DeploymentActions managed resources.
+// Setup adds a controller that reconciles ResourceActions managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.DeploymentActionsGroupKind)
+	name := managed.ControllerName(v1alpha1.ResourceActionsGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
 	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
@@ -71,11 +71,11 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.DeploymentActionsGroupVersionKind),
+		resource.ManagedKind(v1alpha1.ResourceActionsGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: deployment_actions.DeploymentActionsClient}),
+			newServiceFn: resource_actions.ResourceActionsClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
@@ -85,7 +85,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.DeploymentActions{}).
+		For(&v1alpha1.ResourceActions{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -94,7 +94,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(cfg clients.Config) sdkDeploymentActions.ClientService
+	newServiceFn func(cfg clients.Config) sdkResourceActions.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -103,9 +103,9 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.DeploymentActions)
+	cr, ok := mg.(*v1alpha1.ResourceActions)
 	if !ok {
-		return nil, errors.New(errNotDeploymentActions)
+		return nil, errors.New(errNotResourceActions)
 	}
 
 	if err := c.usage.Track(ctx, mg); err != nil {
@@ -125,14 +125,15 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service sdkDeploymentActions.ClientService
+	service sdkResourceActions.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.DeploymentActions)
+	cr, ok := mg.(*v1alpha1.ResourceActions)
 	if !ok {
-		return managed.ExternalObservation{}, errors.New(errNotDeploymentActions)
+		return managed.ExternalObservation{}, errors.New(errNotResourceActions)
 	}
+
 	// These fmt statements should be removed in the real implementation.
 	fmt.Printf("Observing: %+v", cr)
 
@@ -142,12 +143,12 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	}
 	// TODO: bug.. deployment id & name
 
-	deploymentActionID := externalName
+	resourceActionID := externalName
 
-	params := deployment_actions.GenerateGetDeploymentActionsOptions(deploymentActionID, &cr.Spec.ForProvider)
-	deployment_action_Obj, _ := c.service.GetDeploymentActionUsingGET2(params)
+	params := resource_actions.GenerateGetResourceActionsOptions(resourceActionID, &cr.Spec.ForProvider)
+	resource_action_Obj, _ := c.service.GetResourceActionUsingGET5(params)
 
-	if deployment_action_Obj == nil {
+	if resource_action_Obj == nil {
 		return managed.ExternalObservation{ResourceExists: false}, nil // trigger Create
 	}
 
@@ -157,7 +158,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		}
 	}
 
-	cr.Status.AtProvider = deployment_actions.GenerateDeploymentActionsObservation(deployment_action_Obj)
+	cr.Status.AtProvider = resource_actions.GenerateResourceActionsObservation(resource_action_Obj)
 	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalObservation{
@@ -178,18 +179,18 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.DeploymentActions)
+	cr, ok := mg.(*v1alpha1.ResourceActions)
 	if !ok {
-		return managed.ExternalCreation{}, errors.New(errNotDeploymentActions)
+		return managed.ExternalCreation{}, errors.New(errNotResourceActions)
 	}
 
 	fmt.Printf("Creating: %+v", cr)
 
 	cr.Status.SetConditions(xpv1.Creating())
 
-	deploymentActionsParams := deployment_actions.GenerateCreateDeploymentActionsOptions(&cr.Spec.ForProvider)
+	resourceActionsParams := resource_actions.GenerateCreateResourceActionsOptions(&cr.Spec.ForProvider)
 
-	response, err := c.service.SubmitDeploymentActionRequestUsingPOST2(deploymentActionsParams)
+	response, err := c.service.SubmitResourceActionRequestUsingPOST5(resourceActionsParams)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
@@ -207,9 +208,9 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.DeploymentActions)
+	cr, ok := mg.(*v1alpha1.ResourceActions)
 	if !ok {
-		return managed.ExternalUpdate{}, errors.New(errNotDeploymentActions)
+		return managed.ExternalUpdate{}, errors.New(errNotResourceActions)
 	}
 
 	fmt.Printf("Updating: %+v", cr)
@@ -222,9 +223,9 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
-	cr, ok := mg.(*v1alpha1.DeploymentActions)
+	cr, ok := mg.(*v1alpha1.ResourceActions)
 	if !ok {
-		return errors.New(errNotDeploymentActions)
+		return errors.New(errNotResourceActions)
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
