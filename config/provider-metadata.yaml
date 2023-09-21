@@ -1,9 +1,9 @@
 name: vmware/vra
 resources:
-  null_resource Resource - terraform-provider-null:
-    subCategory: ''
-    description: The null_resource resource implements the standard resource lifecycle but takes no further action. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-    name: null_resource Resource - terraform-provider-null
-    title: null_resource Resource - terraform-provider-null
+  VMware vRA Resource - terraform-provider-vra:
+    subCategory: VMware vRA
+    description: Official documentation https://registry.terraform.io/providers/vmware/vra/latest/docs
+    name: VMware vRA Resource - terraform-provider-vra
+    title: VMware vRA Resource - terraform-provider-vra
     argumentDocs: {}
     importStatements: []
