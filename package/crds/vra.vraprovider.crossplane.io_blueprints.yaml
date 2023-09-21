@@ -68,10 +68,61 @@ spec:
                 description: BlueprintParameters are the configurable fields of a
                   Blueprint.
                 properties:
-                  configurableField:
+                  content:
+                    description: Blueprint YAML content
                     type: string
-                required:
-                - configurableField
+                  contentSourceId:
+                    description: 'Content source id Read Only: true'
+                    type: string
+                  contentSourcePath:
+                    description: 'Content source path Read Only: true'
+                    type: string
+                  contentSourceType:
+                    description: 'Content source type Read Only: true'
+                    type: string
+                  createdBy:
+                    description: 'Created by Read Only: true'
+                    type: string
+                  description:
+                    description: Blueprint description
+                    type: string
+                  id:
+                    description: 'Object ID Read Only: true'
+                    type: string
+                  name:
+                    description: Blueprint name
+                    type: string
+                  orgId:
+                    description: 'Org ID Read Only: true'
+                    type: string
+                  projectId:
+                    description: Project ID
+                    type: string
+                  projectName:
+                    description: 'Project Name Read Only: true'
+                    type: string
+                  requestScopeOrg:
+                    description: Flag to indicate blueprint can be requested from
+                      any project in org
+                    type: boolean
+                  selfLink:
+                    description: 'Blueprint self link Read Only: true'
+                    type: string
+                  status:
+                    description: 'Blueprint status Read Only: true Enum: [DRAFT VERSIONED
+                      RELEASED]'
+                    type: string
+                  totalReleasedVersions:
+                    description: 'Total released versions Read Only: true'
+                    format: int32
+                    type: integer
+                  totalVersions:
+                    description: 'Total versions Read Only: true'
+                    format: int32
+                    type: integer
+                  valid:
+                    description: 'Validation result on update Read Only: true'
+                    type: boolean
                 type: object
               managementPolicies:
                 default:
@@ -276,7 +327,23 @@ spec:
               atProvider:
                 description: BlueprintObservation are the observable fields of a Blueprint.
                 properties:
-                  observableField:
+                  content:
+                    description: Blueprint YAML content
+                    type: string
+                  contentSourceType:
+                    description: 'Content source type Read Only: true'
+                    type: string
+                  createdBy:
+                    description: 'Created by Read Only: true'
+                    type: string
+                  description:
+                    description: Blueprint description
+                    type: string
+                  name:
+                    description: Blueprint name
+                    type: string
+                  projectId:
+                    description: Project ID
                     type: string
                 type: object
               conditions:

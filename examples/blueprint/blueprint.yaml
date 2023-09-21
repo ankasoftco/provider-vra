@@ -1,7 +1,14 @@
 apiVersion: vra.vraprovider.crossplane.io/v1alpha1
-kind: CatalogItem
+kind: Blueprint
 metadata:
   name: vra-workflow-crossplane-testv2-1
 spec:
   forProvider:
-    configurableField: "test"
+    name: 'ankasoftco-test-blueprint-1'
+    description: 'test-blueprint-1'
+    content: 'formatVersion: 1'
+    projectId: "76d63bf6-fb2d-4aaf-81c8-a462e8ef28b8"
+
+
+  providerConfigRef:
+    name: default

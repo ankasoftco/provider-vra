@@ -35,11 +35,11 @@ import (
 	apisv1alpha1 "github.com/crossplane/provider-vraprovider/apis/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/features"
+	sdkBlueprint "github.com/vmware/vra-sdk-go/pkg/client/blueprint"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/provider-vraprovider/internal/clients"
-	p "github.com/crossplane/provider-vraprovider/internal/clients/blueprint"
-	"github.com/vmware/vra-sdk-go/pkg/client/blueprint"
+	blueprint "github.com/crossplane/provider-vraprovider/internal/clients/blueprint"
 )
 
 const (
@@ -75,7 +75,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: p.NewBlueprintClient}),
+			newServiceFn: blueprint.NewBlueprintClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
@@ -94,7 +94,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(cfg clients.Config) blueprint.ClientService
+	newServiceFn func(cfg clients.Config) sdkBlueprint.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -125,7 +125,7 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service blueprint.ClientService
+	service sdkBlueprint.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
@@ -144,7 +144,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 
 	blueprintID := externalName
 
-	params := p.GenerateGetBlueprintOptions(blueprintID)
+	params := blueprint.GenerateGetBlueprintOptions(blueprintID)
 
 	// current value of the resource.
 	b, _ := c.service.GetBlueprintUsingGET1(params)
@@ -156,12 +156,11 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	ResourceUpToDate := p.IsResourceUpToDate(desired, b.Payload)
+	ResourceUpToDate := blueprint.IsResourceUpToDate(desired, b.Payload)
 
 	// TODO: Check the deployment process here...
-	cr.Status.AtProvider = p.GenerateBlueprintObservation(b)
+	cr.Status.AtProvider = blueprint.GenerateBlueprintObservation(b)
 	cr.Status.SetConditions(xpv1.Available())
-	// dep.Status
 
 	return managed.ExternalObservation{
 		// Return false when the external resource does not exist. This lets
@@ -188,6 +187,19 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	fmt.Printf("Creating: %+v", cr)
 
+	cr.Status.SetConditions(xpv1.Creating())
+
+	blueprintParam := blueprint.GenerateCreateBlueprintOptions(&cr.Spec.ForProvider)
+
+	response, err := c.service.CreateBlueprintUsingPOST1(blueprintParam)
+	if err != nil {
+		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
+	}
+
+	fmt.Println("Blueprint Id: " + *&response.Payload.ID)
+	meta.SetExternalName(cr, fmt.Sprint(*&response.Payload.ID))
+
+	cr.Status.SetConditions(xpv1.Available())
 	return managed.ExternalCreation{
 		// Optionally return any details that may be required to connect to the
 		// external resource. These will be stored as the connection secret.
@@ -203,6 +215,20 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	fmt.Printf("Updating: %+v", cr)
 
+	externalName := meta.GetExternalName(cr)
+
+	blueprintParam := blueprint.GenerateUpdateBlueprintOptions(externalName, &cr.Spec.ForProvider)
+
+	response, err := c.service.UpdateBlueprintUsingPUT1(blueprintParam)
+	if err != nil {
+		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
+	}
+
+	fmt.Println("Blueprint Id: " + *&response.Payload.ID)
+	meta.SetExternalName(cr, fmt.Sprint(*&response.Payload.ID))
+
+	cr.Status.SetConditions(xpv1.Available())
+
 	return managed.ExternalUpdate{
 		// Optionally return any details that may be required to connect to the
 		// external resource. These will be stored as the connection secret.
@@ -215,6 +241,16 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	if !ok {
 		return errors.New(errNotBlueprint)
 	}
+
+	externalName := meta.GetExternalName(cr)
+
+	blueprintParam := blueprint.GenerateDeleteBlueprintOptions(externalName)
+
+	if _, err := c.service.DeleteBlueprintUsingDELETE1(blueprintParam); err != nil {
+		return errors.Wrap(err, errDeleteFailed)
+	}
+
+	cr.Status.SetConditions(xpv1.Available())
 
 	fmt.Printf("Deleting: %+v", cr)
 
