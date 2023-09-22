@@ -7,6 +7,7 @@ package catalogitem
 import (
 	"fmt"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/vmware/vra-sdk-go/pkg/client/catalog_items"
 	"github.com/vmware/vra-sdk-go/pkg/models"
 
@@ -25,6 +26,14 @@ func NewCatalogItemClient(cfg clients.Config) catalog_items.ClientService {
 	vra := clients.NewClientWithAuthentication(cfg, bearerToken)
 
 	return vra.CatalogItems
+}
+
+// GenerateRequestCatalogItemOptions creates deployments from a catalog item.
+func GenerateGetgCatalogItemOptions(catalogItemID string) *catalog_items.GetCatalogItemUsingGET5Params {
+	var params = catalog_items.NewGetCatalogItemUsingGET5Params().WithID(
+		strfmt.UUID(catalogItemID),
+	)
+	return params
 }
 
 // GenerateRequestCatalogItemOptions creates deployments from a catalog item.

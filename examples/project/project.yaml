@@ -6,13 +6,13 @@ spec:
   forProvider:
     name: vra-test-project-crossplane-001
     administrators:
-      - email: udemirtas@vmware.com
+      - email: extern.yilmaz_ismail@allianz.de
         type: user
     members:
-      - email: iyilmaz@vmware.com
+      - email: extern.demirtas_umit@allianz.de
         type: user
     viewers:
-      - email: test@test.com
+      - email: extern.demirtas_umit@allianz.de
         type: user
     customProperties:
       test1: test1

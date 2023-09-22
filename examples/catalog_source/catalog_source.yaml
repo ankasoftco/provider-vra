@@ -1,0 +1,14 @@
+apiVersion: vra.vraprovider.crossplane.io/v1alpha1
+kind: CatalogSource
+metadata:
+  name: vra-test-crossplane-testv2-1
+spec:
+  forProvider:
+    projectId: 853abfb3-0e50-4b1c-af9a-83f0f3ca5889
+    typeId: com.vmw.blueprint
+    name: vra-test-crossplane-testv2-1
+    config:
+      sourceProjectId: 853abfb3-0e50-4b1c-af9a-83f0f3ca5889
+
+  providerConfigRef:
+    name: default

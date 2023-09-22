@@ -4,10 +4,10 @@ metadata:
   name: vra-workflow-crossplane-testv2-1
 spec:
   forProvider:
-    name: 'ankasoftco-test-blueprint-1'
+    name: 'vra-workflow-crossplane-testv2-1'
     description: 'test-blueprint-1'
     content: 'formatVersion: 1'
-    projectId: "76d63bf6-fb2d-4aaf-81c8-a462e8ef28b8"
+    projectId: "853abfb3-0e50-4b1c-af9a-83f0f3ca5889"
 
 
   providerConfigRef:

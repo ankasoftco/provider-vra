@@ -7,5 +7,6 @@ cover.out
 .vscode
 .idea
 .DS_Store
-/examples/secret.yaml
-secret.yaml
+/examples/provider/secret2.yaml
+/examples/provider/config2.yaml
+

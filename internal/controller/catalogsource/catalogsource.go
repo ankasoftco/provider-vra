@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package blueprint
+package catalogsource
 
 import (
 	"context"
@@ -35,21 +35,22 @@ import (
 	apisv1alpha1 "github.com/crossplane/provider-vraprovider/apis/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/apis/vra/v1alpha1"
 	"github.com/crossplane/provider-vraprovider/internal/features"
-	sdkBlueprint "github.com/vmware/vra-sdk-go/pkg/client/blueprint"
+	sdkCatalogSources "github.com/vmware/vra-sdk-go/pkg/client/catalog_sources"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/provider-vraprovider/internal/clients"
-	blueprint "github.com/crossplane/provider-vraprovider/internal/clients/blueprint"
+	catalog_source "github.com/crossplane/provider-vraprovider/internal/clients/catalog_source"
+	catalog_sources "github.com/crossplane/provider-vraprovider/internal/clients/catalog_source"
 )
 
 const (
-	errNotBlueprint = "managed resource is not a Blueprint custom resource"
-	errTrackPCUsage = "cannot track ProviderConfig usage"
-	errGetPC        = "cannot get ProviderConfig"
-	errGetCreds     = "cannot get credentials"
-	errCreateFailed = "cannot create blueprint with vRA API"
-	errDeleteFailed = "cannot delete blueprint from vRA API"
-	errUpdateFailed = "cannot update blueprint from vRA API"
+	errNotCatalogSource = "managed resource is not a CatalogSource custom resource"
+	errTrackPCUsage     = "cannot track ProviderConfig usage"
+	errGetPC            = "cannot get ProviderConfig"
+	errGetCreds         = "cannot get credentials"
+	errCreateFailed     = "cannot create Catalog Source with vRA API"
+	errDeleteFailed     = "cannot delete Catalog Source from vRA API"
+	errUpdateFailed     = "cannot update Catalog Source from vRA API"
 
 	errNewClient = "cannot create new Service"
 )
@@ -61,9 +62,9 @@ var (
 	newNoOpService = func(_ []byte) (interface{}, error) { return &NoOpService{}, nil }
 )
 
-// Setup adds a controller that reconciles Blueprint managed resources.
+// Setup adds a controller that reconciles CatalogSources managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.BlueprintGroupKind)
+	name := managed.ControllerName(v1alpha1.CatalogSourceGroupKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
 	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
@@ -71,11 +72,11 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.BlueprintGroupVersionKind),
+		resource.ManagedKind(v1alpha1.CatalogSourceGroupVersionKind),
 		managed.WithExternalConnecter(&connector{
 			kube:         mgr.GetClient(),
 			usage:        resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			newServiceFn: blueprint.NewBlueprintClient}),
+			newServiceFn: catalog_source.NewCatalogSourceClient}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
 		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
@@ -85,7 +86,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.Blueprint{}).
+		For(&v1alpha1.CatalogSource{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -94,7 +95,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 type connector struct {
 	kube         client.Client
 	usage        resource.Tracker
-	newServiceFn func(cfg clients.Config) sdkBlueprint.ClientService
+	newServiceFn func(cfg clients.Config) sdkCatalogSources.ClientService
 }
 
 // Connect typically produces an ExternalClient by:
@@ -103,9 +104,9 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.Blueprint)
+	cr, ok := mg.(*v1alpha1.CatalogSource)
 	if !ok {
-		return nil, errors.New(errNotBlueprint)
+		return nil, errors.New(errNotCatalogSource)
 	}
 
 	if err := c.usage.Track(ctx, mg); err != nil {
@@ -125,13 +126,13 @@ type external struct {
 	kube client.Client
 	// A 'client' used to connect to the external resource API. In practice this
 	// would be something like an AWS SDK client.
-	service sdkBlueprint.ClientService
+	service sdkCatalogSources.ClientService
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.Blueprint)
+	cr, ok := mg.(*v1alpha1.CatalogSource)
 	if !ok {
-		return managed.ExternalObservation{}, errors.New(errNotBlueprint)
+		return managed.ExternalObservation{}, errors.New(errNotCatalogSource)
 	}
 
 	// These fmt statements should be removed in the real implementation.
@@ -142,12 +143,12 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	blueprintID := externalName
+	catalog_source_ID := externalName
 
-	params := blueprint.GenerateGetBlueprintOptions(blueprintID)
+	params := catalog_source.GenerateGetCatalogSourceOptions(catalog_source_ID)
 
 	// current value of the resource.
-	b, _ := c.service.GetBlueprintUsingGET1(params)
+	b, _ := c.service.GetUsingGET2(params)
 
 	// desired value of the resource. (it reads the current yaml to determine desired state)
 	desired := cr.Spec.ForProvider.DeepCopy()
@@ -156,10 +157,10 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
 
-	ResourceUpToDate := blueprint.IsResourceUpToDate(desired, b.Payload)
+	ResourceUpToDate := catalog_source.IsResourceUpToDate(desired, b.Payload)
 
 	// TODO: Check the deployment process here...
-	cr.Status.AtProvider = blueprint.GenerateBlueprintObservation(b)
+	cr.Status.AtProvider = catalog_source.GenerateCatalogSourceObservation(b)
 	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalObservation{
@@ -180,24 +181,32 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.Blueprint)
+	cr, ok := mg.(*v1alpha1.CatalogSource)
 	if !ok {
-		return managed.ExternalCreation{}, errors.New(errNotBlueprint)
+		return managed.ExternalCreation{}, errors.New(errNotCatalogSource)
 	}
 
 	fmt.Printf("Creating: %+v", cr)
 
 	cr.Status.SetConditions(xpv1.Creating())
 
-	blueprintParam := blueprint.GenerateCreateBlueprintOptions(&cr.Spec.ForProvider)
+	catalogSourceParam := catalog_sources.GenerateCreateCatalogSourceOptions(&cr.Spec.ForProvider)
 
-	response, err := c.service.CreateBlueprintUsingPOST1(blueprintParam)
+	responseOk, responseCreated, err := c.service.PostUsingPOST2(catalogSourceParam)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateFailed)
 	}
 
-	fmt.Println("Blueprint Id: " + *&response.Payload.ID)
-	meta.SetExternalName(cr, fmt.Sprint(*&response.Payload.ID))
+	if responseOk != nil {
+		fmt.Print("Catalog Source Id: ")
+		fmt.Println(responseOk.Payload.ID)
+		meta.SetExternalName(cr, fmt.Sprint(*&responseOk.Payload.ID))
+	}
+	if responseCreated != nil {
+		fmt.Print("Catalog Source Id: ")
+		fmt.Println(responseCreated.Payload.ID)
+		meta.SetExternalName(cr, fmt.Sprint(*&responseCreated.Payload.ID))
+	}
 
 	cr.Status.SetConditions(xpv1.Available())
 	return managed.ExternalCreation{
@@ -208,25 +217,31 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.Blueprint)
+	cr, ok := mg.(*v1alpha1.CatalogSource)
 	if !ok {
-		return managed.ExternalUpdate{}, errors.New(errNotBlueprint)
+		return managed.ExternalUpdate{}, errors.New(errNotCatalogSource)
 	}
 
 	fmt.Printf("Updating: %+v", cr)
 
 	externalName := meta.GetExternalName(cr)
 
-	blueprintParam := blueprint.GenerateUpdateBlueprintOptions(externalName, &cr.Spec.ForProvider)
-
-	response, err := c.service.UpdateBlueprintUsingPUT1(blueprintParam)
+	catalogSourceParam := catalog_sources.GenerateUpdateCatalogSourceOptions(externalName, &cr.Spec.ForProvider)
+	responseOk, responseCreated, err := c.service.PostUsingPOST2(catalogSourceParam)
 	if err != nil {
-		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateFailed)
+		return managed.ExternalUpdate{}, errors.Wrap(err, errCreateFailed)
 	}
 
-	fmt.Println("Blueprint Id: " + *&response.Payload.ID)
-	meta.SetExternalName(cr, fmt.Sprint(*&response.Payload.ID))
-
+	if responseOk != nil {
+		fmt.Print("Catalog Source Id: ")
+		fmt.Println(responseOk.Payload.ID)
+		meta.SetExternalName(cr, fmt.Sprint(*&responseOk.Payload.ID))
+	}
+	if responseCreated != nil {
+		fmt.Print("Catalog Source Id: ")
+		fmt.Println(responseCreated.Payload.ID)
+		meta.SetExternalName(cr, fmt.Sprint(*&responseCreated.Payload.ID))
+	}
 	cr.Status.SetConditions(xpv1.Available())
 
 	return managed.ExternalUpdate{
@@ -237,18 +252,18 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
-	cr, ok := mg.(*v1alpha1.Blueprint)
+	cr, ok := mg.(*v1alpha1.CatalogSource)
 	if !ok {
-		return errors.New(errNotBlueprint)
+		return errors.New(errNotCatalogSource)
 	}
 
 	fmt.Printf("Deleting: %+v", cr)
 
 	externalName := meta.GetExternalName(cr)
 
-	blueprintParam := blueprint.GenerateDeleteBlueprintOptions(externalName)
+	blueprintParam := catalog_source.GenerateDeleteCatalogSourceOptions(externalName)
 
-	if _, err := c.service.DeleteBlueprintUsingDELETE1(blueprintParam); err != nil {
+	if _, err := c.service.DeleteUsingDELETE4(blueprintParam); err != nil {
 		return errors.Wrap(err, errDeleteFailed)
 	}
 

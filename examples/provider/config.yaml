@@ -4,10 +4,10 @@ kind: ProviderConfig
 metadata:
   name: default
 spec:
-  baseUrl: api.mgmt.cloud.vmware.com
+  baseUrl: 
   credentials:
     source: Secret
     secretRef:
       namespace: crossplane-system
-      name: example-provider-secret
+      name: vra-provider-secret
       key: credentials
