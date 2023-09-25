@@ -57,7 +57,7 @@ type CatalogSourceParameters struct {
 type CatalogSourceObservation struct {
 	// Source custom configuration
 	// Required: true
-	Config map[string]string `json:"config"`
+	Config string `json:"config"`
 
 	// Created By
 	CreatedBy string `json:"createdBy,omitempty"`

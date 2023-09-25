@@ -304,10 +304,8 @@ spec:
                   a CatalogSource.
                 properties:
                   config:
-                    additionalProperties:
-                      type: string
                     description: 'Source custom configuration Required: true'
-                    type: object
+                    type: string
                   createdBy:
                     description: Created By
                     type: string

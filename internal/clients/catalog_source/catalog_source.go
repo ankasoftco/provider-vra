@@ -81,7 +81,21 @@ func GenerateCatalogSourceObservation(b *catalog_sources.GetUsingGET2OK) v1alpha
 		return v1alpha1.CatalogSourceObservation{}
 	}
 
-	o := v1alpha1.CatalogSourceObservation{}
+	o := v1alpha1.CatalogSourceObservation{
+		ID:               b.Payload.ID,
+		CreatedBy:        b.Payload.CreatedBy,
+		Description:      b.Payload.Description,
+		Name:             b.Payload.Name,
+		ProjectID:        b.Payload.ProjectID,
+		TypeID:           b.Payload.TypeID,
+		LastImportErrors: b.Payload.LastImportErrors,
+		ItemsFound:       b.Payload.ItemsFound,
+		ItemsImported:    b.Payload.ItemsImported,
+		LastUpdatedBy:    b.Payload.LastUpdatedBy,
+		Global:           b.Payload.Global,
+		IconID:           b.Payload.IconID,
+		Config:           fmt.Sprintf("%v", b.Payload.Config),
+	}
 
 	return o
 }

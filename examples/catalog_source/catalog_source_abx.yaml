@@ -1,0 +1,14 @@
+apiVersion: vra.vraprovider.crossplane.io/v1alpha1
+kind: CatalogSource
+metadata:
+  name: vra-test-crossplane-test-abx
+spec:
+  forProvider:
+    projectId: 4d5bc872-f602-40b0-9291-b83f4ce322ea
+    typeId: com.vmw.abx.actions
+    name: vra-test-crossplane-test-abx
+    config:
+      sourceProjectId: 4d5bc872-f602-40b0-9291-b83f4ce322ea
+
+  providerConfigRef:
+    name: default
