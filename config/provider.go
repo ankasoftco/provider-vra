@@ -8,18 +8,18 @@ import (
 	// Note(turkenh): we are importing this to embed provider schema document
 	_ "embed"
 
-	blockDevice "github.com/ankasoftco/provider-vra/config/block_device"
+	blockdevice "github.com/ankasoftco/provider-vra/config/block_device"
 	blueprint "github.com/ankasoftco/provider-vra/config/blueprint"
-	catalogItemEntitlement "github.com/ankasoftco/provider-vra/config/catalog_item"
-	catalogSource "github.com/ankasoftco/provider-vra/config/catalog_source"
-	cloudAccount "github.com/ankasoftco/provider-vra/config/cloud_account"
-	contentSource "github.com/ankasoftco/provider-vra/config/content_source"
+	catalogitementitlement "github.com/ankasoftco/provider-vra/config/catalog_item"
+	catalogsource "github.com/ankasoftco/provider-vra/config/catalog_source"
+	cloudaccount "github.com/ankasoftco/provider-vra/config/cloud_account"
+	contentsource "github.com/ankasoftco/provider-vra/config/content_source"
 	deployment "github.com/ankasoftco/provider-vra/config/deployment"
 	fabric "github.com/ankasoftco/provider-vra/config/fabric"
-	flavorProfile "github.com/ankasoftco/provider-vra/config/flavor_profile"
-	imageProfile "github.com/ankasoftco/provider-vra/config/image_profile"
+	flavorprofile "github.com/ankasoftco/provider-vra/config/flavor_profile"
+	imageprofile "github.com/ankasoftco/provider-vra/config/image_profile"
 	integration "github.com/ankasoftco/provider-vra/config/integration"
-	loadBalancer "github.com/ankasoftco/provider-vra/config/load_balancer"
+	loadbalancer "github.com/ankasoftco/provider-vra/config/load_balancer"
 	machine "github.com/ankasoftco/provider-vra/config/machine"
 	network "github.com/ankasoftco/provider-vra/config/network"
 	project "github.com/ankasoftco/provider-vra/config/project"
@@ -55,16 +55,16 @@ func GetProvider() *ujconfig.Provider {
 		blueprint.Configure,
 		deployment.Configure,
 		fabric.Configure,
-		blockDevice.Configure,
-		flavorProfile.Configure,
-		imageProfile.Configure,
+		blockdevice.Configure,
+		flavorprofile.Configure,
+		imageprofile.Configure,
 		storage.Configure,
-		catalogSource.Configure,
-		catalogItemEntitlement.Configure,
-		cloudAccount.Configure,
-		contentSource.Configure,
+		catalogsource.Configure,
+		catalogitementitlement.Configure,
+		cloudaccount.Configure,
+		contentsource.Configure,
 		integration.Configure,
-		loadBalancer.Configure,
+		loadbalancer.Configure,
 		machine.Configure,
 		network.Configure,
 		zone.Configure,

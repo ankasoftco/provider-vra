@@ -1,4 +1,4 @@
-package contentSource
+package contentsource
 
 import "github.com/upbound/upjet/pkg/config"
 

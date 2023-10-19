@@ -30,9 +30,6 @@ const (
 const (
 	keyURL          = "url"
 	keyRefreshToken = "refresh_token"
-
-	envURL          = "VRA_URL"
-	envRefreshToken = "VRA_REFRESH_TOKEN"
 )
 
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
@@ -79,7 +76,7 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		if v, ok := vraCreds[keyRefreshToken]; ok {
 			ps.Configuration[keyRefreshToken] = v
 		}
-		
+
 		// Set credentials in Terraform provider environment.
 		/*ps.Env = []string{
 			fmt.Sprintf("%s=%s", envURL, vraCreds[keyURL]),

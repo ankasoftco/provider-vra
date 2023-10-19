@@ -1,4 +1,4 @@
-package blockDevice
+package blockdevice
 
 import "github.com/upbound/upjet/pkg/config"
 

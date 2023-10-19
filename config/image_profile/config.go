@@ -1,4 +1,4 @@
-package imageProfile
+package imageprofile
 
 import "github.com/upbound/upjet/pkg/config"
 

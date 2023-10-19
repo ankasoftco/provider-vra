@@ -1,4 +1,4 @@
-package loadBalancer
+package loadbalancer
 
 import "github.com/upbound/upjet/pkg/config"
 

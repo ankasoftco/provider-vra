@@ -1,4 +1,4 @@
-package catalogSource
+package catalogsource
 
 import "github.com/upbound/upjet/pkg/config"
 

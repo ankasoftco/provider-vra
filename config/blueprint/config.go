@@ -18,7 +18,7 @@ func Configure(p *config.Provider) {
 		r.ShortGroup = "blueprint"
 		r.Version = "v1alpha1"
 		r.References["blueprint_id"] = config.Reference{
-			Type: "Blueprint", //github.com/crossplane-contrib/provider-vra/apis/blueprint/v1alpha1.Blueprint
+			Type: "Blueprint", // github.com/crossplane-contrib/provider-vra/apis/blueprint/v1alpha1.Blueprint
 		}
 	})
 }
