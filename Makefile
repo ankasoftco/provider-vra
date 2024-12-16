@@ -1,7 +1,7 @@
 # ====================================================================================
 # Setup Project
 
-PROJECT_NAME ?= provider-jet-vra
+PROJECT_NAME ?= provider-vra
 PROJECT_REPO ?= github.com/ankasoftco/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION ?= 1.5.5
