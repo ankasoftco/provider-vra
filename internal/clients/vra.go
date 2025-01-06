@@ -66,6 +66,7 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			return ps, errors.Wrap(err, errUnmarshalCredentials)
 		}
 
+		ps.Configuration = map[string]any{}
 		// Required fields
 		for _, req := range reqFields {
 			ps.Configuration[req] = creds[req]
